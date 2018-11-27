@@ -1,0 +1,74 @@
+﻿<Page
+    x:Class="Client_UWP.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client_UWP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="LightGray">
+
+    <Grid Margin="10"
+          Padding="10"
+          HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="420" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400" />
+        </Grid.ColumnDefinitions>
+        <Button x:Name="ConnectPeer" 
+                Content=" Connect "
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Grid.Row="0"
+                Grid.Column="0"/>
+        <Button x:Name="DisconnectPeer" 
+                Content="Disconnect"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Grid.Row="0"
+                Grid.Column="0"/>
+        <StackPanel Background="White"
+                    Grid.Row="1"
+                    Grid.Column="0">
+            <ListView x:Name="peersListView" 
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Top"
+                      Margin="10"
+                      SelectionMode="Single"
+                      IsItemClickEnabled="True">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ListViewItem Background="White">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="35" />
+                                    <ColumnDefinition Width="195" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding Id}"
+                                        Grid.Row="0"
+                                        Grid.Column="0" />
+                                <TextBlock Text="{Binding Name}"
+                                        Grid.Row="0"
+                                        Grid.Column="1" />
+                            </Grid>
+                        </ListViewItem>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+        <Button x:Name="CallRemotePeer" 
+                Content="Call"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="10,0,10,0"/>
+    </Grid>
+</Page>

@@ -120,10 +120,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\PeerCC_v2\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Cx.Universal\Org.WebRtc.Cx.vcxproj">
-      <Project>{8f5f734c-b823-4029-ab7a-5017b21b865a}</Project>
-      <Name>Org.WebRtc.Cx</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\PeerCC_v2\webrtc-uwp-sdk\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Org.WebRtc.vcxproj">
       <Project>{3dd8fdcd-b703-4b75-826a-2c7e844f903e}</Project>
       <Name>Org.WebRtc</Name>
