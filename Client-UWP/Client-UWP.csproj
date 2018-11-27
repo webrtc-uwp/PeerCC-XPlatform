@@ -131,6 +131,12 @@
       <Version>6.1.7</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClientCore\ClientCore.csproj">
+      <Project>{3dabdb6e-0f26-43d6-9686-12a3b6e63c45}</Project>
+      <Name>ClientCore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

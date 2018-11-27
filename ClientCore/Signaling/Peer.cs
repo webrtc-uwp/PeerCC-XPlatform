@@ -1,4 +1,4 @@
-﻿namespace PeerCC2.Signaling
+﻿namespace ClientCore.Signaling
 {
     public class Peer
     {
