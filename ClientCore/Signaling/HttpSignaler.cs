@@ -2,9 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,7 +36,7 @@ namespace ClientCore.Signaling
         {
             _state = State.NotConnected;
             _myId = -1;
-            _clientName = RTCController.Instance.LocalPeer.Name;
+            _clientName = LocalPeer.Name;
             _baseHttpAddress = new Uri(_url + ":" + _port);
         }
 
@@ -349,7 +351,7 @@ namespace ClientCore.Signaling
 
             if (peer_connected == 1)
             {
-                if (peer_name != RTCController.Instance.LocalPeer.Name)
+                if (peer_name != LocalPeer.Name)
                     _peers.Add(peer);
 
                 OnPeerConnected(peer);
@@ -442,7 +444,7 @@ namespace ClientCore.Signaling
 
                     Peer connectedPeer = new Peer(peer_id, peer_name);
 
-                    if (peer_name != RTCController.Instance.LocalPeer.Name)
+                    if (peer_name != LocalPeer.Name)
                         _peers.Add(connectedPeer);
 
                     OnPeerConnected(new Peer(peer_id, peer_name));
@@ -455,6 +457,37 @@ namespace ClientCore.Signaling
                 return false;
             }
             return true;
+        }
+
+        private static readonly string _localPeerRandom = new Func<string>(() =>
+        {
+            Random random = new Random();   // WARNING: NOT cryptographically strong!
+            const string chars = "abcdefghijklmnopqrstuvxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const int length = 5;
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+        })();
+
+        static readonly Peer _localPeer = new Func<Peer>(() =>
+        {
+            string host = IPGlobalProperties.GetIPGlobalProperties().HostName.ToLower();
+            string hostname = host != null ? host : "<unknown host>";
+
+            // A random string is added to the peer name to easily filter
+            // our local peer by name when the server re-announces the
+            // local peer to itself. Thus two peers with the same hostname
+            // will never be the same and running the application again
+            // causes a slightly different peer name on the peer list to
+            // distinguish a new peer from an old zombie peer still not
+            // yet purged from the server.
+            string peerName = hostname + "-" + _localPeerRandom + "-data";
+
+            return new Peer(-1, peerName);
+        })();
+
+        public Peer LocalPeer
+        {
+            // return a clone of the static local peer contents to ensure original Peer values cannot be modified
+            get { return new Peer(_localPeer); }
         }
     }
 }

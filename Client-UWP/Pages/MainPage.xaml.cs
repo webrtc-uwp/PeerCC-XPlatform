@@ -28,7 +28,7 @@ namespace Client_UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        HttpSignaler _httpSignaler = new HttpSignaler();
+        HttpSignaler _httpSignaler = RTCController.Instance._httpSignaler;
 
         public MainPage()
         {
@@ -37,7 +37,7 @@ namespace Client_UWP
             ApplicationView.PreferredLaunchViewSize = new Size(450, 550);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
-            string name = RTCController.Instance.LocalPeer.Name;
+            string name = RTCController.Instance._httpSignaler.LocalPeer.Name;
             Debug.WriteLine($"Connecting to server from local peer: {name}");
 
             _httpSignaler.SignedIn += Signaler_SignedIn;
@@ -90,7 +90,7 @@ namespace Client_UWP
                 return;
             }
 
-            if (RTCController.Instance.LocalPeer.Name == peer.Name)
+            if (RTCController.Instance._httpSignaler.LocalPeer.Name == peer.Name)
             {
                 Debug.WriteLine($"Peer is our local peer: {peer.ToString()}");
                 return;
