@@ -108,7 +108,6 @@ namespace Client_UWP.Controllers
             /// <returns>This is an asynchronous method. The result is a vector of the
             /// capabilities supported by the video device.</returns>
             public IAsyncOperation<IList<CaptureCapability>> GetVideoCaptureCapabilities()
-
             {
                 if (Id == null)
                     return null;

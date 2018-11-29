@@ -44,6 +44,8 @@ namespace ClientCore
         private static readonly string kCandidateSdpMidName = "sdpMid";
         private static readonly string kCandidateSdpMlineIndexName = "sdpMLineIndex";
         private static readonly string kCandidateSdpName = "candidate";
+        private static readonly string kSessionDescriptionTypeName = "type";
+        private static readonly string kSessionDescriptionSdpName = "sdp";
 
         RTCPeerConnection _peerConnection;
 
@@ -165,5 +167,74 @@ namespace ClientCore
         //{
         //    throw new NotImplementedException();
         //}
+
+        CancellationTokenSource _connectToPeerCancelationTokenSource;
+        Task<bool> _connectToPeerTask;
+
+        /// <summary>
+        /// Calls to connect to the selected peer.
+        /// </summary>
+        /// <param name="peer">Peer to connect to.</param>
+        public async void ConnectToPeer(Peer peer)
+        {
+            Debug.Assert(peer != null);
+            Debug.Assert(_peerId == -1);
+
+            if (_peerConnection != null)
+            {
+                Debug.WriteLine("[Error] Conductor: We only support connecting to one peer at a time");
+                return;
+            }
+
+            _connectToPeerCancelationTokenSource = new System.Threading.CancellationTokenSource();
+            bool connectResult = await CreatePeerConnection(_connectToPeerCancelationTokenSource.Token);
+            _connectToPeerTask = null;
+            _connectToPeerCancelationTokenSource.Dispose();
+
+            if (connectResult)
+            {
+                _peerId = peer.Id;
+                var offerOptions = new RTCOfferOptions();
+                offerOptions.OfferToReceiveAudio = true;
+                offerOptions.OfferToReceiveVideo = true;
+                var offer = await _peerConnection.CreateOffer(offerOptions);
+
+                // Alter sdp to force usage of selected codecs
+                string modifiedSdp = offer.Sdp;
+                //SdpUtils.SelectCodecs(ref modifiedSdp, AudioCodec.PreferredPayloadType, VideoCodec.PreferredPayloadType);
+                RTCSessionDescriptionInit sdpInit = new RTCSessionDescriptionInit();
+                sdpInit.Sdp = modifiedSdp;
+                sdpInit.Type = offer.SdpType;
+                var modifiedOffer = new RTCSessionDescription(sdpInit);
+
+                await _peerConnection.SetLocalDescription(modifiedOffer);
+                Debug.WriteLine("Conductor: Sending offer:\n" + modifiedOffer.Sdp);
+                SendSdp(modifiedOffer);
+            }
+        }
+
+        /// <summary>
+        /// Sends SDP message.
+        /// </summary>
+        /// <param name="description">RTC session description.</param>
+        private void SendSdp(IRTCSessionDescription description)
+        {
+            JsonObject json = null;
+
+            json = new JsonObject();
+            string messageType = null;
+            switch (description.SdpType)
+            {
+                case RTCSdpType.Offer: messageType = "offer"; break;
+                case RTCSdpType.Answer: messageType = "answer"; break;
+                case RTCSdpType.Pranswer: messageType = "pranswer"; break;
+                default: Debug.Assert(false, description.SdpType.ToString()); break;
+            }
+
+            json.Add(kSessionDescriptionTypeName, JsonValue.CreateStringValue(messageType));
+            json.Add(kSessionDescriptionSdpName, JsonValue.CreateStringValue(description.Sdp));
+
+            SendMessage(json);
+        }
     }
 }
