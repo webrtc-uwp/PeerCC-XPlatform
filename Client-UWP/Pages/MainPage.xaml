@@ -11,28 +11,38 @@
     <Grid Margin="10"
           Padding="10"
           HorizontalAlignment="Center">
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
+            <RowDefinition Height="80" />
             <RowDefinition Height="420" />
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400" />
         </Grid.ColumnDefinitions>
+        <CommandBar Grid.Row="0"
+                    Grid.Column="0">
+            <AppBarButton x:Name="GoToSettings" 
+                          Icon="Setting" 
+                          Label="Settings"/>
+        </CommandBar>
         <Button x:Name="ConnectPeer" 
                 Content=" Connect "
                 HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Grid.Row="0"
+                VerticalAlignment="Bottom"
+                Margin="10"
+                Grid.Row="1"
                 Grid.Column="0"/>
         <Button x:Name="DisconnectPeer" 
                 Content="Disconnect"
                 HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Grid.Row="0"
+                VerticalAlignment="Bottom"
+                Margin="10"
+                Grid.Row="1"
                 Grid.Column="0"/>
         <StackPanel Background="White"
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.Column="0">
             <ListView x:Name="peersListView" 
                       HorizontalAlignment="Center"
@@ -67,7 +77,7 @@
                 Content="Call"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Bottom"
-                Grid.Row="2"
+                Grid.Row="3"
                 Grid.Column="0"
                 Margin="10,0,10,0"/>
     </Grid>

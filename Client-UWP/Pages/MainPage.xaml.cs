@@ -32,10 +32,10 @@ namespace Client_UWP
 
         public MainPage()
         {
-            InitializeComponent();
-
-            ApplicationView.PreferredLaunchViewSize = new Size(450, 550);
+            ApplicationView.PreferredLaunchViewSize = new Size(450, 650);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
+            InitializeComponent();
 
             string name = RTCController.Instance._httpSignaler.LocalPeer.Name;
             Debug.WriteLine($"Connecting to server from local peer: {name}");
@@ -124,6 +124,11 @@ namespace Client_UWP
 
             peersListView.Tapped += PeersListView_Tapped;
 
+            GoToSettings.Click += (sender, args) =>
+            {
+                Debug.WriteLine("Go to settings page.");
+            };
+
             ConnectPeer.Click += async (sender, args) =>
             {
                 Debug.WriteLine("Connects to server.");
@@ -158,6 +163,8 @@ namespace Client_UWP
                 if (remotePeer == null) return;
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
+
+                //RTCController.Instance.ConnectToPeer(remotePeer);
             };
         }
 
