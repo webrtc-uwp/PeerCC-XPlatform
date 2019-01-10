@@ -99,8 +99,14 @@
     <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\SettingsPage.xaml.cs">
-      <DependentUpon>SettingsPage.xaml</DependentUpon>
+    <Compile Include="Pages\SettingsConnection\SettingsConnectionPage.xaml.cs">
+      <DependentUpon>SettingsConnectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SettingsDebug\SettingsDebugPage.xaml.cs">
+      <DependentUpon>SettingsDebugPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SettingsDevices\SettingsDevicesPage.xaml.cs">
+      <DependentUpon>SettingsDevicesPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -129,7 +135,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Pages\SettingsPage.xaml">
+    <Page Include="Pages\SettingsConnection\SettingsConnectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SettingsDebug\SettingsDebugPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\SettingsDevices\SettingsDevicesPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -145,6 +159,7 @@
       <Name>ClientCore</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

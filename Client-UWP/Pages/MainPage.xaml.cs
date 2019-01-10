@@ -19,6 +19,9 @@ using System.Diagnostics;
 using Windows.UI.Popups;
 using Windows.UI.Core;
 using Client_UWP.Pages;
+using Client_UWP.Pages.SettingsConnection;
+using Client_UWP.Pages.SettingsDevices;
+using Client_UWP.Pages.SettingsDebug;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -125,7 +128,11 @@ namespace Client_UWP
 
             peersListView.Tapped += PeersListView_Tapped;
 
-            GoToSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsPage));
+            ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
+
+            DevicesSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDevicesPage));
+
+            DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
             ConnectPeer.Click += async (sender, args) =>
             {

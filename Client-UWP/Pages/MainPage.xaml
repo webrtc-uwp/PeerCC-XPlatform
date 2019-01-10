@@ -8,8 +8,8 @@
     mc:Ignorable="d"
     Background="LightGray">
 
-    <Grid Margin="10"
-          Padding="10"
+    <Grid Margin="10,0,10,10"
+          Padding="10,0,10,10"
           HorizontalAlignment="Center">
         
         <Grid.RowDefinitions>
@@ -23,9 +23,20 @@
         </Grid.ColumnDefinitions>
         <CommandBar Grid.Row="0"
                     Grid.Column="0">
-            <AppBarButton x:Name="GoToSettings" 
-                          Icon="Setting" 
-                          Label="Settings"/>
+            <CommandBar.Content>
+                <TextBlock Text="Peer Connection Client"
+                           Margin="12,12,0,18"
+                           FontWeight="Bold"
+                           Foreground="Gray"/>
+            </CommandBar.Content>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="ConnectionSettings" 
+                              Label="Connection"/>
+                <AppBarButton x:Name="DevicesSettings" 
+                              Label="Devices"/>
+                <AppBarButton x:Name="DebugSettings" 
+                              Label="Debug"/>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
         <Button x:Name="ConnectPeer" 
                 Content=" Connect "

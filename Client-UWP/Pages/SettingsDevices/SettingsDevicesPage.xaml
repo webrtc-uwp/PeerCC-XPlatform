@@ -1,0 +1,30 @@
+﻿<Page
+    x:Class="Client_UWP.Pages.SettingsDevices.SettingsDevicesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client_UWP.Pages.SettingsDevices"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="LightGray">
+
+    <Grid>
+        <CommandBar>
+            <AppBarButton x:Name="GoToMainPage" 
+                          Icon="Back"
+                          Label="Back"/>
+            <CommandBar.Content>
+                <TextBlock Text="Devices Settings"
+                           Margin="12,12,0,18"
+                           FontWeight="Bold"
+                           Foreground="Gray"/>
+            </CommandBar.Content>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="ConnectionSettings" 
+                              Label="Connection"/>
+                <AppBarButton x:Name="DebugSettings" 
+                              Label="Debug"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Grid>
+</Page>

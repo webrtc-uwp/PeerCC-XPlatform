@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Client_UWP.Pages.SettingsConnection;
+using Client_UWP.Pages.SettingsDebug;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,18 +17,22 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace Client_UWP.Pages
+namespace Client_UWP.Pages.SettingsDevices
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class SettingsPage : Page
+    public sealed partial class SettingsDevicesPage : Page
     {
-        public SettingsPage()
+        public SettingsDevicesPage()
         {
             InitializeComponent();
 
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
+
+            ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
+
+            DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
         }
     }
 }
