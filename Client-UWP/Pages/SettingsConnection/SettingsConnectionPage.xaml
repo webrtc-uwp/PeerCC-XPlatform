@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Background="LightGray">
 
-    <Grid>
+    <StackPanel>
         <CommandBar>
             <AppBarButton x:Name="GoToMainPage" 
                           Icon="Back"
@@ -26,5 +26,56 @@
                               Label="Debug"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
-    </Grid>
+        
+        <TextBlock Text="IP"
+                   Width="300"
+                   Foreground="Black"/>
+        <TextBox x:Name="entryIP"
+                 Text=""
+                 Width="300"
+                 PlaceholderText="Enter IP"
+                 Foreground="Black"/>
+        <TextBlock Text="Port"
+                   Width="300"
+                   Foreground="Black"/>
+        <TextBox x:Name="entryPort"
+                 Text=""
+                 Width="300"
+                 PlaceholderText="Enter Port"
+                 Foreground="Black"/>
+        <ListView x:Name="IceServersListView"
+                  Width="300"
+                  Margin="0,20,0,0"
+                  Background="White">
+            <Grid Width="300" 
+                  Padding="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="120"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Server Details"
+                           Grid.ColumnSpan="2"
+                           Foreground="Blue"/>
+                <TextBlock Text="Type: "
+                           Grid.Row="1"
+                           Grid.Column="0"/>
+                <TextBlock Text="Binding Type"
+                           Grid.Row="1"
+                           Grid.Column="1"
+                           Foreground="Blue"/>
+                <TextBlock Text="User: "
+                           Grid.Row="2"
+                           Grid.Column="0"/>
+                <TextBlock Text="Binding Username"
+                           Grid.Row="2"
+                           Grid.Column="1"
+                           Foreground="Blue"/>
+            </Grid>
+        </ListView>
+    </StackPanel>
 </Page>
