@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Background="LightGray">
 
-    <Grid>
+    <StackPanel>
         <CommandBar>
             <AppBarButton x:Name="GoToMainPage" 
                           Icon="Back"
@@ -26,5 +26,69 @@
                               Label="Debug"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
-    </Grid>
+
+        <TextBlock Text="Camera"
+                   FontWeight="Bold"
+                   Width="300"
+                   Margin="0,20,0,10"
+                   Foreground="Black"/>
+        <ComboBox x:Name="cbCamera"
+                  HorizontalAlignment="Center"
+                  Width="300"
+                  Foreground="Black"/>
+        <TextBlock Text="Microphone"
+                   FontWeight="Bold"
+                   Width="300"
+                   Margin="0,20,0,10"
+                   Foreground="Black"/>
+        <ComboBox x:Name="cbMicrophone"
+                  HorizontalAlignment="Center"
+                  Width="300"
+                  Foreground="Black"/>
+        <TextBlock Text="Speakers"
+                   FontWeight="Bold"
+                   Width="300"
+                   Margin="0,20,0,10"
+                   Foreground="Black"/>
+        <ComboBox x:Name="cbSpeakers"
+                  HorizontalAlignment="Center"
+                  Width="300"
+                  Foreground="Black"/>
+        <TextBlock Text="Audio Codec"
+                   FontWeight="Bold"
+                   Width="300"
+                   Margin="0,20,0,10"
+                   Foreground="Black"/>
+        <ComboBox x:Name="cbAudioCodec"
+                  HorizontalAlignment="Center"
+                  Width="300"
+                  Foreground="Black"/>
+        <TextBlock Text="Video Codec"
+                   FontWeight="Bold"
+                   Width="300"
+                   Margin="0,20,0,10"
+                   Foreground="Black"/>
+        <ComboBox x:Name="cbVideoCodec"
+                  HorizontalAlignment="Center"
+                  Width="300"
+                  Foreground="Black"/>
+        <TextBlock Text="Capture Resolution"
+                   FontWeight="Bold"
+                   Width="300"
+                   Margin="0,20,0,10"
+                   Foreground="Black"/>
+        <ComboBox x:Name="cbCaptureResolution"
+                  HorizontalAlignment="Center"
+                  Width="300"
+                  Foreground="Black"/>
+        <TextBlock Text="Capture Frame Rate"
+                   FontWeight="Bold"
+                   Width="300"
+                   Margin="0,20,0,10"
+                   Foreground="Black"/>
+        <ComboBox x:Name="cbCaptureFrameRate"
+                  HorizontalAlignment="Center"
+                  Width="300"
+                  Foreground="Black"/>
+    </StackPanel>
 </Page>
