@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Background="LightGray">
 
-    <Grid>
+    <StackPanel>
         <CommandBar>
             <AppBarButton x:Name="GoToMainPage" 
                           Icon="Back"
@@ -26,5 +26,101 @@
                               Label="Devices"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
-    </Grid>
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,20,0,5"
+                    HorizontalAlignment="Center"
+                    Width="300">
+            <TextBlock Text="Tracing"
+                       Foreground="Black"
+                       Width="250"
+                       VerticalAlignment="Center"/>
+            <ToggleSwitch x:Name="switchTracing"
+                          IsOn="False"
+                          Width="50"
+                          VerticalAlignment="Center"/>
+        </StackPanel>
+        <RichTextBlock HorizontalAlignment="Center"
+                       Margin="0,5,0,10"
+                       Width="300">
+            <Paragraph>Text="Note: Traces are automatically sent upon the tracing is stopped!"</Paragraph>
+        </RichTextBlock>
+        <TextBlock Text="Trace server IP"
+                   Width="300"
+                   Margin="0,10,0,10"
+                   HorizontalAlignment="Center"/>
+        <TextBox x:Name="entryTraceIP"
+                 Width="300"
+                 Text="127.0.0.1"
+                 HorizontalAlignment="Center"
+                 IsReadOnly="True"/>
+        <TextBlock Text="Trace server port"
+                   Margin="0,10,0,10"
+                   Width="300"
+                   HorizontalAlignment="Center"/>
+        <TextBox x:Name="entryTracePort"
+                 Width="300"
+                 Text="55000"
+                 HorizontalAlignment="Center"
+                 IsReadOnly="True"/>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,10,0,5"
+                    Width="300">
+            <TextBlock Text="Logging"
+                       Foreground="Black"
+                       Width="250"
+                       VerticalAlignment="Center"/>
+            <ToggleSwitch x:Name="switchLogging"
+                          IsOn="False"
+                          Width="50"
+                          VerticalAlignment="Center"/>
+        </StackPanel>
+        <TextBlock Text="NTP Server"
+                   Margin="0,5,0,10"
+                   HorizontalAlignment="Center"
+                   Width="300"/>
+        <TextBox x:Name="entryNTPServer"
+                 Text="time.windows.com"
+                 Width="300"
+                 HorizontalAlignment="Center"/>
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,10,0,5"
+                    HorizontalAlignment="Center"
+                    Width="300">
+            <TextBlock Text="NTP Sync"
+                       Foreground="Black"
+                       Width="250"
+                       VerticalAlignment="Center"/>
+            <ToggleSwitch x:Name="switchNTPSync"
+                          IsOn="False"
+                          Width="50"
+                          VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,5,0,5"
+                    HorizontalAlignment="Center"
+                    Width="300">
+            <TextBlock Text="ETW Statistics"
+                       Foreground="Black"
+                       Width="250"
+                       VerticalAlignment="Center"/>
+            <ToggleSwitch x:Name="switchETWStats"
+                          IsOn="False"
+                          Width="50"
+                          VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,5,0,5"
+                    HorizontalAlignment="Center"
+                    Width="300">
+            <TextBlock Text="Connection Health Statistics"
+                       Foreground="Black"
+                       Width="250"
+                       VerticalAlignment="Center"/>
+            <ToggleSwitch x:Name="switchHealthStats"
+                          IsOn="False"
+                          Width="50"
+                          VerticalAlignment="Center"/>
+        </StackPanel>
+    </StackPanel>
 </Page>
