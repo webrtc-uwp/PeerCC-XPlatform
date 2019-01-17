@@ -1,6 +1,8 @@
-﻿using Client_UWP.Models;
+﻿using Client_UWP.Controllers;
+using Client_UWP.Models;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
+using Client_UWP.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,6 +44,10 @@ namespace Client_UWP.Pages.SettingsConnection
 
         public SettingsConnectionPageViewModel ViewModel { get; set; }
 
-        Server server = new Server { IP = "127.0.0.1", Port = 8888 };
+        Server server = new Server
+        {
+            IP = (string)SettingsController.Instance.localSettings.Values["IP"],
+            Port = (int)SettingsController.Instance.localSettings.Values["Port"]
+        };
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Client_UWP.Controllers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,8 @@ namespace Client_UWP
         /// </summary>
         public App()
         {
+            InitializationController.Instance.Initialize();
+
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
