@@ -1,4 +1,5 @@
-﻿using Client_UWP.Pages.SettingsDebug;
+﻿using Client_UWP.Models;
+using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace Client_UWP.Pages.SettingsConnection
         {
             InitializeComponent();
 
+            DataContext = server;
+
             ViewModel = new SettingsConnectionPageViewModel();
 
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
@@ -38,5 +41,7 @@ namespace Client_UWP.Pages.SettingsConnection
         }
 
         public SettingsConnectionPageViewModel ViewModel { get; set; }
+
+        Server server = new Server { IP = "127.0.0.1", Port = 8888 };
     }
 }

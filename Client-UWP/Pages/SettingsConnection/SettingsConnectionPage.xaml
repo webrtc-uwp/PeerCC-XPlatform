@@ -30,16 +30,14 @@
         <TextBlock Text="IP"
                    Width="300"
                    Foreground="Black"/>
-        <TextBox x:Name="entryIP"
-                 Text=""
+        <TextBox Text="{Binding IP, Mode=TwoWay}"
                  Width="300"
                  PlaceholderText="Enter IP"
                  Foreground="Black"/>
         <TextBlock Text="Port"
                    Width="300"
                    Foreground="Black"/>
-        <TextBox x:Name="entryPort"
-                 Text=""
+        <TextBox Text="{Binding Port, Mode=TwoWay}"
                  Width="300"
                  PlaceholderText="Enter Port"
                  Foreground="Black"/>

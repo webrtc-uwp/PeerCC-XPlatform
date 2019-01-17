@@ -103,6 +103,7 @@
     <Compile Include="Models\CaptureFrameRate.cs" />
     <Compile Include="Models\CaptureResolution.cs" />
     <Compile Include="Models\IceServer.cs" />
+    <Compile Include="Models\Server.cs" />
     <Compile Include="Models\VideoCodec.cs" />
     <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
