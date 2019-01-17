@@ -28,11 +28,15 @@ namespace Client_UWP.Pages.SettingsConnection
         {
             InitializeComponent();
 
+            ViewModel = new SettingsConnectionPageViewModel();
+
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
 
             DevicesSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDevicesPage));
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
         }
+
+        public SettingsConnectionPageViewModel ViewModel { get; set; }
     }
 }

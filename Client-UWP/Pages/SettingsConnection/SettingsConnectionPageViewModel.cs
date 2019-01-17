@@ -7,16 +7,23 @@ namespace Client_UWP.Pages.SettingsConnection
 {
     public class SettingsConnectionPageViewModel : ViewModelBase
     {
-        public static ObservableCollection<IceServer> _iceServersList { get; set; }
+        public SettingsConnectionPageViewModel()
+        {
+            AddDefaultIceServers(IceServersList);
+        }
 
-        public static ObservableCollection<IceServer> AddDefaultIceServers()
+        private ObservableCollection<IceServer> _iceServersList = new ObservableCollection<IceServer>();
+        public ObservableCollection<IceServer> IceServersList
+        { get { return _iceServersList; } }
+
+        public static ObservableCollection<IceServer> AddDefaultIceServers(ObservableCollection<IceServer> IceServersList)
         {
             List<IceServer> list = DefaultSettings.IceServersList;
 
             foreach (IceServer ice in list)
-                _iceServersList.Add(ice);
+                IceServersList.Add(ice);
 
-            return _iceServersList;
+            return IceServersList;
         }
     }
 }
