@@ -9,6 +9,9 @@ namespace Client_UWP.Utilities
 {
     public static class DefaultSettings
     {
+        public static string IP = "127.0.0.1";
+        public static int Port = 8888;
+
         // Default ICE servers
         public static List<IceServer> IceServersList = new List<IceServer>
         {

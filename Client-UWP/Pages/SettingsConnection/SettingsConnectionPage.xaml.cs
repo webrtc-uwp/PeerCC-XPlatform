@@ -46,8 +46,8 @@ namespace Client_UWP.Pages.SettingsConnection
 
         Server server = new Server
         {
-            IP = (string)SettingsController.Instance.localSettings.Values["IP"],
-            Port = (int)SettingsController.Instance.localSettings.Values["Port"]
+            IP = DefaultSettings.IP,
+            Port = DefaultSettings.Port
         };
     }
 }

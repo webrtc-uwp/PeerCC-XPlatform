@@ -34,8 +34,7 @@ namespace Client_UWP.Controllers
 
         public void Initialize ()
         {
-            Instance.localSettings.Values["IP"] = "127.0.0.1";
-            Instance.localSettings.Values["Port"] = 8888;
+            
         }
     }
 }
