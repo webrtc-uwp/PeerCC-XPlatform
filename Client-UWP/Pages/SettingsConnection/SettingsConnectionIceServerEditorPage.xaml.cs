@@ -1,8 +1,5 @@
-﻿using Client_UWP.Controllers;
-using Client_UWP.Models;
-using Client_UWP.Pages.SettingsDebug;
+﻿using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
-using Client_UWP.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,33 +22,17 @@ namespace Client_UWP.Pages.SettingsConnection
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class SettingsConnectionPage : Page
+    public sealed partial class SettingsConnectionIceServerEditorPage : Page
     {
-        public SettingsConnectionPage()
+        public SettingsConnectionIceServerEditorPage()
         {
             InitializeComponent();
 
-            DataContext = server;
-
-            ViewModel = new SettingsConnectionPageViewModel();
-
-            GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
+            GoToSettingsConnectionPage.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 
             DevicesSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDevicesPage));
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
-
-            AddServer.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage));
-
-            EditServer.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage));
         }
-
-        public SettingsConnectionPageViewModel ViewModel { get; set; }
-
-        Server server = new Server
-        {
-            IP = DefaultSettings.IP,
-            Port = DefaultSettings.Port
-        };
     }
 }

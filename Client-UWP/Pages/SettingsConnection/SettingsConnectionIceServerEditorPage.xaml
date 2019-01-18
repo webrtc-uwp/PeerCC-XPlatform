@@ -1,0 +1,62 @@
+﻿<Page
+    x:Class="Client_UWP.Pages.SettingsConnection.SettingsConnectionIceServerEditorPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client_UWP.Pages.SettingsConnection"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <StackPanel>
+        <CommandBar>
+            <AppBarButton x:Name="GoToSettingsConnectionPage"
+                          Icon="Back"
+                          Label="Back"/>
+            <CommandBar.Content>
+                <TextBlock Text="Add/Edit Ice Server"
+                           Margin="12,12,0,18"
+                           FontWeight="Bold"
+                           Foreground="Gray"/>
+            </CommandBar.Content>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="DevicesSettings"
+                              Label="Devices"/>
+                <AppBarButton x:Name="DebugSettings"
+                              Label="Debug"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+
+        <TextBlock Text="Server URL"
+                   Width="300"
+                   Foreground="Black"/>
+        <TextBox Text="{Binding ServerURL, Mode=TwoWay}"
+                 Width="300"
+                 Foreground="Black"/>
+        <TextBlock Text="Type"
+                   Width="300"
+                   Foreground="Black"/>
+        <ComboBox x:Name="cbType"
+                  Width="300"
+                  HorizontalAlignment="Center"
+                  Foreground="Black"/>
+        <TextBlock Text="Port"
+                   Width="300"
+                   Foreground="Black"/>
+        <TextBox Text="{Binding Port, Mode=TwoWay}"
+                 Width="300"
+                 Foreground="Black"/>
+        <TextBlock Text="Username"
+                   Width="300"
+                   Foreground="Black"/>
+        <TextBox Text="{Binding Username, Mode=TwoWay}"
+                 Width="300"
+                 Foreground="Black"/>
+        <TextBlock Text="Password"
+                   Width="300"
+                   Foreground="Black"/>
+        <PasswordBox x:Name="pbPassword"
+                 Width="300"
+                 Foreground="Black"/>
+    </StackPanel>
+</Page>
