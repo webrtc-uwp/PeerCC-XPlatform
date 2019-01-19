@@ -41,7 +41,8 @@
                  Width="300"
                  PlaceholderText="Enter Port"
                  Foreground="Black"/>
-        <ListView ItemsSource="{x:Bind ViewModel.IceServersList}"
+        <ListView x:Name="IceServersListView" 
+                  ItemsSource="{x:Bind ViewModel.IceServersList}"
                   Width="300"
                   Margin="0,20,0,0"
                   Background="White"

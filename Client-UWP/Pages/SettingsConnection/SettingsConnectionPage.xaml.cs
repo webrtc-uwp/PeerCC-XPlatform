@@ -5,11 +5,13 @@ using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -35,6 +37,22 @@ namespace Client_UWP.Pages.SettingsConnection
 
             ViewModel = new SettingsConnectionPageViewModel();
 
+            InitView();
+        }
+
+        private void IceServersListView_Tapped(object sender, TappedRoutedEventArgs e) =>
+            IceServersListView.SelectedItem = (IceServer)((FrameworkElement)e.OriginalSource).DataContext;
+
+        public SettingsConnectionPageViewModel ViewModel { get; set; }
+
+        Server server = new Server
+        {
+            IP = DefaultSettings.IP,
+            Port = DefaultSettings.Port
+        };
+
+        private void InitView()
+        {
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
 
             DevicesSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDevicesPage));
@@ -44,14 +62,22 @@ namespace Client_UWP.Pages.SettingsConnection
             AddServer.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage));
 
             EditServer.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage));
+
+            IceServersListView.Tapped += IceServersListView_Tapped;
+
+            RemoveServer.Click += async (sender, args) =>
+            {
+                if (IceServersListView.SelectedIndex == -1)
+                {
+                    await new MessageDialog("Please select Ice Server you want to remove.").ShowAsync();
+                    return;
+                }
+
+                IceServer iceServer = IceServersListView.SelectedItem as IceServer;
+                if (iceServer == null) return;
+
+                Debug.WriteLine($"Remove Ice Server {iceServer.ServerDetails}");
+            };
         }
-
-        public SettingsConnectionPageViewModel ViewModel { get; set; }
-
-        Server server = new Server
-        {
-            IP = DefaultSettings.IP,
-            Port = DefaultSettings.Port
-        };
     }
 }
