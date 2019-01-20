@@ -28,8 +28,7 @@ namespace Client_UWP.Pages.SettingsConnection
             }
         }
 
-        private ObservableCollection<IceServer> _iceServersList = new ObservableCollection<IceServer>();
-        public ObservableCollection<IceServer> IceServersList { get { return _iceServersList; } }
+        public ObservableCollection<IceServer> IceServersList { get; set; } = new ObservableCollection<IceServer>();
 
         public static ObservableCollection<IceServer> AddDefaultIceServers(ObservableCollection<IceServer> IceServersList)
         {

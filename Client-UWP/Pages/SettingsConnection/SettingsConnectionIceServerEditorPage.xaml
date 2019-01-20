@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="LightGray">
 
     <StackPanel>
         <CommandBar>
@@ -29,12 +29,14 @@
 
         <TextBlock Text="Server URL"
                    Width="300"
+                   Margin="0,20,0,10"
                    Foreground="Black"/>
         <TextBox Text="{Binding ServerURL, Mode=TwoWay}"
                  Width="300"
                  Foreground="Black"/>
         <TextBlock Text="Type"
                    Width="300"
+                   Margin="0,20,0,10"
                    Foreground="Black"/>
         <ComboBox x:Name="cbType"
                   Width="300"
@@ -42,21 +44,46 @@
                   Foreground="Black"/>
         <TextBlock Text="Port"
                    Width="300"
+                   Margin="0,20,0,10"
                    Foreground="Black"/>
         <TextBox Text="{Binding Port, Mode=TwoWay}"
                  Width="300"
                  Foreground="Black"/>
         <TextBlock Text="Username"
                    Width="300"
+                   Margin="0,20,0,10"
                    Foreground="Black"/>
         <TextBox Text="{Binding Username, Mode=TwoWay}"
                  Width="300"
                  Foreground="Black"/>
         <TextBlock Text="Password"
                    Width="300"
+                   Margin="0,20,0,10"
                    Foreground="Black"/>
         <PasswordBox x:Name="pbPassword"
                  Width="300"
                  Foreground="Black"/>
+
+        <Button x:Name="btnAdd"
+                HorizontalAlignment="Center"
+                Content="Add"
+                Foreground="Blue"
+                Margin="0,20,0,10"/>
+        <StackPanel x:Name="spEdit" 
+                    Orientation="Horizontal"
+                    Margin="0,20,0,10"
+                    HorizontalAlignment="Center">
+            <Button x:Name="btnDelete"
+                    Content="Delete"
+                    Foreground="Blue"
+                    IsEnabled="True"
+                    Visibility="Collapsed"/>
+
+            <Button x:Name="btnSave"
+                    Content="Save"
+                    Foreground="Blue"
+                    IsEnabled="True"
+                    Visibility="Collapsed"/>
+        </StackPanel>
     </StackPanel>
 </Page>

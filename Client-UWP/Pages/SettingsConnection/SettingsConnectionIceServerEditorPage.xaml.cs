@@ -33,6 +33,10 @@ namespace Client_UWP.Pages.SettingsConnection
             DevicesSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDevicesPage));
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
+
+            btnDelete.Click += async (sender, args) =>
+            {
+            };
         }
     }
 }
