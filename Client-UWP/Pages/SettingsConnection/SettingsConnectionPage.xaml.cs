@@ -59,9 +59,21 @@ namespace Client_UWP.Pages.SettingsConnection
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
-            AddServer.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage));
+            AddServer.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), null);
 
-            EditServer.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage));
+            EditServer.Click += async (sender, args) => 
+            {
+                if (IceServersListView.SelectedIndex == -1)
+                {
+                    await new MessageDialog("Please select Ice Server you want to edit.").ShowAsync();
+                    return;
+                }
+
+                IceServer iceServer = IceServersListView.SelectedItem as IceServer;
+                if (iceServer == null) return;
+
+                Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), iceServer);
+            };
 
             IceServersListView.Tapped += IceServersListView_Tapped;
 
