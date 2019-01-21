@@ -59,7 +59,7 @@ namespace Client_UWP.Pages.SettingsConnection
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
-            AddServer.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), null);
+            AddServer.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage));
 
             EditServer.Click += async (sender, args) => 
             {
@@ -89,6 +89,13 @@ namespace Client_UWP.Pages.SettingsConnection
                 if (iceServer == null) return;
 
                 Debug.WriteLine($"Remove Ice Server {iceServer.ServerDetails}");
+
+                // Remove IceServer from IceServersList
+                ViewModel.IceServersList.Remove(iceServer);
+
+                // Save IceServersList
+                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                    SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
             };
         }
     }

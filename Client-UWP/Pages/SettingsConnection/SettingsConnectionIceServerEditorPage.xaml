@@ -31,7 +31,7 @@
                    Width="300"
                    Margin="0,20,0,10"
                    Foreground="Black"/>
-        <TextBox Text="{Binding ServerURL, Mode=TwoWay}"
+        <TextBox x:Name="tbServerUrl" 
                  Width="300"
                  Foreground="Black"/>
         <TextBlock Text="Type"
@@ -46,14 +46,14 @@
                    Width="300"
                    Margin="0,20,0,10"
                    Foreground="Black"/>
-        <TextBox Text="{Binding Port, Mode=TwoWay}"
+        <TextBox x:Name="tbPort" 
                  Width="300"
                  Foreground="Black"/>
         <TextBlock Text="Username"
                    Width="300"
                    Margin="0,20,0,10"
                    Foreground="Black"/>
-        <TextBox Text="{Binding Username, Mode=TwoWay}"
+        <TextBox x:Name="tbUsername" 
                  Width="300"
                  Foreground="Black"/>
         <TextBlock Text="Password"
@@ -75,12 +75,14 @@
                     HorizontalAlignment="Center">
             <Button x:Name="btnDelete"
                     Content="Delete"
+                    Margin="15,0"
                     Foreground="Blue"
                     IsEnabled="True"
                     Visibility="Collapsed"/>
 
             <Button x:Name="btnSave"
                     Content="Save"
+                    Margin="15,0"
                     Foreground="Blue"
                     IsEnabled="True"
                     Visibility="Collapsed"/>

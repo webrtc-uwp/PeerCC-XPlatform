@@ -1,4 +1,5 @@
-﻿using Client_UWP.Models;
+﻿using Client_UWP.Controllers;
+using Client_UWP.Models;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
 using System;
@@ -32,16 +33,14 @@ namespace Client_UWP.Pages.SettingsConnection
 
             ViewModel = new SettingsConnectionPageViewModel();
 
+            cbType.Items.Add("STUN");
+            cbType.Items.Add("TURN");
+
             GoToSettingsConnectionPage.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 
             DevicesSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDevicesPage));
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
-
-            btnDelete.Click += async (sender, args) =>
-            {
-                //ViewModel.IceServersList;
-            };
         }
 
         public SettingsConnectionPageViewModel ViewModel { get; set; }
@@ -50,9 +49,74 @@ namespace Client_UWP.Pages.SettingsConnection
         {
             base.OnNavigatedTo(e);
 
-            IceServer iceServer = (IceServer)e.Parameter;
+            if (e.Parameter != null)
+            {
+                IceServer iceServer = (IceServer)e.Parameter;
 
-            Debug.WriteLine("Edit ice server: " + iceServer.ServerDetails);
+                Debug.WriteLine("Edit ice server: " + iceServer.ServerDetails);
+
+                tbServerUrl.Text = iceServer.Url;
+                cbType.SelectedIndex = cbType.Items.IndexOf(iceServer.Type);
+                tbPort.Text = iceServer.Port;
+                tbUsername.Text = iceServer.Username != null ? iceServer.Username : string.Empty;
+                pbPassword.Password = iceServer.Password != null ? iceServer.Password : string.Empty;
+                btnAdd.Visibility = Visibility.Collapsed;
+                btnSave.Visibility = Visibility.Visible;
+                btnDelete.Visibility = Visibility.Visible;
+
+                btnDelete.Click += (sender, args) =>
+                {
+                    // Remove IceServer from IceServersList
+                    ViewModel.IceServersList.Remove(iceServer);
+
+                    // Save IceServersList
+                    SettingsController.Instance.localSettings.Values["IceServersList"] = 
+                        SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+
+                    Frame.Navigate(typeof(SettingsConnectionPage));
+                };
+
+                btnSave.Click += (sender, args) =>
+                {
+                    // Remove IceServer from IceServersList
+                    ViewModel.IceServersList.Remove(iceServer);
+
+                    // Add new IceServer to IceServersList
+                    ViewModel.IceServersList.Add(new IceServer
+                    {
+                        Url = tbServerUrl.Text,
+                        Type = cbType.Items[cbType.SelectedIndex].ToString(),
+                        Port = tbPort.Text,
+                        Username = tbPort.Text,
+                        Password = pbPassword.Password
+                    });
+
+                    // Save IceServersList
+                    SettingsController.Instance.localSettings.Values["IceServersList"] =
+                        SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+
+                    Frame.Navigate(typeof(SettingsConnectionPage));
+                };
+            }
+
+            btnAdd.Click += (sender, args) => 
+            {
+                // Add new IceServer to IceServersList
+                ViewModel.IceServersList.Add(new IceServer
+                {
+                    Url = tbServerUrl.Text,
+                    Type = cbType.Items[cbType.SelectedIndex].ToString(),
+                    Port = tbPort.Text,
+                    Username = tbPort.Text,
+                    Password = pbPassword.Password
+                });
+
+                // Save IceServersList
+                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                    SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+
+                Frame.Navigate(typeof(SettingsConnectionPage));
+            };
         }
     }
 }
