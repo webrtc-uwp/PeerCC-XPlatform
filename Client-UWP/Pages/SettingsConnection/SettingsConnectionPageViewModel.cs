@@ -13,14 +13,18 @@ namespace Client_UWP.Pages.SettingsConnection
     {
         public SettingsConnectionPageViewModel()
         {
-            if (DeserializedList() == null)
+            if (XmlSerialization<ObservableCollection<IceServer>>
+                .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]) == null)
             {
                 AddDefaultIceServers(IceServersList);
-                SettingsController.IceServersList = SerializedList(IceServersList);
+                SettingsController.Instance.localSettings.Values["IceServersList"] = 
+                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(IceServersList);
             }
             else
             {
-                List<IceServer> list = DeserializedList();
+                ObservableCollection<IceServer> list = 
+                    XmlSerialization<ObservableCollection<IceServer>>
+                    .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
 
                 foreach (IceServer ice in list)
                     IceServersList.Add(ice);
@@ -37,35 +41,6 @@ namespace Client_UWP.Pages.SettingsConnection
                 IceServersList.Add(ice);
 
             return IceServersList;
-        }
-
-        public static string SerializedList(ObservableCollection<IceServer> IceServersList)
-        {
-            List<IceServer> iceList = IceServersList.ToList();
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<IceServer>));
-
-            StringWriter stringWriter = new StringWriter();
-
-            serializer.Serialize(stringWriter, iceList);
-
-            return stringWriter.ToString();
-        }
-
-        public static List<IceServer> DeserializedList()
-        {
-            StringReader stringReader = new StringReader((string)SettingsController.IceServersList);
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<IceServer>));
-
-            if (stringReader.ReadLine() != null)
-            {
-                List<IceServer> list = (List<IceServer>)serializer.Deserialize(stringReader) as List<IceServer>;
-                IceServer ice = new IceServer();
-
-                if (list.Any()) return list;
-            }
-            return null;
         }
     }
 }

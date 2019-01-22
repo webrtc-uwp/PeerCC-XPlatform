@@ -29,15 +29,13 @@ namespace Client_UWP.Controllers
 
         private SettingsController() { }
 
-        private ApplicationDataContainer localSettings =
+        public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
         public void Initialize ()
         {
             
         }
-
-        public static object IceServersList = Instance.localSettings.Values["IceServersList"];
 
         public static object AudioCodecs = Instance.localSettings.Values["AudioCodecs"];
     }

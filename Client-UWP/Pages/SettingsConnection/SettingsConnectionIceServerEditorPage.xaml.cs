@@ -2,8 +2,10 @@
 using Client_UWP.Models;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
+using Client_UWP.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -57,8 +59,8 @@ namespace Client_UWP.Pages.SettingsConnection
                 ViewModel.IceServersList.Add(iceServer);
 
                 // Save IceServersList
-                SettingsController.IceServersList =
-                    SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
 
                 Debug.WriteLine("Edit ice server: " + iceServer.ServerDetails);
 
@@ -77,8 +79,8 @@ namespace Client_UWP.Pages.SettingsConnection
                     ViewModel.IceServersList.Remove(iceServer);
 
                     // Save IceServersList
-                    SettingsController.IceServersList = 
-                        SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+                    SettingsController.Instance.localSettings.Values["IceServersList"] =
+                        XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
                 };
@@ -99,8 +101,8 @@ namespace Client_UWP.Pages.SettingsConnection
                     });
 
                     // Save IceServersList
-                    SettingsController.IceServersList =
-                        SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+                    SettingsController.Instance.localSettings.Values["IceServersList"] =
+                        XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
                 };
@@ -114,13 +116,13 @@ namespace Client_UWP.Pages.SettingsConnection
                     Url = tbServerUrl.Text,
                     Type = cbType.Items[cbType.SelectedIndex].ToString(),
                     Port = tbPort.Text,
-                    Username = tbPort.Text,
+                    Username = tbUsername.Text,
                     Password = pbPassword.Password
                 });
 
                 // Save IceServersList
-                SettingsController.IceServersList =
-                    SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
 
                 Frame.Navigate(typeof(SettingsConnectionPage));
             };

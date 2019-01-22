@@ -5,6 +5,7 @@ using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -76,8 +77,8 @@ namespace Client_UWP.Pages.SettingsConnection
                 ViewModel.IceServersList.Remove(iceServer);
 
                 // Save IceServersList
-                SettingsController.IceServersList =
-                    SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
 
                 Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), iceServer);
             };
@@ -101,8 +102,8 @@ namespace Client_UWP.Pages.SettingsConnection
                 ViewModel.IceServersList.Remove(iceServer);
 
                 // Save IceServersList
-                SettingsController.IceServersList =
-                    SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
             };
         }
     }
