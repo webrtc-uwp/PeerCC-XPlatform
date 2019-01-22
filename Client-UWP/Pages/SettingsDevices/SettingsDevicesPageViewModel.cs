@@ -15,14 +15,15 @@ namespace Client_UWP.Pages.SettingsDevices
     {
         public SettingsDevicesPageViewModel()
         {
-            if (DeserializedList() == null)
+            if (XmlSerialization<List<AudioCodec>>.Deserialize((string)SettingsController.AudioCodecs) == null)
             {
                 AddDefaultAudioCodecs(AudioCodecsList);
-                SettingsController.AudioCodecs = SerializedList(AudioCodecsList);
+                SettingsController.AudioCodecs = XmlSerialization<List<AudioCodec>>.Serialize(AudioCodecsList);
             }
             else
             {
-                List<AudioCodec> list = DeserializedList();
+                List<AudioCodec> list = 
+                    XmlSerialization<List<AudioCodec>>.Deserialize((string)SettingsController.AudioCodecs);
 
                 foreach (AudioCodec ac in list)
                     AudioCodecsList.Add(ac);
@@ -39,41 +40,6 @@ namespace Client_UWP.Pages.SettingsDevices
                 AudioCodecsList.Add(ac);
 
             return AudioCodecsList;
-        }
-
-        public static string SerializedList(List<AudioCodec> AudioCodecsList)
-        {
-            XmlSerializer serializer = new XmlSerializer(typeof(List<AudioCodec>));
-
-            StringWriter stringWriter = new StringWriter();
-
-            serializer.Serialize(stringWriter, AudioCodecsList);
-
-            return stringWriter.ToString();
-        }
-
-        public static List<AudioCodec> DeserializedList()
-        {
-            StringReader stringReader;
-
-            if (SettingsController.AudioCodecs != null)
-            {
-                stringReader = new StringReader((string)SettingsController.AudioCodecs);
-
-                XmlSerializer serializer = new XmlSerializer(typeof(List<AudioCodec>));
-
-                if (stringReader.ReadLine() != null)
-                {
-                    List<AudioCodec> list =
-                        (List<AudioCodec>)serializer.Deserialize(stringReader) as List<AudioCodec>;
-
-                    AudioCodec ac = new AudioCodec();
-
-                    if (list.Any()) return list;
-                }
-            }
-           
-            return null;
         }
     }
 }
