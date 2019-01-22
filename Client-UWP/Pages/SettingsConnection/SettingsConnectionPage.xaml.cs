@@ -76,7 +76,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 ViewModel.IceServersList.Remove(iceServer);
 
                 // Save IceServersList
-                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                SettingsController.IceServersList =
                     SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
 
                 Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), iceServer);
@@ -101,7 +101,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 ViewModel.IceServersList.Remove(iceServer);
 
                 // Save IceServersList
-                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                SettingsController.IceServersList =
                     SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
             };
         }

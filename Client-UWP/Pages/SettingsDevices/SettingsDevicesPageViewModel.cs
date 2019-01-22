@@ -18,8 +18,7 @@ namespace Client_UWP.Pages.SettingsDevices
             if (DeserializedList() == null)
             {
                 AddDefaultAudioCodecs(AudioCodecsList);
-                SettingsController.Instance.localSettings.Values["AudioCodecs"] =
-                    SerializedList(AudioCodecsList);
+                SettingsController.AudioCodecs = SerializedList(AudioCodecsList);
             }
             else
             {
@@ -57,9 +56,9 @@ namespace Client_UWP.Pages.SettingsDevices
         {
             StringReader stringReader;
 
-            if (SettingsController.Instance.localSettings.Values["AudioCodecs"] != null)
+            if (SettingsController.AudioCodecs != null)
             {
-                stringReader = new StringReader((string)SettingsController.Instance.localSettings.Values["AudioCodecs"]);
+                stringReader = new StringReader((string)SettingsController.AudioCodecs);
 
                 XmlSerializer serializer = new XmlSerializer(typeof(List<AudioCodec>));
 

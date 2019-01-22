@@ -16,8 +16,7 @@ namespace Client_UWP.Pages.SettingsConnection
             if (DeserializedList() == null)
             {
                 AddDefaultIceServers(IceServersList);
-                SettingsController.Instance.localSettings.Values["IceServersList"] = 
-                    SerializedList(IceServersList);
+                SettingsController.IceServersList = SerializedList(IceServersList);
             }
             else
             {
@@ -55,7 +54,7 @@ namespace Client_UWP.Pages.SettingsConnection
 
         public static List<IceServer> DeserializedList()
         {
-            StringReader stringReader = new StringReader((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
+            StringReader stringReader = new StringReader((string)SettingsController.IceServersList);
 
             XmlSerializer serializer = new XmlSerializer(typeof(List<IceServer>));
 

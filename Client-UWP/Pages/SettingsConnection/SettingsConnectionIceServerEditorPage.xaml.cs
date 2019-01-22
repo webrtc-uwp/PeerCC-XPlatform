@@ -57,7 +57,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 ViewModel.IceServersList.Add(iceServer);
 
                 // Save IceServersList
-                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                SettingsController.IceServersList =
                     SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
 
                 Debug.WriteLine("Edit ice server: " + iceServer.ServerDetails);
@@ -77,7 +77,7 @@ namespace Client_UWP.Pages.SettingsConnection
                     ViewModel.IceServersList.Remove(iceServer);
 
                     // Save IceServersList
-                    SettingsController.Instance.localSettings.Values["IceServersList"] = 
+                    SettingsController.IceServersList = 
                         SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
@@ -99,7 +99,7 @@ namespace Client_UWP.Pages.SettingsConnection
                     });
 
                     // Save IceServersList
-                    SettingsController.Instance.localSettings.Values["IceServersList"] =
+                    SettingsController.IceServersList =
                         SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
@@ -119,7 +119,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 });
 
                 // Save IceServersList
-                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                SettingsController.IceServersList =
                     SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
 
                 Frame.Navigate(typeof(SettingsConnectionPage));
