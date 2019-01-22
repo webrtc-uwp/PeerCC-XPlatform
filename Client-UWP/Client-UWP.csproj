@@ -103,6 +103,7 @@
     <Compile Include="Models\CaptureFrameRate.cs" />
     <Compile Include="Models\CaptureResolution.cs" />
     <Compile Include="Models\IceServer.cs" />
+    <Compile Include="Models\MediaDevice.cs" />
     <Compile Include="Models\Server.cs" />
     <Compile Include="Models\VideoCodec.cs" />
     <Compile Include="Pages\MainPage.xaml.cs">
@@ -121,9 +122,11 @@
     <Compile Include="Pages\SettingsDevices\SettingsDevicesPage.xaml.cs">
       <DependentUpon>SettingsDevicesPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\SettingsDevices\SettingsDevicesPageViewModel.cs" />
     <Compile Include="Pages\ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DefaultSettings.cs" />
+    <Compile Include="Utilities\XmlSerialization.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

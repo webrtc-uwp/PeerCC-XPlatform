@@ -1,5 +1,8 @@
-﻿using Client_UWP.Pages.SettingsConnection;
+﻿using Client_UWP.Controllers;
+using Client_UWP.Models;
+using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
+using Client_UWP.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,11 +31,23 @@ namespace Client_UWP.Pages.SettingsDevices
         {
             InitializeComponent();
 
+            ViewModel = new SettingsDevicesPageViewModel();
+
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
 
             ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
+
+            List<string> acList = new List<string>();
+
+            foreach (var ac in ViewModel.AudioCodecsList)
+                acList.Add(ac.Name);
+
+            cbAudioCodec.ItemsSource = acList;
+            cbAudioCodec.SelectedIndex = 0;
         }
+
+        public SettingsDevicesPageViewModel ViewModel { get; set; }
     }
 }
