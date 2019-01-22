@@ -72,6 +72,13 @@ namespace Client_UWP.Pages.SettingsConnection
                 IceServer iceServer = IceServersListView.SelectedItem as IceServer;
                 if (iceServer == null) return;
 
+                // Remove IceServer from IceServersList
+                ViewModel.IceServersList.Remove(iceServer);
+
+                // Save IceServersList
+                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                    SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+
                 Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), iceServer);
             };
 

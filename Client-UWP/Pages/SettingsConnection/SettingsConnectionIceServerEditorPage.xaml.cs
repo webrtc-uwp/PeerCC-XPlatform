@@ -53,6 +53,13 @@ namespace Client_UWP.Pages.SettingsConnection
             {
                 IceServer iceServer = (IceServer)e.Parameter;
 
+                // Add new IceServer to IceServersList
+                ViewModel.IceServersList.Add(iceServer);
+
+                // Save IceServersList
+                SettingsController.Instance.localSettings.Values["IceServersList"] =
+                    SettingsConnectionPageViewModel.SerializedList(ViewModel.IceServersList);
+
                 Debug.WriteLine("Edit ice server: " + iceServer.ServerDetails);
 
                 tbServerUrl.Text = iceServer.Url;
@@ -87,7 +94,7 @@ namespace Client_UWP.Pages.SettingsConnection
                         Url = tbServerUrl.Text,
                         Type = cbType.Items[cbType.SelectedIndex].ToString(),
                         Port = tbPort.Text,
-                        Username = tbPort.Text,
+                        Username = tbUsername.Text,
                         Password = pbPassword.Password
                     });
 
