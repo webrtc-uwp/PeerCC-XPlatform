@@ -1,10 +1,4 @@
-﻿using Client_UWP.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Storage;
+﻿using Windows.Storage;
 
 namespace Client_UWP.Controllers
 {
@@ -36,7 +30,5 @@ namespace Client_UWP.Controllers
         {
             
         }
-
-        public static object AudioCodecs = Instance.localSettings.Values["AudioCodecs"];
     }
 }

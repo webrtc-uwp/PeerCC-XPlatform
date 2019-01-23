@@ -1,22 +1,7 @@
-﻿using Client_UWP.Controllers;
-using Client_UWP.Models;
-using Client_UWP.Pages.SettingsConnection;
+﻿using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
-using Client_UWP.Utilities;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -46,6 +31,14 @@ namespace Client_UWP.Pages.SettingsDevices
 
             cbAudioCodec.ItemsSource = acList;
             cbAudioCodec.SelectedIndex = 0;
+
+            List<string> vcList = new List<string>();
+
+            foreach (var vc in ViewModel.VideoCodecsList)
+                vcList.Add(vc.Name);
+
+            cbVideoCodec.ItemsSource = vcList;
+            cbVideoCodec.SelectedIndex = 0;
         }
 
         public SettingsDevicesPageViewModel ViewModel { get; set; }
