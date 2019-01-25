@@ -3,9 +3,6 @@ using Client_UWP.Models;
 using Client_UWP.Utilities;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Xml.Serialization;
 
 namespace Client_UWP.Pages.SettingsConnection
 {

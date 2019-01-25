@@ -34,6 +34,8 @@ namespace Client_UWP
     {
         HttpSignaler _httpSignaler = RTCController.Instance._httpSignaler;
 
+        private MainViewModel _mainViewModel = new MainViewModel();
+
         public MainPage()
         {
             ApplicationView.PreferredLaunchViewSize = new Size(450, 650);
