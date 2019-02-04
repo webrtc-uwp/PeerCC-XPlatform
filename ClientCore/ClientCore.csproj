@@ -110,6 +110,8 @@
     <Compile Include="RTCController.cs" />
     <Compile Include="Signaling\HttpSignaler.cs" />
     <Compile Include="Signaling\HttpSignalerEvents.cs" />
+    <Compile Include="Signaling\IPeer.cs" />
+    <Compile Include="Signaling\IPeersList.cs" />
     <Compile Include="Signaling\Peer.cs" />
     <Compile Include="Signaling\Util.cs" />
     <EmbeddedResource Include="Properties\ClientCore.rd.xml" />

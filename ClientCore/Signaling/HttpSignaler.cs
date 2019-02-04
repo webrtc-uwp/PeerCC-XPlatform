@@ -15,7 +15,7 @@ namespace ClientCore.Signaling
     /// <summary>
     /// HttpSignaler instance is used to fire connection events.
     /// </summary>
-    public class HttpSignaler : HttpSignalerEvents
+    public class HttpSignaler : HttpSignalerEvents, IPeersList
     {
         #region Signaling server config
         private static string _url = "http://peercc-server.ortclib.org";
@@ -352,13 +352,13 @@ namespace ClientCore.Signaling
             if (peer_connected == 1)
             {
                 if (peer_name != LocalPeer.Name)
-                    _peers.Add(peer);
+                    AddPeerToList(peer);
 
                 OnPeerConnected(peer);
             }
             else if (peer_connected == 0)
             {
-                _peers.Remove(p => p.Id == peer_id);
+                RemovePeerFromList(peer_id);
 
                 OnPeerDisconnected(peer);
             }
@@ -445,7 +445,7 @@ namespace ClientCore.Signaling
                     Peer connectedPeer = new Peer(peer_id, peer_name);
 
                     if (peer_name != LocalPeer.Name)
-                        _peers.Add(connectedPeer);
+                        AddPeerToList(connectedPeer);
 
                     OnPeerConnected(new Peer(peer_id, peer_name));
                 }
@@ -457,6 +457,16 @@ namespace ClientCore.Signaling
                 return false;
             }
             return true;
+        }
+
+        public void AddPeerToList(Peer peer)
+        {
+            _peers.Add(peer);
+        }
+
+        public void RemovePeerFromList(int peerId)
+        {
+            _peers.Remove(p => p.Id == peerId);
         }
 
         private static readonly string _localPeerRandom = new Func<string>(() =>

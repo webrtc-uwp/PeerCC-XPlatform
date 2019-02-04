@@ -1,6 +1,6 @@
 ﻿namespace ClientCore.Signaling
 {
-    public class Peer
+    public class Peer : IPeer
     {
         public int Id { get; set; }
         public string Name { get; set; }
