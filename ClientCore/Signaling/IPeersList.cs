@@ -2,7 +2,7 @@
 {
     public interface IPeersList
     {
-        void AddPeerToList(Peer peer);
+        void AddPeerToList(IPeer peer);
 
         void RemovePeerFromList(int peerId);
     }

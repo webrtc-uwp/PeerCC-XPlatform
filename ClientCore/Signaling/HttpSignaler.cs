@@ -27,7 +27,7 @@ namespace ClientCore.Signaling
         private Uri _baseHttpAddress;
         private int _myId;
         private string _clientName;
-        public static ObservableCollection<Peer> _peers = new ObservableCollection<Peer>();
+        public ObservableCollection<IPeer> _peers = new ObservableCollection<IPeer>();
         private ManualResetEvent _sendEvent = new ManualResetEvent(false);
         private ConcurrentQueue<Tuple<int, string>> _sendMessageQueue = new ConcurrentQueue<Tuple<int, string>>();
         private Thread _sendThread;
@@ -459,7 +459,7 @@ namespace ClientCore.Signaling
             return true;
         }
 
-        public void AddPeerToList(Peer peer)
+        public void AddPeerToList(IPeer peer)
         {
             _peers.Add(peer);
         }
