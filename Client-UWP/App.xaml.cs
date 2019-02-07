@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -23,6 +24,8 @@ namespace Client_UWP
     /// </summary>
     sealed partial class App : Application
     {
+        MainViewModel mainViewModel;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -64,15 +67,19 @@ namespace Client_UWP
 
             if (e.PrelaunchActivated == false)
             {
-                if (rootFrame.Content == null)
-                {
-                    // When the navigation stack isn't restored navigate to the first page,
-                    // configuring the new page by passing required information as a navigation
-                    // parameter
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
-                }
+                //if (rootFrame.Content == null)
+                //{
+                //    // When the navigation stack isn't restored navigate to the first page,
+                //    // configuring the new page by passing required information as a navigation
+                //    // parameter
+                //    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                //}
+
+                mainViewModel = new MainViewModel(CoreApplication.MainView.CoreWindow.Dispatcher);
+                mainViewModel.OnInitialized += OnMainViewModelInitialized;
+
                 // Ensure the current window is active
-                Window.Current.Activate();
+                //Window.Current.Activate();
             }
         }
 
@@ -98,6 +105,20 @@ namespace Client_UWP
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        /// <summary>
+        /// Invoked when the application MainViewModel is initialized. 
+        /// Creates the application initial page.
+        /// </summary>
+        private void OnMainViewModelInitialized()
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+            if (!rootFrame.Navigate(typeof(MainPage), mainViewModel))
+                throw new Exception("Failed to create initial page.");
+
+            // Ensure the current window is active
+            Window.Current.Activate();
         }
     }
 }

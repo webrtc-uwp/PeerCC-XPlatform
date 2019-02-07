@@ -1,23 +1,24 @@
 ﻿using Client_UWP.Controllers;
-using Client_UWP.Pages;
+using Client_UWP.MVVM;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Windows.UI.Core;
 using Windows.UI.Popups;
 
 namespace Client_UWP
 {
-    public class MainViewModel : ViewModelBase
+    public delegate void InitializedDelegate();
+    internal class MainViewModel : DispatcherBindableBase
     {
-        public MainViewModel()
+        public event InitializedDelegate OnInitialized; 
+
+        public MainViewModel(CoreDispatcher uiDispatcher)
+            : base(uiDispatcher)
         {
             DevicesController.RequestAccessForMediaCapture().AsTask().ContinueWith(antecedent =>
             {
                 if (antecedent.Result)
                 {
-                    Initialize();
+                    Initialize(uiDispatcher);
                 }
                 else
                 {
@@ -26,9 +27,13 @@ namespace Client_UWP
             });
         }
 
-        private void Initialize()
+        /// <summary>
+        /// The initializer for MainViewModel.
+        /// </summary>
+        /// <param name="uiDispatcher">The UI dispatcher.</param>
+        private void Initialize(CoreDispatcher uiDispatcher)
         {
-            throw new NotImplementedException();
+            RunOnUiThread(() => OnInitialized?.Invoke());
         }
     }
 }

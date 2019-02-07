@@ -34,7 +34,7 @@ namespace Client_UWP
     {
         HttpSignaler _httpSignaler = RTCController.Instance._httpSignaler;
 
-        private MainViewModel _mainViewModel = new MainViewModel();
+        private MainViewModel _mainViewModel;
 
         public MainPage()
         {
@@ -52,6 +52,16 @@ namespace Client_UWP
             _httpSignaler.PeerDisconnected += Signaler_PeerDisconnected;
 
             InitView();
+        }
+
+        /// <summary>
+        /// See Page.OnNavigatedTo()
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            _mainViewModel = (MainViewModel)e.Parameter;
+            DataContext = _mainViewModel;
         }
 
         private async void Signaler_SignedIn(object sender, EventArgs e)
