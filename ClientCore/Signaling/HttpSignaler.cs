@@ -15,7 +15,7 @@ namespace ClientCore.Signaling
     /// <summary>
     /// HttpSignaler instance is used to fire connection events.
     /// </summary>
-    public class HttpSignaler : HttpSignalerEvents, IPeersList
+    public class HttpSignaler : HttpSignalerEvents
     {
         #region Signaling server config
         private static string _url = "http://peercc-server.ortclib.org";
@@ -27,7 +27,7 @@ namespace ClientCore.Signaling
         private Uri _baseHttpAddress;
         private int _myId;
         private string _clientName;
-        public ObservableCollection<IPeer> _peers = new ObservableCollection<IPeer>();
+        public ObservableCollection<Peer> _peers = new ObservableCollection<Peer>();
         private ManualResetEvent _sendEvent = new ManualResetEvent(false);
         private ConcurrentQueue<Tuple<int, string>> _sendMessageQueue = new ConcurrentQueue<Tuple<int, string>>();
         private Thread _sendThread;
@@ -459,7 +459,7 @@ namespace ClientCore.Signaling
             return true;
         }
 
-        public void AddPeerToList(IPeer peer)
+        public void AddPeerToList(Peer peer)
         {
             _peers.Add(peer);
         }

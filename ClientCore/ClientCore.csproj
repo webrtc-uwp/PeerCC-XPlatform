@@ -114,6 +114,7 @@
     <Compile Include="Contacts\IContactDisposition.cs" />
     <Compile Include="Contacts\IContactManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RTCController.cs" />
     <Compile Include="Signaling\HttpSignaler.cs" />
     <Compile Include="Signaling\HttpSignalerEvents.cs" />
     <Compile Include="Signaling\ISignaler.cs" />
