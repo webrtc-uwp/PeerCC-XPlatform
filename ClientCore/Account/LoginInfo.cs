@@ -1,7 +1,7 @@
 ﻿
 namespace ClientCore.Account
 {
-    public class StartLoginInfo
+    public class LoginInfo
     {
         /// <summary>
         /// Gets or sets the login URI specific to the login service.

@@ -11,7 +11,7 @@ namespace ClientCore.Account
         /// </summary>
         /// <returns>A URL to display in a browser control or "" if no browser
         /// window is required to be displayed.</returns>
-        Task<string> LoginAysnc(StartLoginInfo info);
+        Task<string> LoginAysnc(LoginInfo info);
 
         /// <summary>
         /// Once the login is complete this method can be called to obtain

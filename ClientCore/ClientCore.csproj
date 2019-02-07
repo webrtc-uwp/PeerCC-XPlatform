@@ -108,16 +108,23 @@
   <ItemGroup>
     <Compile Include="Account\IAccount.cs" />
     <Compile Include="Account\IAccountInfo.cs" />
-    <Compile Include="Account\StartLoginInfo.cs" />
+    <Compile Include="Account\LoginInfo.cs" />
+    <Compile Include="Call\CallConfiguration.cs" />
+    <Compile Include="Call\ICall.cs" />
+    <Compile Include="Call\ICallInfo.cs" />
+    <Compile Include="Call\IceServer.cs" />
     <Compile Include="Call\ICodec.cs" />
     <Compile Include="Call\IMedia.cs" />
     <Compile Include="Call\IMediaDevice.cs" />
+    <Compile Include="Call\IMediaElement.cs" />
     <Compile Include="Call\IMediaVideoFormat.cs" />
+    <Compile Include="Call\MediaDirection.cs" />
     <Compile Include="Call\MediaKind.cs" />
     <Compile Include="Contacts\IAvatar.cs" />
     <Compile Include="Contacts\IContact.cs" />
     <Compile Include="Contacts\IContactDisposition.cs" />
     <Compile Include="Contacts\IContactManager.cs" />
+    <Compile Include="PeerCCSocketSignaling\AccountFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RTCController.cs" />
     <Compile Include="Signaling\HttpSignaler.cs" />
@@ -126,6 +133,8 @@
     <Compile Include="Signaling\Message.cs" />
     <Compile Include="Signaling\Peer.cs" />
     <Compile Include="Signaling\Util.cs" />
+    <Compile Include="WebRTCCalling\CallFactory.cs" />
+    <Compile Include="WebRTCCalling\MediaFactory.cs" />
     <EmbeddedResource Include="Properties\ClientCore.rd.xml" />
   </ItemGroup>
   <ItemGroup>

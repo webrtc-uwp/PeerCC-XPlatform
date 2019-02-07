@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ClientCore.Call
 {
-    interface IMediaDevice
+    public interface IMediaDevice
     {
         /// <summary>
         /// Get the media kind for the device.
