@@ -26,12 +26,12 @@ namespace ClientCore.Account
         /// login URL was returned from the LoginAsync method.</param>
         /// <returns>Returns the login information associated with the
         /// logged in account.</returns>
-        Task<ILoginInfo> GetLoginInfoAsync(string loginCompletePayload);
+        Task<IAccountInfo> GetLoginInfoAsync(string loginCompletePayload);
 
         /// <summary>
         /// Logout of the logged in identity.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns when logged out.</returns>
         Task Logout();
     }
 }

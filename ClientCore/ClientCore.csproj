@@ -106,13 +106,18 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Peers\IAvatar.cs" />
+    <Compile Include="Account\IAccount.cs" />
+    <Compile Include="Account\IAccountInfo.cs" />
+    <Compile Include="Account\StartLoginInfo.cs" />
+    <Compile Include="Contacts\IAvatar.cs" />
+    <Compile Include="Contacts\IContact.cs" />
+    <Compile Include="Contacts\IContactDisposition.cs" />
+    <Compile Include="Contacts\IContactManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RTCController.cs" />
     <Compile Include="Signaling\HttpSignaler.cs" />
     <Compile Include="Signaling\HttpSignalerEvents.cs" />
-    <Compile Include="Peers\IPeer.cs" />
-    <Compile Include="Peers\IPeersList.cs" />
+    <Compile Include="Signaling\ISignaler.cs" />
+    <Compile Include="Signaling\Message.cs" />
     <Compile Include="Signaling\Peer.cs" />
     <Compile Include="Signaling\Util.cs" />
     <EmbeddedResource Include="Properties\ClientCore.rd.xml" />
@@ -128,6 +133,7 @@
       <Version>1.66.0.5-DebugAlpha</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

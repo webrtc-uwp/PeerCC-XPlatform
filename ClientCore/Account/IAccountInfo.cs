@@ -8,7 +8,7 @@ namespace ClientCore.Account
         /// <summary>
         /// Gets the signaler associated with the account.
         /// </summary>
-        ISignaller Signaler { get; }
+        ISignaler Signaler { get; }
         /// <summary>
         /// Gets the contact manager used to manage contacts for the
         /// logged-in identity.
