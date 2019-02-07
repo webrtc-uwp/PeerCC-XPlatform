@@ -109,6 +109,11 @@
     <Compile Include="Account\IAccount.cs" />
     <Compile Include="Account\IAccountInfo.cs" />
     <Compile Include="Account\StartLoginInfo.cs" />
+    <Compile Include="Call\ICodec.cs" />
+    <Compile Include="Call\IMedia.cs" />
+    <Compile Include="Call\IMediaDevice.cs" />
+    <Compile Include="Call\IMediaVideoFormat.cs" />
+    <Compile Include="Call\MediaKind.cs" />
     <Compile Include="Contacts\IAvatar.cs" />
     <Compile Include="Contacts\IContact.cs" />
     <Compile Include="Contacts\IContactDisposition.cs" />
