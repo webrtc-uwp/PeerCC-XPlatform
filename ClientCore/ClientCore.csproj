@@ -106,8 +106,8 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Account\IAccountSetup.cs" />
     <Compile Include="Account\IAccount.cs" />
-    <Compile Include="Account\IAccountInfo.cs" />
     <Compile Include="Account\LoginInfo.cs" />
     <Compile Include="Call\CallConfiguration.cs" />
     <Compile Include="Call\ICall.cs" />
@@ -133,6 +133,10 @@
     <Compile Include="Signaling\Message.cs" />
     <Compile Include="PeerCCSignalingImpl\Peer.cs" />
     <Compile Include="PeerCCSignalingImpl\Util.cs" />
+    <Compile Include="Signaling\EnhancedMessage.cs" />
+    <Compile Include="Signaling\MediaDescriptionEncodingType.cs" />
+    <Compile Include="Signaling\SimpleMessage.cs" />
+    <Compile Include="Signaling\SignalerType.cs" />
     <Compile Include="WebRTCCalling\CallFactory.cs" />
     <Compile Include="WebRTCCalling\MediaFactory.cs" />
     <EmbeddedResource Include="Properties\ClientCore.rd.xml" />

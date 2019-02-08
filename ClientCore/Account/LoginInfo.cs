@@ -9,6 +9,12 @@ namespace ClientCore.Account
         public string ServiceUri { get; set; }
 
         /// <summary>
+        /// Get or sets the identity URI to associate with this service
+        /// (if known).
+        /// </summary>
+        public string SelfIdentityUri { get; set; }
+
+        /// <summary>
         /// Gets or sets if the browser control window starts visible. If true
         /// then the browser control window starts as a visible dialog on the
         /// end user's screen. Otherwise false indicates the browser control

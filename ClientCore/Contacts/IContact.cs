@@ -1,22 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using ClientCore.Signaling;
+using System.Collections.Generic;
 
 namespace ClientCore.Contacts
 {
     public interface IContact
     {
         /// <summary>
-        /// Get a unique instance identifier for the peer. This identifier is
-        /// uniquely assigned to the peer for each and every run of the
-        /// application and will not be stable across runs or be stablely
-        /// associated to any other identifier.
+        /// Get a unique identifier for the contact. This identifier is
+        /// uniquely assigned to the contact but is not guaranteed to remain
+        /// stable across applications runs but will be stable within the
+        /// same application run for the same identity.
         /// </summary>
-        string InstanceId { get; }
+        string Id { get; }
         /// <summary>
         /// Gets a unique identity URI representing this peer. This identity
         /// represents a stable identifier for the peer for all of time. For
         /// example, identity://domain.com/alice.
         /// </summary>
-        string IdentityId { get; }
+        string IdentityUri { get; }
         /// <summary>
         /// Get the peer identifier. This anonymizing identifier will be
         /// assigned to the identity URI and should be considered semi
@@ -47,8 +48,12 @@ namespace ClientCore.Contacts
         /// </summary>
         string AboutUri { get; }
         /// <summary>
-        /// Obtain an associated list of avatars related to this peer.
+        /// Get an associated list of avatars related to this peer.
         /// </summary>
         IList<IAvatar> Avatars { get; }
+        /// <summary>
+        /// Get the supported communication format of the peer.
+        /// </summary>
+        SignalerType SupportedMessagingFormat { get; }
     }
 }

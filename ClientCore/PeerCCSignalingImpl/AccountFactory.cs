@@ -5,7 +5,7 @@ namespace ClientCore.PeerCCSignalingImpl
 {
     public class AccountFactory
     {
-        static Task<IAccount> GetAccountAsync()
+        static Task<IAccountSetup> GetAccountAsync()
         {
             return null;
         }
