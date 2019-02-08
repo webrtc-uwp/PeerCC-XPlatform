@@ -10,7 +10,7 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ClientCore.Signaling
+namespace ClientCore.PeerCCSignalingImpl
 {
     /// <summary>
     /// HttpSignaler instance is used to fire connection events.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ClientCore.Signaling
+namespace ClientCore.PeerCCSignalingImpl
 {
     public class HttpSignalerMessageEvent
     {

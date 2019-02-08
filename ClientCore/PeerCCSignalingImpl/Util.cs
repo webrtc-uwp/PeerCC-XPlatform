@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ClientCore.Signaling
+namespace ClientCore.PeerCCSignalingImpl
 {
     /// <summary>
     /// The connection state.

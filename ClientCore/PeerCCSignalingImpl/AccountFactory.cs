@@ -1,7 +1,7 @@
 ﻿using ClientCore.Account;
 using System.Threading.Tasks;
 
-namespace ClientCore.PeerCCSocketSignaling
+namespace ClientCore.PeerCCSignalingImpl
 {
     public class AccountFactory
     {

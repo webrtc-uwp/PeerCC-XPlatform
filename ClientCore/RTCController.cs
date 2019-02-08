@@ -1,10 +1,8 @@
-﻿using ClientCore.Signaling;
+﻿using ClientCore.PeerCCSignalingImpl;
 using Org.WebRtc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
