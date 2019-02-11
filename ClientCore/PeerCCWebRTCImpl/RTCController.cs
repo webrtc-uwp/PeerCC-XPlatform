@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 
-namespace ClientCore
+namespace ClientCore.PeerCCWebRTCImpl
 {
     /// <summary>
     /// A singleton RTCController for WebRtc session.
