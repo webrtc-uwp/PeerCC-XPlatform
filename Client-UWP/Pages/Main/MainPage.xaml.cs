@@ -15,6 +15,7 @@ using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Pages.SettingsDebug;
 using ClientCore.PeerCCSignalingImpl;
 using ClientCore.PeerCCWebRTCImpl;
+using ClientCore.Signaling;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -175,6 +176,13 @@ namespace Client_UWP
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
                 //RTCController.Instance.ConnectToPeer(remotePeer);
+
+                var m = new Message();
+                m.Id = "msgId1";
+                m.PeerId = remotePeer.Id.ToString();
+                m.Content = "mgContent";
+
+                await _httpSignaler.SentToPeerAsync(m);
             };
         }
 

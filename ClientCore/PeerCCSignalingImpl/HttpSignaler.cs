@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ClientCore.Signaling;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -15,7 +17,7 @@ namespace ClientCore.PeerCCSignalingImpl
     /// <summary>
     /// HttpSignaler instance is used to fire connection events.
     /// </summary>
-    public class HttpSignaler : HttpSignalerEvents
+    public class HttpSignaler : HttpSignalerEvents, ISignaler
     {
         #region Signaling server config
         private static string _url = "http://peercc-server.ortclib.org";
@@ -467,6 +469,103 @@ namespace ClientCore.PeerCCSignalingImpl
         public void RemovePeerFromList(int peerId)
         {
             _peers.Remove(p => p.Id == peerId);
+        }
+
+        /// <summary>
+        /// Send a message to a peer.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>Returns when message is delivered or an
+        /// exception if the message could not be delivered.
+        public async Task SentToPeerAsync(Message message)
+        {
+            try
+            {
+                if (_state != State.Connected)
+                    return;
+
+                Debug.Assert(IsConnected());
+
+                if (!IsConnected() || message.PeerId == "")
+                    return;
+
+                string request =
+                    string.Format(
+                    "POST /message?peer_id={0}&to={1} HTTP/1.0\r\n" +
+                    "Content-Length: {2}\r\n" +
+                    "Content-Type: text/plain\r\n" +
+                    "\r\n" +
+                    "{3}",
+                    _myId, message.PeerId, message.Content.Length, message.Content);
+
+                var content = new StringContent(message.Content, System.Text.Encoding.UTF8, "application/json");
+
+                Debug.WriteLine("Sending to remote peer: " + request + " " + message.Content);
+
+                // Send request, await response
+                HttpResponseMessage response = await _httpClient.PostAsync(
+                    _baseHttpAddress + request, content);
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                    return;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[Error] Signaling SendToPeer: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Wait for messages to arrive from peers. This method will not
+        /// return until there is at least one message available.
+        /// </summary>
+        /// <returns>Returns a list messages sent from peers or
+        /// returns an exception the ability to receive messages
+        /// failed.</returns>
+        public async Task<IList<Message>> WaitForMessagesAsync()
+        {
+            while (_state != State.NotConnected)
+            {
+                try
+                {
+                    string request = string.Format("wait?messages");
+
+                    // Send the request, await response
+                    HttpResponseMessage response =
+                        await _httpClient.GetAsync(_baseHttpAddress + request, 
+                        HttpCompletionOption.ResponseContentRead);
+
+                    HttpResponseHeaders header = response.Headers;
+                    HttpStatusCode status_code = response.StatusCode;
+
+                    if (response.StatusCode == HttpStatusCode.InternalServerError)
+                    {
+                        Debug.WriteLine("Internal server error, status code: 500");
+                        return null;
+                    }
+
+                    string result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        result = await response.Content.ReadAsStringAsync();
+
+                        IList<Message> messages = ParseServerResponse(result);
+
+                        return messages;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        private IList<Message> ParseServerResponse(string result)
+        {
+            throw new NotImplementedException();
         }
 
         private static readonly string _localPeerRandom = new Func<string>(() =>
