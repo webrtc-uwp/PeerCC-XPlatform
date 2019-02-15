@@ -1,15 +1,22 @@
-﻿using System;
+﻿using ClientCore.Signaling;
+using System;
 
 namespace ClientCore.PeerCCSignalingImpl
 {
     public class HttpSignalerMessageEvent
     {
         public Peer Peer { get; set; }
-        public string Message { get; set; }
+        public string MessageStr { get; set; }
+        public Message Message { get; set; }
 
         public HttpSignalerMessageEvent(Peer peer, string message)
         {
             Peer = peer;
+            MessageStr = message;
+        }
+
+        public HttpSignalerMessageEvent(Message message)
+        {
             Message = message;
         }
     }
@@ -51,6 +58,10 @@ namespace ClientCore.PeerCCSignalingImpl
         protected void OnMessageFromPeer(Peer peer, string message)
         {
             MessageFromPeer?.Invoke(this, new HttpSignalerMessageEvent(peer, message));
+        }
+        protected void OnMessage(Message message)
+        {
+            MessageFromPeer?.Invoke(this, new HttpSignalerMessageEvent(message));
         }
         protected void OnServerConnectionFailure()
         {

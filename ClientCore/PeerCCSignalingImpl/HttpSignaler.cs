@@ -110,7 +110,8 @@ namespace ClientCore.PeerCCSignalingImpl
                         // thread is now allowed to complete by virtue of the
                         // .Wait() causing the send routine to quit before
                         // the end of the thread scope completes.
-                        SendWaitRequestAsync().Wait();
+                        //SendWaitRequestAsync().Wait();
+                        WaitForMessagesAsync().Wait();
                     });
 
                     thread.Start();
@@ -491,11 +492,11 @@ namespace ClientCore.PeerCCSignalingImpl
 
                 string request =
                     string.Format(
-                    "POST /message?peer_id={0}&to={1} HTTP/1.0\r\n" +
-                    "Content-Length: {2}\r\n" +
-                    "Content-Type: text/plain\r\n" +
-                    "\r\n" +
-                    "{3}",
+                        "message?peer_id={0}&to={1} HTTP/1.0\r\n" +
+                        "Content-Length: {2}\r\n" +
+                        "Content-Type: text/plain\r\n" +
+                        "\r\n" +
+                        "{3}",
                     _myId, message.PeerId, message.Content.Length, message.Content);
 
                 var content = new StringContent(message.Content, System.Text.Encoding.UTF8, "application/json");
@@ -515,6 +516,8 @@ namespace ClientCore.PeerCCSignalingImpl
             }
         }
 
+        IList<Message> messagesList = new List<Message>();
+
         /// <summary>
         /// Wait for messages to arrive from peers. This method will not
         /// return until there is at least one message available.
@@ -524,48 +527,81 @@ namespace ClientCore.PeerCCSignalingImpl
         /// failed.</returns>
         public async Task<IList<Message>> WaitForMessagesAsync()
         {
+            int messageId = 0;
             while (_state != State.NotConnected)
             {
                 try
                 {
-                    string request = string.Format("wait?messages");
+                    string request = string.Format("wait?peer_id=" + _myId);
 
                     // Send the request, await response
                     HttpResponseMessage response =
-                        await _httpClient.GetAsync(_baseHttpAddress + request, 
+                        await _httpClient.GetAsync(_baseHttpAddress + request,
                         HttpCompletionOption.ResponseContentRead);
-
                     HttpResponseHeaders header = response.Headers;
                     HttpStatusCode status_code = response.StatusCode;
-
                     if (response.StatusCode == HttpStatusCode.InternalServerError)
                     {
-                        Debug.WriteLine("Internal server error, status code: 500");
+                        Debug.WriteLine("Internal server error, StatusCode: 500");
                         return null;
                     }
+
+                    int peerId = ParseHeaderGetPragma(header);
 
                     string result;
                     if (response.IsSuccessStatusCode)
                     {
                         result = await response.Content.ReadAsStringAsync();
+                        if (_myId == peerId)
+                        {
+                            string peer_name;
+                            int peer_id, peer_connected;
+                            if (!ParseServerResponse(result, status_code,
+                                out peer_name, out peer_id, out peer_connected))
+                                continue;
 
-                        IList<Message> messages = ParseServerResponse(result);
+                            AddOrRemovePeerFromList(peer_name, peer_id, peer_connected);
+                        }
+                        else
+                        {
+                            if (response.ToString().Contains("BYE"))
+                                OnPeerHangup(new Peer(peerId, string.Empty));
+                            else
+                            {
+                                //OnMessageFromPeer(new Peer(peerId, string.Empty), result);
 
-                        return messages;
+                                messageId++;
+
+                                var message = new Message();
+                                message.Id = messageId.ToString();
+                                message.PeerId = peerId.ToString();
+                                message.Content = result;
+
+                                Debug.WriteLine("OnMessageFromPeer! " + 
+                                    "message id: " + message.Id +
+                                    " , peer id: " + message.PeerId + 
+                                    " , message content: " + message.Content);
+
+                                messagesList.Add(message);
+
+                                OnMessage(message);
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex.Message);
-                    return null;
+                    Debug.WriteLine("[Error] Signaling SendWaitRequestAsync, Message: " + ex.Message);
                 }
-            }
-            return null;
-        }
 
-        private IList<Message> ParseServerResponse(string result)
-        {
-            throw new NotImplementedException();
+                // If the client or server HTTP is in a messed up state and
+                // returns bogus information or exceptions immediately,
+                // prevent the CPU from becoming pinned by yielding the CPU
+                // to other tasks. This will not solve the issue but this
+                // will prevent CPU spiking to 100%.
+                await Task.Yield();
+            }
+            return messagesList;
         }
 
         private static readonly string _localPeerRandom = new Func<string>(() =>
