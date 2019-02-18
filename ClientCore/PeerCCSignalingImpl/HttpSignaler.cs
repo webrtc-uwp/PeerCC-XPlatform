@@ -190,71 +190,6 @@ namespace ClientCore.PeerCCSignalingImpl
             }
         }
 
-        /// <summary>
-        /// Long lasting loop to get notified about connected/disconnected peers.
-        /// </summary>
-        //private async Task SendWaitRequestAsync()
-        //{
-        //    while (_state != State.NotConnected)
-        //    {
-        //        try
-        //        {
-        //            string request = string.Format("wait?peer_id=" + _myId);
-
-        //            // Send the request, await response
-        //            HttpResponseMessage response =
-        //                await _httpClient.GetAsync(_baseHttpAddress + request,
-        //                HttpCompletionOption.ResponseContentRead);
-        //            HttpResponseHeaders header = response.Headers;
-        //            HttpStatusCode status_code = response.StatusCode;
-        //            if (response.StatusCode == HttpStatusCode.InternalServerError)
-        //            {
-        //                Debug.WriteLine("Internal server error, StatusCode: 500");
-        //                return;
-        //            }
-
-        //            int peerId = ParseHeaderGetPragma(header);
-
-        //            string result;
-        //            if (response.IsSuccessStatusCode)
-        //            {
-        //                result = await response.Content.ReadAsStringAsync();
-        //                if (_myId == peerId)
-        //                {
-        //                    string peer_name;
-        //                    int peer_id, peer_connected;
-        //                    if (!ParseServerResponse(result, status_code,
-        //                        out peer_name, out peer_id, out peer_connected))
-        //                        continue;
-
-        //                    AddOrRemovePeerFromList(peer_name, peer_id, peer_connected);
-        //                }
-        //                else
-        //                {
-        //                    if (response.ToString().Contains("BYE"))
-        //                        OnPeerHangup(new Peer(peerId, string.Empty));
-        //                    else
-        //                    {
-        //                        Debug.WriteLine("OnMessageFromPeer! peer_id: " + peerId + " , result: " + result);
-        //                        OnMessageFromPeer(new Peer(peerId, string.Empty), result);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Debug.WriteLine("[Error] Signaling SendWaitRequestAsync, Message: " + ex.Message);
-        //        }
-
-        //        // If the client or server HTTP is in a messed up state and
-        //        // returns bogus information or exceptions immediately,
-        //        // prevent the CPU from becoming pinned by yielding the CPU
-        //        // to other tasks. This will not solve the issue but this
-        //        // will prevent CPU spiking to 100%.
-        //        await Task.Yield();
-        //    }
-        //}
-
         public override void SendToPeer(int peer_id, string message)
         {
             // A message is queued to deliver to the server in order the
@@ -491,7 +426,7 @@ namespace ClientCore.PeerCCSignalingImpl
 
                 string request =
                     string.Format(
-                        "message?peer_id={0}&to={1} HTTP/1.0\r\n" +
+                        "message?peer_id={0}&to={1}" +
                         "Content-Length: {2}\r\n" +
                         "Content-Type: text/plain\r\n" +
                         "\r\n" +
@@ -500,7 +435,9 @@ namespace ClientCore.PeerCCSignalingImpl
 
                 var content = new StringContent(message.Content, System.Text.Encoding.UTF8, "application/json");
 
-                Debug.WriteLine("Sending to remote peer: " + request + " " + message.Content);
+                Debug.WriteLine("Sending to remote peer id: " + message.PeerId);
+                Debug.WriteLine("Message id: " + message.Id + ", content: " + message.Content);
+                Debug.WriteLine("Formated request: " + request);
 
                 // Send request, await response
                 HttpResponseMessage response = await _httpClient.PostAsync(
@@ -518,6 +455,10 @@ namespace ClientCore.PeerCCSignalingImpl
         private List<Message> messagesList = new List<Message>();
         private object _locker = new object();
 
+        /// <summary>
+        /// Long lasting loop to get server responses 
+        /// and to get notified about connected/disconnected peers and messages.
+        /// </summary>
         private async Task SendWaitRequestAsync()
         {
             int messageId = 0;
@@ -578,7 +519,7 @@ namespace ClientCore.PeerCCSignalingImpl
                                     messagesList.Add(message);
                                 }
 
-                                OnMessage(message);
+                                OnMessageFromPeer(message);
                             }
                         }
                     }

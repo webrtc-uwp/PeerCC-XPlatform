@@ -55,11 +55,7 @@ namespace ClientCore.PeerCCSignalingImpl
         {
             PeerHangup?.Invoke(this, peer);
         }
-        protected void OnMessageFromPeer(Peer peer, string message)
-        {
-            MessageFromPeer?.Invoke(this, new HttpSignalerMessageEvent(peer, message));
-        }
-        protected void OnMessage(Message message)
+        protected void OnMessageFromPeer(Message message)
         {
             MessageFromPeer?.Invoke(this, new HttpSignalerMessageEvent(message));
         }

@@ -178,9 +178,9 @@ namespace Client_UWP
                 //RTCController.Instance.ConnectToPeer(remotePeer);
 
                 var m = new Message();
-                m.Id = "msgId1";
+                m.Id = "1";
                 m.PeerId = remotePeer.Id.ToString();
-                m.Content = "mgContent";
+                m.Content = "test message";
 
                 await _httpSignaler.SentToPeerAsync(m);
             };
