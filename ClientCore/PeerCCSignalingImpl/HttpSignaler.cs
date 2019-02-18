@@ -110,8 +110,7 @@ namespace ClientCore.PeerCCSignalingImpl
                         // thread is now allowed to complete by virtue of the
                         // .Wait() causing the send routine to quit before
                         // the end of the thread scope completes.
-                        //SendWaitRequestAsync().Wait();
-                        WaitForMessagesAsync().Wait();
+                        SendWaitRequestAsync().Wait();
                     });
 
                     thread.Start();
@@ -194,67 +193,67 @@ namespace ClientCore.PeerCCSignalingImpl
         /// <summary>
         /// Long lasting loop to get notified about connected/disconnected peers.
         /// </summary>
-        private async Task SendWaitRequestAsync()
-        {
-            while (_state != State.NotConnected)
-            {
-                try
-                {
-                    string request = string.Format("wait?peer_id=" + _myId);
+        //private async Task SendWaitRequestAsync()
+        //{
+        //    while (_state != State.NotConnected)
+        //    {
+        //        try
+        //        {
+        //            string request = string.Format("wait?peer_id=" + _myId);
 
-                    // Send the request, await response
-                    HttpResponseMessage response =
-                        await _httpClient.GetAsync(_baseHttpAddress + request,
-                        HttpCompletionOption.ResponseContentRead);
-                    HttpResponseHeaders header = response.Headers;
-                    HttpStatusCode status_code = response.StatusCode;
-                    if (response.StatusCode == HttpStatusCode.InternalServerError)
-                    {
-                        Debug.WriteLine("Internal server error, StatusCode: 500");
-                        return;
-                    }
+        //            // Send the request, await response
+        //            HttpResponseMessage response =
+        //                await _httpClient.GetAsync(_baseHttpAddress + request,
+        //                HttpCompletionOption.ResponseContentRead);
+        //            HttpResponseHeaders header = response.Headers;
+        //            HttpStatusCode status_code = response.StatusCode;
+        //            if (response.StatusCode == HttpStatusCode.InternalServerError)
+        //            {
+        //                Debug.WriteLine("Internal server error, StatusCode: 500");
+        //                return;
+        //            }
 
-                    int peerId = ParseHeaderGetPragma(header);
+        //            int peerId = ParseHeaderGetPragma(header);
 
-                    string result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        result = await response.Content.ReadAsStringAsync();
-                        if (_myId == peerId)
-                        {
-                            string peer_name;
-                            int peer_id, peer_connected;
-                            if (!ParseServerResponse(result, status_code,
-                                out peer_name, out peer_id, out peer_connected))
-                                continue;
+        //            string result;
+        //            if (response.IsSuccessStatusCode)
+        //            {
+        //                result = await response.Content.ReadAsStringAsync();
+        //                if (_myId == peerId)
+        //                {
+        //                    string peer_name;
+        //                    int peer_id, peer_connected;
+        //                    if (!ParseServerResponse(result, status_code,
+        //                        out peer_name, out peer_id, out peer_connected))
+        //                        continue;
 
-                            AddOrRemovePeerFromList(peer_name, peer_id, peer_connected);
-                        }
-                        else
-                        {
-                            if (response.ToString().Contains("BYE"))
-                                OnPeerHangup(new Peer(peerId, string.Empty));
-                            else
-                            {
-                                Debug.WriteLine("OnMessageFromPeer! peer_id: " + peerId + " , result: " + result);
-                                OnMessageFromPeer(new Peer(peerId, string.Empty), result);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine("[Error] Signaling SendWaitRequestAsync, Message: " + ex.Message);
-                }
+        //                    AddOrRemovePeerFromList(peer_name, peer_id, peer_connected);
+        //                }
+        //                else
+        //                {
+        //                    if (response.ToString().Contains("BYE"))
+        //                        OnPeerHangup(new Peer(peerId, string.Empty));
+        //                    else
+        //                    {
+        //                        Debug.WriteLine("OnMessageFromPeer! peer_id: " + peerId + " , result: " + result);
+        //                        OnMessageFromPeer(new Peer(peerId, string.Empty), result);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Debug.WriteLine("[Error] Signaling SendWaitRequestAsync, Message: " + ex.Message);
+        //        }
 
-                // If the client or server HTTP is in a messed up state and
-                // returns bogus information or exceptions immediately,
-                // prevent the CPU from becoming pinned by yielding the CPU
-                // to other tasks. This will not solve the issue but this
-                // will prevent CPU spiking to 100%.
-                await Task.Yield();
-            }
-        }
+        //        // If the client or server HTTP is in a messed up state and
+        //        // returns bogus information or exceptions immediately,
+        //        // prevent the CPU from becoming pinned by yielding the CPU
+        //        // to other tasks. This will not solve the issue but this
+        //        // will prevent CPU spiking to 100%.
+        //        await Task.Yield();
+        //    }
+        //}
 
         public override void SendToPeer(int peer_id, string message)
         {
@@ -516,16 +515,10 @@ namespace ClientCore.PeerCCSignalingImpl
             }
         }
 
-        IList<Message> messagesList = new List<Message>();
+        private List<Message> messagesList = new List<Message>();
+        private object _locker = new object();
 
-        /// <summary>
-        /// Wait for messages to arrive from peers. This method will not
-        /// return until there is at least one message available.
-        /// </summary>
-        /// <returns>Returns a list messages sent from peers or
-        /// returns an exception the ability to receive messages
-        /// failed.</returns>
-        public async Task<IList<Message>> WaitForMessagesAsync()
+        private async Task SendWaitRequestAsync()
         {
             int messageId = 0;
             while (_state != State.NotConnected)
@@ -543,7 +536,7 @@ namespace ClientCore.PeerCCSignalingImpl
                     if (response.StatusCode == HttpStatusCode.InternalServerError)
                     {
                         Debug.WriteLine("Internal server error, StatusCode: 500");
-                        return null;
+                        return;
                     }
 
                     int peerId = ParseHeaderGetPragma(header);
@@ -568,8 +561,6 @@ namespace ClientCore.PeerCCSignalingImpl
                                 OnPeerHangup(new Peer(peerId, string.Empty));
                             else
                             {
-                                //OnMessageFromPeer(new Peer(peerId, string.Empty), result);
-
                                 messageId++;
 
                                 var message = new Message();
@@ -582,7 +573,10 @@ namespace ClientCore.PeerCCSignalingImpl
                                     " , peer id: " + message.PeerId + 
                                     " , message content: " + message.Content);
 
-                                messagesList.Add(message);
+                                lock (_locker)
+                                {
+                                    messagesList.Add(message);
+                                }
 
                                 OnMessage(message);
                             }
@@ -601,7 +595,30 @@ namespace ClientCore.PeerCCSignalingImpl
                 // will prevent CPU spiking to 100%.
                 await Task.Yield();
             }
-            return messagesList;
+        }
+
+        /// <summary>
+        /// Wait for messages to arrive from peers. This method will not
+        /// return until there is at least one message available.
+        /// </summary>
+        /// <returns>Returns a list messages sent from peers or
+        /// returns an exception the ability to receive messages
+        /// failed.</returns>
+        public async Task<IList<Message>> WaitForMessagesAsync()
+        {
+            return await Task.Run(() => GetMessagesList());
+        }
+
+        private IList<Message> GetMessagesList()
+        {
+            IList<Message> list = new List<Message>();
+
+            lock (_locker)
+            {
+                messagesList.ForEach(m => { list.Add(m); });
+            }
+
+            return list;
         }
 
         private static readonly string _localPeerRandom = new Func<string>(() =>
