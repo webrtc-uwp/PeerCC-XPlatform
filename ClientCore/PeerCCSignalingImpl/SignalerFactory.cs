@@ -1,6 +1,6 @@
-﻿using ClientCore.PeerCCSignalingImpl;
+﻿using ClientCore.Signaling;
 
-namespace ClientCore.Signaling
+namespace ClientCore.PeerCCSignalingImpl
 {
     public class SignalerFactory
     {

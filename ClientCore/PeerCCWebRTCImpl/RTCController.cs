@@ -1,5 +1,4 @@
 ﻿using ClientCore.PeerCCSignalingImpl;
-using ClientCore.Signaling;
 using Org.WebRtc;
 using System;
 using System.Collections.Generic;
