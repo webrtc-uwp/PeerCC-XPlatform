@@ -135,6 +135,7 @@
     <Compile Include="PeerCCSignalingImpl\Util.cs" />
     <Compile Include="Signaling\EnhancedMessage.cs" />
     <Compile Include="Signaling\MediaDescriptionEncodingType.cs" />
+    <Compile Include="Signaling\SignalerFactory.cs" />
     <Compile Include="Signaling\SimpleMessage.cs" />
     <Compile Include="Signaling\SignalerType.cs" />
     <Compile Include="WebRTCCalling\CallFactory.cs" />

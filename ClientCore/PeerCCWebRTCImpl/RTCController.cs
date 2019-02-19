@@ -1,4 +1,5 @@
 ﻿using ClientCore.PeerCCSignalingImpl;
+using ClientCore.Signaling;
 using Org.WebRtc;
 using System;
 using System.Collections.Generic;
@@ -34,8 +35,8 @@ namespace ClientCore.PeerCCWebRTCImpl
         }
 
         private RTCController()
-        {
-            _httpSignaler = new HttpSignaler();
+        { 
+            _httpSignaler = (HttpSignaler)SignalerFactory.Create();
         }
 
         // SDP negotiation attributes
