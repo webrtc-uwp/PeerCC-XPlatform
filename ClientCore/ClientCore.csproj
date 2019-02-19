@@ -125,6 +125,7 @@
     <Compile Include="Contacts\IContactDisposition.cs" />
     <Compile Include="Contacts\IContactManager.cs" />
     <Compile Include="PeerCCSignalingImpl\AccountFactory.cs" />
+    <Compile Include="PeerCCSignalingImpl\SignalerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PeerCCWebRTCImpl\RTCController.cs" />
     <Compile Include="PeerCCSignalingImpl\HttpSignaler.cs" />
@@ -135,7 +136,6 @@
     <Compile Include="PeerCCSignalingImpl\Util.cs" />
     <Compile Include="Signaling\EnhancedMessage.cs" />
     <Compile Include="Signaling\MediaDescriptionEncodingType.cs" />
-    <Compile Include="Signaling\SignalerFactory.cs" />
     <Compile Include="Signaling\SimpleMessage.cs" />
     <Compile Include="Signaling\SignalerType.cs" />
     <Compile Include="WebRTCCalling\CallFactory.cs" />
