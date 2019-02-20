@@ -12,45 +12,45 @@ namespace ClientCore.Call
         /// Get or set the preferred audio codec id or empty string for
         /// default.
         /// </summary>
-        string PreferredAudioCodecId;
+        public string PreferredAudioCodecId;
         /// <summary>
         /// Get or set the preferred video codec id or empty string for
         /// default.
         /// </summary>
-        string PreferredVideoCodecId;
+        public string PreferredVideoCodecId;
         /// <summary>
         /// Get or set the preferred audio device id or empty string for
         /// default.
         /// </summary>
-        string PreferredAudioDeviceId;
+        public string PreferredAudioDeviceId;
         /// <summary>
         /// Get or set the preferred video device id or empty string for
         /// default.
         /// </summary>
-        string PreferredVideoDeviceId;
+        public string PreferredVideoDeviceId;
         /// <summary>
         /// Get or set the preferred video format for associated video device
         /// and empty string indicates no preferred format.
         /// </summary>
-        string PreferredVideoFormatId;
+        public string PreferredVideoFormatId;
         /// <summary>
         /// Get or set the preferred frame rate of the associated video device.
         /// Null indicated no preference.
         /// </summary>
-        int? PreferredFrameRate;
+        public int? PreferredFrameRate;
 
         /// <summary>
         /// Get or set the list of available ICE servers.
         /// </summary>
-        List<IceServer> IceServers;
+        public List<IceServer> IceServers;
 
         /// <summary>
         /// Get or set the local video preview element.
         /// </summary>
-        IMediaElement LocalVideoElement;
+        public IMediaElement LocalVideoElement;
         /// <summary>
         /// Get or set the remote video element.
         /// </summary>
-        IMediaElement RemoveVideoElement;
+        public IMediaElement RemoveVideoElement;
     }
 }

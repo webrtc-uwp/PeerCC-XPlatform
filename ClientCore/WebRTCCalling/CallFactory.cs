@@ -1,4 +1,5 @@
 ﻿using ClientCore.Call;
+using ClientCore.PeerCCImpl.PeerCCWebRTCImpl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace ClientCore.WebRTCCalling
 {
     public class CallFactory
     {
-        static Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
+        public static Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
         {
-            return null;
+            return Task.Run(() => (ICallInfo)new CallInfo());
         }
         
         static Task<ICallInfo> AnswerCallAsync(

@@ -1,4 +1,6 @@
-﻿using ClientCore.PeerCCSignalingImpl;
+﻿using ClientCore.Call;
+using ClientCore.PeerCCSignalingImpl;
+using ClientCore.WebRTCCalling;
 using Org.WebRtc;
 using System;
 using System.Collections.Generic;
@@ -74,6 +76,19 @@ namespace ClientCore.PeerCCWebRTCImpl
             Debug.WriteLine("RTCManager: Creating peer connection.");
 
             _peerConnection = new RTCPeerConnection(config);
+
+            CallConfiguration conf = new CallConfiguration();
+            conf.IceServers = new List<IceServer>();
+            conf.LocalVideoElement = null;
+            conf.PreferredAudioCodecId = "";
+            conf.PreferredAudioDeviceId = "";
+            conf.PreferredFrameRate = 1111;
+            conf.PreferredVideoCodecId = "";
+            conf.PreferredVideoDeviceId = "";
+            conf.PreferredVideoFormatId = "";
+            conf.RemoveVideoElement = null;
+
+            var call = await CallFactory.PlaceCallAsync(conf);
 
             _peerConnection.OnIceGatheringStateChange += () =>
             {
