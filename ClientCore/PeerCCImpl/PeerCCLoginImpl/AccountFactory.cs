@@ -1,13 +1,13 @@
 ﻿using ClientCore.Account;
 using System.Threading.Tasks;
 
-namespace ClientCore.PeerCCSignalingImpl
+namespace ClientCore.PeerCCLoginImpl
 {
     public class AccountFactory
     {
         static Task<IAccountSetup> GetAccountAsync()
         {
-            return null;
+            return Task.Run(() => (IAccountSetup)new AccountSetup());
         }
     }
 }
