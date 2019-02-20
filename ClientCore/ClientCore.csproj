@@ -131,6 +131,7 @@
     <Compile Include="PeerCCImpl\PeerCCLoginImpl\AccountFactory.cs" />
     <Compile Include="PeerCCImpl\PeerCCLoginImpl\AccountSetup.cs" />
     <Compile Include="PeerCCImpl\PeerCCSignalingImpl\SignalerFactory.cs" />
+    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\Call.cs" />
     <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\CallInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\RTCController.cs" />
