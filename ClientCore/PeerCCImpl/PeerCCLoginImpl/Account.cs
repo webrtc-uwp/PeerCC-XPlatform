@@ -1,5 +1,6 @@
 ﻿using ClientCore.Account;
 using ClientCore.Contacts;
+using ClientCore.PeerCCContactImpl;
 using ClientCore.PeerCCSignalingImpl;
 using ClientCore.Signaling;
 using System;
@@ -16,7 +17,7 @@ namespace ClientCore.PeerCCLoginImpl
 
         public ISignaler Signaler => SignalerFactory.Create();
 
-        public IContactManager ContactManager => throw new NotImplementedException();
+        public IContactManager ContactManager => ContactManagerFactory.Create();
 
         public string CachedCredentialsPayload => throw new NotImplementedException();
 

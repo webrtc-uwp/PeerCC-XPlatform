@@ -124,6 +124,9 @@
     <Compile Include="Contacts\IContact.cs" />
     <Compile Include="Contacts\IContactDisposition.cs" />
     <Compile Include="Contacts\IContactManager.cs" />
+    <Compile Include="PeerCCContactImpl\ContactDisposition.cs" />
+    <Compile Include="PeerCCContactImpl\ContactManager.cs" />
+    <Compile Include="PeerCCContactImpl\ContactManagerFactory.cs" />
     <Compile Include="PeerCCImpl\PeerCCLoginImpl\Account.cs" />
     <Compile Include="PeerCCImpl\PeerCCLoginImpl\AccountFactory.cs" />
     <Compile Include="PeerCCImpl\PeerCCLoginImpl\AccountSetup.cs" />
