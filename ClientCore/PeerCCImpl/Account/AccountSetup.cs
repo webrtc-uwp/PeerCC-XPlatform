@@ -5,10 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ClientCore.PeerCCLoginImpl
+namespace ClientCore.PeerCCImpl.Account
 {
     public class AccountSetup : IAccountSetup
     {
+        public static AccountSetup Create()
+        {
+            return new AccountSetup();
+        }
+
         public Task<IAccount> GetLoginInfoAsync(string loginCompletePayload)
         {
             throw new NotImplementedException();

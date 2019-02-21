@@ -45,6 +45,12 @@ namespace Client_UWP
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            // Install the signaler and the calling factories
+            ClientCore.PeerCCImpl.Setup.Install();
+            //ClientCore.WebRtcImpl.Setup.Install();
+
+            ClientCore.Account.IAccountSetup accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountSetup();
+
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,

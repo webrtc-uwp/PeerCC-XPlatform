@@ -1,15 +1,10 @@
 ﻿using ClientCore.Account;
 using ClientCore.Contacts;
-using ClientCore.PeerCCContactImpl;
-using ClientCore.PeerCCSignalingImpl;
 using ClientCore.Signaling;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace ClientCore.PeerCCLoginImpl
+namespace ClientCore.PeerCCImpl.Account
 {
     public class Account : IAccount
     {
