@@ -1,6 +1,7 @@
 ﻿using ClientCore.Call;
 using ClientCore.PeerCCImpl.PeerCCWebRTCImpl;
 using ClientCore.PeerCCSignalingImpl;
+using ClientCore.Signaling;
 using ClientCore.WebRTCCalling;
 using Org.WebRtc;
 using System;
@@ -187,18 +188,7 @@ namespace ClientCore.PeerCCWebRTCImpl
                 return;
             }
 
-            CallConfiguration configuration = new CallConfiguration();
-            configuration.IceServers = new List<IceServer>();
-            configuration.LocalVideoElement = null;
-            configuration.PreferredAudioCodecId = "";
-            configuration.PreferredAudioDeviceId = "";
-            configuration.PreferredFrameRate = 1111;
-            configuration.PreferredVideoCodecId = "";
-            configuration.PreferredVideoDeviceId = "";
-            configuration.PreferredVideoFormatId = "";
-            configuration.RemoveVideoElement = null;
-
-            CallInfo callInfo = (CallInfo)await CallFactory.PlaceCallAsync(configuration);
+            CallInfo callInfo = (CallInfo)await CallFactory.PlaceCallAsync(GetCallConfiguration());
 
             _connectToPeerCancelationTokenSource = new System.Threading.CancellationTokenSource();
             bool connectResult = await CreatePeerConnection(_connectToPeerCancelationTokenSource.Token);
@@ -252,6 +242,52 @@ namespace ClientCore.PeerCCWebRTCImpl
             json.Add(kSessionDescriptionSdpName, JsonValue.CreateStringValue(description.Sdp));
 
             SendMessage(json);
+        }
+
+        private List<Peer> _peers = new List<Peer>();
+        private Peer _peer;
+
+        private void OnMessageFromPeer(Message message)
+        {
+            Task.Run(async () => 
+            {
+                Debug.Assert(_peerId == Convert.ToInt32(message.PeerId));
+                Debug.Assert(message.Content.Length > 0);
+
+                if (!JsonObject.TryParse(message.Content, out JsonObject jMessage))
+                {
+                    Debug.WriteLine("[Error] RTCController: Received unknown message. " + message.Content);
+
+                    return;
+                }
+
+                string type = jMessage.ContainsKey(kSessionDescriptionTypeName) ? jMessage.GetNamedString(kSessionDescriptionTypeName) : null;
+
+                if (_peerConnection != null && !string.IsNullOrEmpty(type))
+                {
+                    string sdp = null;
+
+                    sdp = jMessage.ContainsKey(kSessionDescriptionSdpName) ? jMessage.GetNamedString(kSessionDescriptionSdpName) : null;
+
+                    CallInfo answerCall = (CallInfo)await CallFactory.AnswerCallAsync(GetCallConfiguration(), sdp);
+                }
+            }).Wait();
+        }
+
+        private CallConfiguration GetCallConfiguration()
+        {
+            CallConfiguration config = new CallConfiguration();
+            config.IceServers = new List<IceServer>();
+            config.LocalVideoElement = null;
+            config.PreferredAudioCodecId = "";
+            config.PreferredAudioDeviceId = "";
+            config.PreferredFrameRate = 1111;
+            config.PreferredVideoCodecId = "";
+            config.PreferredVideoDeviceId = "";
+            config.PreferredVideoFormatId = "";
+            config.RemoveVideoElement = null;
+
+            return config;
         }
     }
 }

@@ -15,12 +15,12 @@ namespace ClientCore.WebRTCCalling
             return Task.Run(() => (ICallInfo)new CallInfo());
         }
         
-        static Task<ICallInfo> AnswerCallAsync(
+        public static Task<ICallInfo> AnswerCallAsync(
             CallConfiguration config,
             string sdpOfRemoteParty
             )
         {
-            return null;
+            return Task.Run(() => (ICallInfo)new CallInfo());
         }
     }
 }
