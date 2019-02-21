@@ -133,6 +133,9 @@
     <Compile Include="PeerCCImpl\PeerCCSignalingImpl\SignalerFactory.cs" />
     <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\Call.cs" />
     <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\CallInfo.cs" />
+    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\Codec.cs" />
+    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\Media.cs" />
+    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\MediaDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\RTCController.cs" />
     <Compile Include="PeerCCImpl\PeerCCSignalingImpl\HttpSignaler.cs" />
