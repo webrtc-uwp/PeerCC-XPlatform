@@ -1,4 +1,5 @@
 ﻿using ClientCore.Call;
+using ClientCore.PeerCCImpl.PeerCCWebRTCImpl;
 using ClientCore.PeerCCSignalingImpl;
 using ClientCore.WebRTCCalling;
 using Org.WebRtc;
@@ -73,32 +74,19 @@ namespace ClientCore.PeerCCWebRTCImpl
                 IceServers = _iceServers
             };
 
-            Debug.WriteLine("RTCManager: Creating peer connection.");
+            Debug.WriteLine("RTCController: Creating peer connection.");
 
             _peerConnection = new RTCPeerConnection(config);
 
-            CallConfiguration conf = new CallConfiguration();
-            conf.IceServers = new List<IceServer>();
-            conf.LocalVideoElement = null;
-            conf.PreferredAudioCodecId = "";
-            conf.PreferredAudioDeviceId = "";
-            conf.PreferredFrameRate = 1111;
-            conf.PreferredVideoCodecId = "";
-            conf.PreferredVideoDeviceId = "";
-            conf.PreferredVideoFormatId = "";
-            conf.RemoveVideoElement = null;
-
-            var call = await CallFactory.PlaceCallAsync(conf);
-
             _peerConnection.OnIceGatheringStateChange += () =>
             {
-                Debug.WriteLine("RTCManager: Ice connection state change, gathering-state = " +
+                Debug.WriteLine("RTCController: Ice connection state change, gathering-state = " +
                     _peerConnection.IceGatheringState.ToString().ToLower());
             };
 
             _peerConnection.OnIceConnectionStateChange += () =>
             {
-                Debug.WriteLine("RTCManager: Ice connection state change, state = " +
+                Debug.WriteLine("RTCController: Ice connection state change, state = " +
                     (null != _peerConnection ? _peerConnection.IceConnectionState.ToString().ToLower() : "closed"));
             };
 
@@ -159,7 +147,7 @@ namespace ClientCore.PeerCCWebRTCImpl
                 { kCandidateSdpName, JsonValue.CreateStringValue(evt.Candidate.Candidate) }
             };
 
-            Debug.WriteLine("RTCManager: Sending ice candidate:\n" + json?.Stringify());
+            Debug.WriteLine("RTCController: Sending ice candidate:\n" + json?.Stringify());
 
             SendMessage(json);
         }
@@ -195,9 +183,22 @@ namespace ClientCore.PeerCCWebRTCImpl
 
             if (_peerConnection != null)
             {
-                Debug.WriteLine("[Error] Conductor: We only support connecting to one peer at a time");
+                Debug.WriteLine("[Error] RTCController: We only support connecting to one peer at a time");
                 return;
             }
+
+            CallConfiguration configuration = new CallConfiguration();
+            configuration.IceServers = new List<IceServer>();
+            configuration.LocalVideoElement = null;
+            configuration.PreferredAudioCodecId = "";
+            configuration.PreferredAudioDeviceId = "";
+            configuration.PreferredFrameRate = 1111;
+            configuration.PreferredVideoCodecId = "";
+            configuration.PreferredVideoDeviceId = "";
+            configuration.PreferredVideoFormatId = "";
+            configuration.RemoveVideoElement = null;
+
+            CallInfo callInfo = (CallInfo)await CallFactory.PlaceCallAsync(configuration);
 
             _connectToPeerCancelationTokenSource = new System.Threading.CancellationTokenSource();
             bool connectResult = await CreatePeerConnection(_connectToPeerCancelationTokenSource.Token);
@@ -214,6 +215,9 @@ namespace ClientCore.PeerCCWebRTCImpl
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
+
+                callInfo.GetSdp(offer.Sdp);
+
                 //SdpUtils.SelectCodecs(ref modifiedSdp, AudioCodec.PreferredPayloadType, VideoCodec.PreferredPayloadType);
                 RTCSessionDescriptionInit sdpInit = new RTCSessionDescriptionInit();
                 sdpInit.Sdp = modifiedSdp;
@@ -221,7 +225,7 @@ namespace ClientCore.PeerCCWebRTCImpl
                 var modifiedOffer = new RTCSessionDescription(sdpInit);
 
                 await _peerConnection.SetLocalDescription(modifiedOffer);
-                Debug.WriteLine("Conductor: Sending offer:\n" + modifiedOffer.Sdp);
+                Debug.WriteLine("RTCController: Sending offer:\n" + modifiedOffer.Sdp);
                 SendSdp(modifiedOffer);
             }
         }
