@@ -1,5 +1,4 @@
 ﻿using ClientCore.Call;
-using ClientCore.PeerCCImpl.PeerCCWebRTCImpl;
 using System.Threading.Tasks;
 
 namespace ClientCore.WebRTCCalling
@@ -8,7 +7,8 @@ namespace ClientCore.WebRTCCalling
     {
         static Task<IMedia> GetMediaAsync()
         {
-            return Task.Run(() => (IMedia)new Media());
+            //return Task.Run(() => (IMedia)new Media());
+            return null;
         }
     }
 }

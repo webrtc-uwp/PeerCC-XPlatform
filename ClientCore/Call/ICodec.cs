@@ -1,5 +1,4 @@
-﻿
-namespace ClientCore.Call
+﻿namespace ClientCore.Call
 {
     public interface ICodec
     {

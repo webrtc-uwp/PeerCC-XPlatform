@@ -2,14 +2,14 @@
 
 namespace ClientCore.Factory
 {
-    public class CalllFactory
+    public class CallFactory
     {
-        private static CalllFactory _singleton = new CalllFactory();
+        private static CallFactory _singleton = new CallFactory();
 #if CHANGE
         private IAccountSetupFactory _accountSetupFactory = null;
 #endif
 
-        public static CalllFactory Singleton { get { return _singleton; } }
+        public static CallFactory Singleton { get { return _singleton; } }
 
 #if CHANGE
         public IAccountSetupFactory AccountSetupFactory

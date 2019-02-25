@@ -1,5 +1,4 @@
-﻿
-namespace ClientCore.Contacts
+﻿namespace ClientCore.Contacts
 {
     public enum Disposition
     {

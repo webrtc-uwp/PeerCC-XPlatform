@@ -11,8 +11,8 @@ namespace ClientCore.Factory
 
         public IAccountSetupFactory AccountSetupFactory
         {
-            get {return _accountSetupFactory;}
-            set {_accountSetupFactory = value;}
+            get { return _accountSetupFactory; }
+            set { _accountSetupFactory = value; }
         }
 
         public IAccountSetup CreateIAccountSetup()

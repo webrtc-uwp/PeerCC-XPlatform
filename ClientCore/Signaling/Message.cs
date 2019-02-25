@@ -1,5 +1,4 @@
-﻿
-namespace ClientCore.Signaling
+﻿namespace ClientCore.Signaling
 {
     public class Message
     {

@@ -4,15 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3DABDB6E-0F26-43D6-9686-12A3B6E63C45}</ProjectGuid>
+    <ProjectGuid>{22CBD286-A132-4396-A410-5FA051F7DBEF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ClientCore</RootNamespace>
     <AssemblyName>ClientCore</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17134.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17763.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -43,7 +43,6 @@
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -54,7 +53,6 @@
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -65,7 +63,6 @@
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>ARM</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -76,7 +73,26 @@
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
+    <PlatformTarget>ARM64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
+    <PlatformTarget>ARM64</PlatformTarget>
+    <OutputPath>bin\ARM64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -87,7 +103,6 @@
     <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
     <NoWarn>;2008</NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -98,7 +113,6 @@
     <Optimize>true</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
@@ -106,8 +120,8 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Account\IAccountSetup.cs" />
     <Compile Include="Account\IAccount.cs" />
+    <Compile Include="Account\IAccountSetup.cs" />
     <Compile Include="Account\LoginInfo.cs" />
     <Compile Include="Call\CallConfiguration.cs" />
     <Compile Include="Call\ICall.cs" />
@@ -124,43 +138,23 @@
     <Compile Include="Contacts\IContact.cs" />
     <Compile Include="Contacts\IContactDisposition.cs" />
     <Compile Include="Contacts\IContactManager.cs" />
-    <Compile Include="PeerCCImpl\PeerCCContactImpl\ContactDisposition.cs" />
-    <Compile Include="PeerCCImpl\PeerCCContactImpl\ContactManager.cs" />
-    <Compile Include="PeerCCImpl\PeerCCContactImpl\ContactManagerFactory.cs" />
-    <Compile Include="PeerCCImpl\PeerCCLoginImpl\Account.cs" />
-    <Compile Include="PeerCCImpl\PeerCCLoginImpl\AccountFactory.cs" />
-    <Compile Include="PeerCCImpl\PeerCCLoginImpl\AccountSetup.cs" />
-    <Compile Include="PeerCCImpl\PeerCCSignalingImpl\SignalerFactory.cs" />
-    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\Call.cs" />
-    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\CallInfo.cs" />
-    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\Codec.cs" />
-    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\Media.cs" />
-    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\MediaDevice.cs" />
+    <Compile Include="Factory\CallFactory.cs" />
+    <Compile Include="Factory\IAccountSetupFactory.cs" />
+    <Compile Include="Factory\SignalingFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PeerCCImpl\PeerCCWebRTCImpl\RTCController.cs" />
-    <Compile Include="PeerCCImpl\PeerCCSignalingImpl\HttpSignaler.cs" />
-    <Compile Include="PeerCCImpl\PeerCCSignalingImpl\HttpSignalerEvents.cs" />
-    <Compile Include="Signaling\ISignaler.cs" />
-    <Compile Include="Signaling\Message.cs" />
-    <Compile Include="PeerCCImpl\PeerCCSignalingImpl\Peer.cs" />
-    <Compile Include="PeerCCImpl\PeerCCSignalingImpl\Util.cs" />
     <Compile Include="Signaling\EnhancedMessage.cs" />
+    <Compile Include="Signaling\ISignaler.cs" />
     <Compile Include="Signaling\MediaDescriptionEncodingType.cs" />
-    <Compile Include="Signaling\SimpleMessage.cs" />
+    <Compile Include="Signaling\Message.cs" />
     <Compile Include="Signaling\SignalerType.cs" />
+    <Compile Include="Signaling\SimpleMessage.cs" />
     <Compile Include="WebRTCCalling\CallFactory.cs" />
     <Compile Include="WebRTCCalling\MediaFactory.cs" />
     <EmbeddedResource Include="Properties\ClientCore.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.1.7</Version>
-    </PackageReference>
-    <PackageReference Include="System.Drawing.Common">
-      <Version>4.5.1</Version>
-    </PackageReference>
-    <PackageReference Include="WebRtc">
-      <Version>1.66.0.5-DebugAlpha</Version>
+      <Version>6.2.3</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

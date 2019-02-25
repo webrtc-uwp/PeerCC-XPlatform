@@ -12,6 +12,6 @@ namespace ClientCore.Contacts
         /// access to the source contact list be no longer available.
         /// </summary>
         /// <returns>A list of changed contacts.</returns>
-        Task< IList<IContactDisposition> > GetContactsChangesAsync();
+        Task<IList<IContactDisposition>> GetContactsChangesAsync();
     }
 }

@@ -1,5 +1,4 @@
-﻿
-namespace ClientCore.Account
+﻿namespace ClientCore.Account
 {
     public class LoginInfo
     {
