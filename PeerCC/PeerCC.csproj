@@ -144,7 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.3</Version>
+      <Version>6.1.9</Version>
     </PackageReference>
     <PackageReference Include="WebRtc">
       <Version>1.71.0.1-Alpha</Version>

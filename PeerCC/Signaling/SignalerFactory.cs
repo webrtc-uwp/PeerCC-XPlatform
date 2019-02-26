@@ -1,4 +1,5 @@
 ﻿using ClientCore.Signaling;
+using System.Diagnostics;
 
 namespace PeerCC.Signaling
 {
@@ -6,11 +7,24 @@ namespace PeerCC.Signaling
     {
         public static ISignaler Create()
         {
-            // if (...) http signaler .net standard 2.0
-            return new HttpSignaler();
+            
 
-            // else  
-            // return another signaler class
+            try
+            {
+                // if (...) http signaler .net standard 2.0
+                return new HttpSignaler();
+
+                // else  
+                // return another signaler class
+            }
+            catch (System.Exception ex)
+            {
+                Debug.WriteLine("Create signaler: " + ex.Message);
+
+                return null;
+            }
+
+            
         }
     }
 }
