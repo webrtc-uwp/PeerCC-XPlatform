@@ -1,4 +1,5 @@
 ﻿using Client_UWP.Controllers;
+using Client_UWP.Pages;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,8 +47,7 @@ namespace Client_UWP
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             // Install the signaler and the calling factories
-            ClientCore.PeerCCImpl.Setup.Install();
-            //ClientCore.WebRtcImpl.Setup.Install();
+            PeerCC.Setup.Install();
 
             ClientCore.Account.IAccountSetup accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountSetup();
 

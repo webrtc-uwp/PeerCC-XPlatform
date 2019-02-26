@@ -1,5 +1,4 @@
-﻿using ClientCore;
-using System;
+﻿using System;
 using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -13,9 +12,9 @@ using Windows.UI.Core;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Pages.SettingsDebug;
-using ClientCore.PeerCCSignalingImpl;
-using ClientCore.PeerCCWebRTCImpl;
 using ClientCore.Signaling;
+using PeerCC.Signaling;
+using PeerCC.WebRTCImpl.Call;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -26,7 +25,7 @@ namespace Client_UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        HttpSignaler _httpSignaler = RTCController.Instance._httpSignaler;
+        //HttpSignaler _httpSignaler = RTCController.Instance._httpSignaler;
 
         private MainViewModel _mainViewModel;
 
@@ -37,13 +36,13 @@ namespace Client_UWP
 
             InitializeComponent();
 
-            string name = RTCController.Instance._httpSignaler.LocalPeer.Name;
-            Debug.WriteLine($"Connecting to server from local peer: {name}");
+            //string name = RTCController.Instance._httpSignaler.LocalPeer.Name;
+            //Debug.WriteLine($"Connecting to server from local peer: {name}");
 
-            _httpSignaler.SignedIn += Signaler_SignedIn;
-            _httpSignaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
-            _httpSignaler.PeerConnected += Signaler_PeerConnected;
-            _httpSignaler.PeerDisconnected += Signaler_PeerDisconnected;
+            //_httpSignaler.SignedIn += Signaler_SignedIn;
+            //_httpSignaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
+            //_httpSignaler.PeerConnected += Signaler_PeerConnected;
+            //_httpSignaler.PeerDisconnected += Signaler_PeerDisconnected;
 
             InitView();
         }
@@ -144,7 +143,7 @@ namespace Client_UWP
             {
                 Debug.WriteLine("Connects to server.");
 
-                await _httpSignaler.Connect();
+                //await _httpSignaler.Connect();
 
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -154,7 +153,7 @@ namespace Client_UWP
             {
                 Debug.WriteLine("Disconnects from server.");
 
-                await _httpSignaler.SignOut();
+                //await _httpSignaler.SignOut();
 
                 peersListView.Items.Clear();
 
@@ -182,7 +181,7 @@ namespace Client_UWP
                 m.PeerId = remotePeer.Id.ToString();
                 m.Content = "test message";
 
-                await _httpSignaler.SentToPeerAsync(m);
+                //await _httpSignaler.SentToPeerAsync(m);
             };
         }
 

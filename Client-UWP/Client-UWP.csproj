@@ -11,7 +11,7 @@
     <AssemblyName>Client-UWP</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17134.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17763.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17134.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -126,6 +126,9 @@
       <DependentUpon>SettingsDevicesPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\SettingsDevices\SettingsDevicesPageViewModel.cs" />
+    <Compile Include="Pages\Test.xaml.cs">
+      <DependentUpon>Test.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\DefaultSettings.cs" />
@@ -172,6 +175,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\Test.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
@@ -182,6 +189,10 @@
     <ProjectReference Include="..\ClientCore\ClientCore.csproj">
       <Project>{22cbd286-a132-4396-a410-5fa051f7dbef}</Project>
       <Name>ClientCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PeerCC\PeerCC.csproj">
+      <Project>{cbec4040-1498-4aee-84c9-bb341371afd4}</Project>
+      <Name>PeerCC</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
