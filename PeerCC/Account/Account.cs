@@ -8,17 +8,37 @@ namespace PeerCC.Account
 {
     public class Account : IAccount
     {
-        public string SelfIdentityUri => throw new NotImplementedException();
+        public string SelfIdentityUri { get; private set; }
 
-        public ISignaler Signaler => throw new NotImplementedException();
+        public ISignaler Signaler { get; private set; }
 
-        public IContactManager ContactManager => throw new NotImplementedException();
+        public IContactManager ContactManager { get; private set; }
 
-        public string CachedCredentialsPayload => throw new NotImplementedException();
+        public string CachedCredentialsPayload { get; private set; }
 
         public Task Logout()
         {
             throw new NotImplementedException();
+        }
+
+        public void SetSelfIdentityUri(string selfIdentityUri)
+        {
+            SelfIdentityUri = selfIdentityUri;
+        }
+
+        public void SetSignaler(ISignaler signaler)
+        {
+            Signaler = signaler;
+        }
+
+        public void SetContactManager(IContactManager contactManager)
+        {
+            ContactManager = contactManager;
+        }
+
+        public void SetCachedCredentialsPayload(string cachedCredentialsPayload)
+        {
+            CachedCredentialsPayload = cachedCredentialsPayload;
         }
     }
 }

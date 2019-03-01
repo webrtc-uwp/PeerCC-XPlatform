@@ -3,6 +3,7 @@ using Client_UWP.Models;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Utilities;
+using PeerCC.Account;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -35,6 +36,12 @@ namespace Client_UWP.Pages.SettingsConnection
             InitializeComponent();
 
             DataContext = server;
+
+            Account account = new Account();
+
+            string uri = $"{server.IP}:{server.Port}";
+
+            account.SetSelfIdentityUri(uri);
 
             ViewModel = new SettingsConnectionPageViewModel();
 

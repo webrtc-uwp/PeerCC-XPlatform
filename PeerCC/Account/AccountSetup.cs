@@ -11,12 +11,12 @@ namespace PeerCC.Account
             return new AccountSetup();
         }
 
-        public Task<IAccount> GetLoginInfoAsync(string loginCompletePayload)
+        public Task<string> LoginAysnc(LoginInfo info)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => "");
         }
 
-        public Task<string> LoginAysnc(LoginInfo info)
+        public Task<IAccount> GetLoginInfoAsync(string loginCompletePayload)
         {
             throw new NotImplementedException();
         }
