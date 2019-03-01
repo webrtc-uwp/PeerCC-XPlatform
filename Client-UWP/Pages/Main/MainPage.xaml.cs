@@ -15,6 +15,9 @@ using Client_UWP.Pages.SettingsDebug;
 using ClientCore.Signaling;
 using PeerCC.Signaling;
 using PeerCC.WebRTCImpl.Call;
+using PeerCC.Account;
+using Client_UWP.Utilities;
+using Client_UWP.Models;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -31,7 +34,7 @@ namespace Client_UWP
 
         public MainPage()
         {
-            ApplicationView.PreferredLaunchViewSize = new Size(450, 650);
+            ApplicationView.PreferredLaunchViewSize = new Size(450, 700);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
             InitializeComponent();
@@ -130,6 +133,9 @@ namespace Client_UWP
         {
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = null;
+
+            IP.Text = DefaultSettings.IP;
+            Port.Text = DefaultSettings.Port.ToString();
 
             peersListView.Tapped += PeersListView_Tapped;
 

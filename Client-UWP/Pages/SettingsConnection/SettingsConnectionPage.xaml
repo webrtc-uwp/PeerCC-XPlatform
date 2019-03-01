@@ -26,21 +26,6 @@
                               Label="Debug"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
-        
-        <TextBlock Text="IP"
-                   Width="300"
-                   Foreground="Black"/>
-        <TextBox Text="{Binding IP, Mode=TwoWay}"
-                 Width="300"
-                 PlaceholderText="Enter IP"
-                 Foreground="Black"/>
-        <TextBlock Text="Port"
-                   Width="300"
-                   Foreground="Black"/>
-        <TextBox Text="{Binding Port, Mode=TwoWay}"
-                 Width="300"
-                 PlaceholderText="Enter Port"
-                 Foreground="Black"/>
         <ListView x:Name="IceServersListView" 
                   ItemsSource="{x:Bind ViewModel.IceServersList}"
                   Width="300"
