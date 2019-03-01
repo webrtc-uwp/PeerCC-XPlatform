@@ -3,29 +3,31 @@ using Client_UWP.Models;
 using Client_UWP.Utilities;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Windows.Storage;
+using System.Linq;
 
 namespace Client_UWP.Pages.SettingsConnection
 {
     public class SettingsConnectionPageViewModel : ViewModelBase
     {
-        public ApplicationDataContainer localSettings =
-            ApplicationData.Current.LocalSettings;
-
         public SettingsConnectionPageViewModel()
         {
-            if (XmlSerialization<ObservableCollection<IceServer>>
-                .Deserialize((string)localSettings.Values["IceServersList"]) == null)
+            if (!(XmlSerialization<ObservableCollection<IceServer>>
+                .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"])).Any())
             {
                 AddDefaultIceServers(IceServersList);
-                localSettings.Values["IceServersList"] = 
-                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(IceServersList);
+
+                ObservableCollection<IceServer> list =
+                    XmlSerialization<ObservableCollection<IceServer>>
+                    .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
+
+                foreach (IceServer ice in list)
+                    IceServersList.Add(ice);
             }
             else
             {
                 ObservableCollection<IceServer> list = 
                     XmlSerialization<ObservableCollection<IceServer>>
-                    .Deserialize((string)localSettings.Values["IceServersList"]);
+                    .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
 
                 foreach (IceServer ice in list)
                     IceServersList.Add(ice);
