@@ -28,7 +28,7 @@ namespace Client_UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        HttpSignaler _httpSignaler = RTCController.Instance._httpSignaler;
+        HttpSignaler _httpSignaler;
 
         private MainViewModel _mainViewModel;
 
@@ -37,9 +37,18 @@ namespace Client_UWP
             ApplicationView.PreferredLaunchViewSize = new Size(450, 700);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
+            ClientCore.Account.IAccountSetup accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountSetup();
+
+            AccountSetup accountSetup = (AccountSetup)accountFactory;
+
+            Account account = accountSetup.GetSignaler("http://peercc-server.ortclib.org", 8888, new HttpSignaler());
+
+            _httpSignaler = (HttpSignaler)account.Signaler;
+
+
             InitializeComponent();
 
-            string name = RTCController.Instance._httpSignaler.LocalPeer.Name;
+            string name = _httpSignaler.LocalPeer.Name;
             Debug.WriteLine($"Connecting to server from local peer: {name}");
 
             _httpSignaler.SignedIn += Signaler_SignedIn;
@@ -102,7 +111,7 @@ namespace Client_UWP
                 return;
             }
 
-            if (RTCController.Instance._httpSignaler.LocalPeer.Name == peer.Name)
+            if (_httpSignaler.LocalPeer.Name == peer.Name)
             {
                 Debug.WriteLine($"Peer is our local peer: {peer.ToString()}");
                 return;

@@ -139,7 +139,6 @@
     <Compile Include="WebRTCImpl\Call\Codec.cs" />
     <Compile Include="WebRTCImpl\Call\Media.cs" />
     <Compile Include="WebRTCImpl\Call\MediaDevice.cs" />
-    <Compile Include="WebRTCImpl\Call\RTCController.cs" />
     <EmbeddedResource Include="Properties\PeerCC.rd.xml" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using ClientCore.Account;
+using PeerCC.Signaling;
 using System;
 using System.Threading.Tasks;
 
@@ -19,6 +20,15 @@ namespace PeerCC.Account
         public Task<IAccount> GetLoginInfoAsync(string loginCompletePayload)
         {
             throw new NotImplementedException();
+        }
+
+        public Account GetSignaler(string ip, int port, HttpSignaler httpSignaler)
+        {
+            Account account = new Account();
+            account.SetSelfIdentityUri($"{ip}:{port}");
+            account.SetSignaler(new HttpSignaler());
+
+            return account;
         }
     }
 }
