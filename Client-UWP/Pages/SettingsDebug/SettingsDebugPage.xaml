@@ -20,6 +20,8 @@
                            Foreground="Gray"/>
             </CommandBar.Content>
             <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="AccountSettings" 
+                              Label="Account"/>
                 <AppBarButton x:Name="ConnectionSettings" 
                               Label="Connection"/>
                 <AppBarButton x:Name="DevicesSettings" 

@@ -36,7 +36,7 @@ namespace Client_UWP.Pages.SettingsAccount
 
             ViewModel = new SettingsAccountPageViewModel();
 
-            GoToSettingsAccountPage.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
+            GoToSettingsAccountPage.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
 
             ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 

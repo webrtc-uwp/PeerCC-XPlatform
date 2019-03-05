@@ -1,5 +1,6 @@
 ﻿using Client_UWP.Controllers;
 using Client_UWP.Models;
+using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Utilities;
@@ -39,6 +40,8 @@ namespace Client_UWP.Pages.SettingsConnection
             cbType.Items.Add("TURN");
 
             GoToSettingsConnectionPage.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
+
+            AccountSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
 
             DevicesSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDevicesPage));
 

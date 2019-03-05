@@ -1,4 +1,5 @@
-﻿using Client_UWP.Pages.SettingsConnection;
+﻿using Client_UWP.Pages.SettingsAccount;
+using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using System.Collections.Generic;
 using Windows.UI.Xaml.Controls;
@@ -19,6 +20,8 @@ namespace Client_UWP.Pages.SettingsDevices
             ViewModel = new SettingsDevicesPageViewModel();
 
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
+
+            AccountSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
 
             ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 

@@ -46,7 +46,7 @@ namespace Client_UWP.Pages.SettingsAccount
         {
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
 
-            ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
+            ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 
             DevicesSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDevicesPage));
 

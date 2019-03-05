@@ -14,10 +14,9 @@
         
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
-            <RowDefinition Height="125" />
             <RowDefinition Height="60" />
-            <RowDefinition Height="380" />
-            <RowDefinition Height="40" />
+            <RowDefinition Height="400" />
+            <RowDefinition Height="60" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="400" />
@@ -41,44 +40,22 @@
                               Label="Debug"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
-        <StackPanel Grid.Row="1"
-                    Grid.Column="0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Top">
-            <TextBlock Text="IP"
-                       Width="300"
-                       Margin="5"
-                       Foreground="Black"/>
-            <TextBox x:Name="IP" 
-                     Width="300"
-                     PlaceholderText="Enter IP"
-                     Foreground="Black"/>
-            <TextBlock Text="Port"
-                       Width="300"
-                       Margin="5"
-                       Foreground="Black"/>
-            <TextBox x:Name="Port" 
-                     Width="300"
-                     PlaceholderText="Enter Port"
-                     Foreground="Black"/>
-
-        </StackPanel>
         <Button x:Name="ConnectPeer" 
                 Content=" Connect "
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Margin="5"
-                Grid.Row="2"
+                Grid.Row="1"
                 Grid.Column="0"/>
         <Button x:Name="DisconnectPeer" 
                 Content="Disconnect"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 Margin="5"
-                Grid.Row="2"
+                Grid.Row="1"
                 Grid.Column="0"/>
         <StackPanel Background="White"
-                    Grid.Row="3"
+                    Grid.Row="2"
                     Grid.Column="0">
             <ListView x:Name="peersListView" 
                       HorizontalAlignment="Center"
@@ -113,7 +90,7 @@
                 Content="Call"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Bottom"
-                Grid.Row="4"
+                Grid.Row="3"
                 Grid.Column="0"
                 Margin="10,0,10,0"/>
     </Grid>

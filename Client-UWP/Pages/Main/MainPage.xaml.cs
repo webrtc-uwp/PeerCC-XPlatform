@@ -144,9 +144,6 @@ namespace Client_UWP
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = null;
 
-            IP.Text = DefaultSettings.IP;
-            Port.Text = DefaultSettings.Port.ToString();
-
             peersListView.Tapped += PeersListView_Tapped;
 
             AccountSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
