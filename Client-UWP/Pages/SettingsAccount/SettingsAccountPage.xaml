@@ -28,7 +28,7 @@
                               Label="Debug"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
-        <ListView x:Name="AccountsList" 
+        <ListView x:Name="AccountsListView" 
                   ItemsSource="{x:Bind ViewModel.AccountsList}"
                   Width="300"
                   Margin="0,20,0,0"

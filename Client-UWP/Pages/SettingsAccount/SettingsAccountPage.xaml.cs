@@ -52,17 +52,19 @@ namespace Client_UWP.Pages.SettingsAccount
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
+            AccountsListView.Tapped += AccountsListView_Tapped;
+
             AddAccount.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountEditorPage));
 
             RemoveAccount.Click += async (sender, args) => 
             {
-                if (AccountsList.SelectedIndex == -1)
+                if (AccountsListView.SelectedIndex == -1)
                 {
                     await new MessageDialog("Please select Account you want to remove.").ShowAsync();
                     return;
                 }
 
-                Account account = AccountsList.SelectedItem as Account;
+                Account account = AccountsListView.SelectedItem as Account;
                 if (account == null) return;
 
                 Debug.WriteLine($"Remove Account {account.AccountName}");
@@ -75,7 +77,29 @@ namespace Client_UWP.Pages.SettingsAccount
                 XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
             };
 
-            EditAccount.Click += (sender, args) => { };
+            EditAccount.Click += async (sender, args) => 
+            {
+                if (AccountsListView.SelectedIndex == -1)
+                {
+                    await new MessageDialog("Please select Account you want to edit").ShowAsync();
+                    return;
+                }
+
+                Account account = AccountsListView.SelectedItem as Account;
+                if (account == null) return;
+
+                // Remove Account from AccountsList
+                ViewModel.AccountsList.Remove(account);
+
+                // Save AccountsList
+                SettingsController.Instance.localSettings.Values["AccountsList"] =
+                    XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
+
+                Frame.Navigate(typeof(SettingsAccountEditorPage), account);
+            };
         }
+
+        private void AccountsListView_Tapped(object sender, TappedRoutedEventArgs e) =>
+            AccountsListView.SelectedItem = (Account)((FrameworkElement)e.OriginalSource).DataContext;
     }
 }
