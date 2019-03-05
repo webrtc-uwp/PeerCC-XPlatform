@@ -113,6 +113,9 @@
     <Compile Include="Pages\Main\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\SettingsAccount\SettingsAccountEditorPage.xaml.cs">
+      <DependentUpon>SettingsAccountEditorPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\SettingsAccount\SettingsAccountPage.xaml.cs">
       <DependentUpon>SettingsAccountPage.xaml</DependentUpon>
     </Compile>
@@ -160,6 +163,10 @@
     <Page Include="Pages\Main\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\SettingsAccount\SettingsAccountEditorPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\SettingsAccount\SettingsAccountPage.xaml">
       <SubType>Designer</SubType>
