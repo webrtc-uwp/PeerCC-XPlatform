@@ -13,6 +13,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -31,6 +32,9 @@ namespace Client_UWP.Pages.SettingsAccount
     /// </summary>
     public sealed partial class SettingsAccountPage : Page
     {
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
+
         public SettingsAccountPage()
         {
             InitializeComponent();
@@ -73,7 +77,7 @@ namespace Client_UWP.Pages.SettingsAccount
                 ViewModel.AccountsList.Remove(account);
 
                 // Save AccoutsList
-                SettingsController.Instance.localSettings.Values["AccountsList"] =
+                localSettings.Values["AccountsList"] =
                 XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
             };
 
@@ -92,7 +96,7 @@ namespace Client_UWP.Pages.SettingsAccount
                 ViewModel.AccountsList.Remove(account);
 
                 // Save AccountsList
-                SettingsController.Instance.localSettings.Values["AccountsList"] =
+                localSettings.Values["AccountsList"] =
                     XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
 
                 Frame.Navigate(typeof(SettingsAccountEditorPage), account);

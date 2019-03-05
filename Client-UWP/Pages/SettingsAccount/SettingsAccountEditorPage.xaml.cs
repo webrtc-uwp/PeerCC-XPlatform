@@ -13,6 +13,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -30,6 +31,9 @@ namespace Client_UWP.Pages.SettingsAccount
     /// </summary>
     public sealed partial class SettingsAccountEditorPage : Page
     {
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
+
         public SettingsAccountEditorPage()
         {
             InitializeComponent();
@@ -57,7 +61,7 @@ namespace Client_UWP.Pages.SettingsAccount
                 ViewModel.AccountsList.Add(account);
 
                 // Save AccountsList
-                SettingsController.Instance.localSettings.Values["AccountsList"] =
+                localSettings.Values["AccountsList"] =
                     XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
 
                 Debug.WriteLine("Edit Account: " + account.AccountName);
@@ -75,7 +79,7 @@ namespace Client_UWP.Pages.SettingsAccount
                     ViewModel.AccountsList.Remove(account);
 
                     // Save AccountsList
-                    SettingsController.Instance.localSettings.Values["AccountsList"] =
+                    localSettings.Values["AccountsList"] =
                         XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
 
                     Frame.Navigate(typeof(SettingsAccountPage));
@@ -95,7 +99,7 @@ namespace Client_UWP.Pages.SettingsAccount
                     });
 
                     // Save AccountsList
-                    SettingsController.Instance.localSettings.Values["AccountsList"] =
+                    localSettings.Values["AccountsList"] =
                         XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
 
                     Frame.Navigate(typeof(SettingsAccountPage));
@@ -113,7 +117,7 @@ namespace Client_UWP.Pages.SettingsAccount
                 });
 
                 // Save AccountsList
-                SettingsController.Instance.localSettings.Values["AccountsList"] =
+                localSettings.Values["AccountsList"] =
                     XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
 
                 Frame.Navigate(typeof(SettingsAccountPage));

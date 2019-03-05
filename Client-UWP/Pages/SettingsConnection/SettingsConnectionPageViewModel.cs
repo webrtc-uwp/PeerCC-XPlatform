@@ -6,25 +6,29 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using Windows.Storage;
 
 namespace Client_UWP.Pages.SettingsConnection
 {
     public class SettingsConnectionPageViewModel : ViewModelBase
     {
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
+
         public SettingsConnectionPageViewModel()
         {
             try
             {
-                if (SettingsController.Instance.localSettings.Values["IceServersList"] != null)
+                if (localSettings.Values["IceServersList"] != null)
                 {
                     if (!(XmlSerialization<ObservableCollection<IceServer>>
-                .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"])).Any())
+                .Deserialize((string)localSettings.Values["IceServersList"])).Any())
                     {
                         AddDefaultIceServers(IceServersList);
 
                         ObservableCollection<IceServer> list =
                             XmlSerialization<ObservableCollection<IceServer>>
-                            .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
+                            .Deserialize((string)localSettings.Values["IceServersList"]);
 
                         foreach (IceServer ice in list)
                             IceServersList.Add(ice);
@@ -33,7 +37,7 @@ namespace Client_UWP.Pages.SettingsConnection
                     {
                         ObservableCollection<IceServer> list =
                             XmlSerialization<ObservableCollection<IceServer>>
-                            .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
+                            .Deserialize((string)localSettings.Values["IceServersList"]);
 
                         foreach (IceServer ice in list)
                             IceServersList.Add(ice);

@@ -27,7 +27,6 @@ namespace Client_UWP.Controllers
 
         public void Initialize()
         {
-            SettingsController.Instance.Initialize();
             DevicesController.Instance.Initialize();
         }
     }

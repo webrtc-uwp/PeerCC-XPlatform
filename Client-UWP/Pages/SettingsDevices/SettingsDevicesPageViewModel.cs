@@ -2,40 +2,44 @@
 using Client_UWP.Models;
 using Client_UWP.Utilities;
 using System.Collections.Generic;
+using Windows.Storage;
 
 namespace Client_UWP.Pages.SettingsDevices
 {
     public class SettingsDevicesPageViewModel : ViewModelBase
     {
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
+
         public SettingsDevicesPageViewModel()
         {
-            if (SettingsController.Instance.localSettings.Values["AudioCodecs"] == null)
+            if (localSettings.Values["AudioCodecs"] == null)
             {
                 AddDefaultAudioCodecs(AudioCodecsList);
-                SettingsController.Instance.localSettings.Values["AudioCodecs"] = 
+                localSettings.Values["AudioCodecs"] = 
                     XmlSerialization<List<AudioCodec>>.Serialize(AudioCodecsList);
             }
             else
             {
                 List<AudioCodec> acList = 
                     XmlSerialization<List<AudioCodec>>
-                    .Deserialize((string)SettingsController.Instance.localSettings.Values["AudioCodecs"]);
+                    .Deserialize((string)localSettings.Values["AudioCodecs"]);
 
                 foreach (AudioCodec ac in acList)
                     AudioCodecsList.Add(ac);
             }
 
-            if (SettingsController.Instance.localSettings.Values["VideoCodecs"] == null)
+            if (localSettings.Values["VideoCodecs"] == null)
             {
                 AddDefaultVideoCodecs(VideoCodecsList);
-                SettingsController.Instance.localSettings.Values["VideoCodecs"] 
+                localSettings.Values["VideoCodecs"] 
                     = XmlSerialization<List<VideoCodec>>.Serialize(VideoCodecsList);
             }
             else
             {
                 List<VideoCodec> vcList =
                     XmlSerialization<List<VideoCodec>>
-                    .Deserialize((string)SettingsController.Instance.localSettings.Values["VideoCodecs"]);
+                    .Deserialize((string)localSettings.Values["VideoCodecs"]);
 
                 foreach (VideoCodec vc in vcList)
                     VideoCodecsList.Add(vc);
