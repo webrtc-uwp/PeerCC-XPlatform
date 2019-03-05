@@ -12,13 +12,21 @@ namespace Client_UWP.Utilities
         /// </summary>
         public static string Serialize(T param)
         {
-            XmlSerializer serializer = new XmlSerializer(param.GetType());
-
-            using (StringWriter textWriter = new StringWriter())
+            try
             {
-                serializer.Serialize(textWriter, param);
+                XmlSerializer serializer = new XmlSerializer(param.GetType());
 
-                return textWriter.ToString();
+                using (StringWriter textWriter = new StringWriter())
+                {
+                    serializer.Serialize(textWriter, param);
+
+                    return textWriter.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[Error] XmlSerialization Serialize message: " + ex.Message);
+                return null;
             }
         }
 
@@ -27,29 +35,37 @@ namespace Client_UWP.Utilities
         /// </summary>
         public static T Deserialize(string xml)
         {
-            if (xml == null)
-                return default(T);
-
-            StringReader sr = new StringReader(xml);
-            XmlSerializer serializer = new XmlSerializer(typeof(T));
-
-            if (sr.ReadLine() == null)
-                return default(T);
-
             try
             {
+                if (xml == null)
+                    return default(T);
+
+                StringReader sr = new StringReader(xml);
+                XmlSerializer serializer = new XmlSerializer(typeof(T));
+
+                if (sr.ReadLine() == null)
+                    return default(T);
+
+                try
+                {
+                    return (T)serializer.Deserialize(sr);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Deserialize exception: " + e.Message);
+
+                    if (e != null)
+                    {
+                        return default(T);
+                    }
+                }
                 return (T)serializer.Deserialize(sr);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.WriteLine("Deserialize exception: " + e.Message);
-
-                if (e != null)
-                {
-                    return default(T);
-                }
+                Debug.WriteLine("[Error] XmlSerialization Deserialize message: " + ex.Message);
+                return default(T);
             }
-            return (T)serializer.Deserialize(sr);
         }
     }
 }

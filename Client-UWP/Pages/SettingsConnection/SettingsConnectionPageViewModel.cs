@@ -1,8 +1,10 @@
 ﻿using Client_UWP.Controllers;
 using Client_UWP.Models;
 using Client_UWP.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Client_UWP.Pages.SettingsConnection
@@ -11,26 +13,36 @@ namespace Client_UWP.Pages.SettingsConnection
     {
         public SettingsConnectionPageViewModel()
         {
-            if (!(XmlSerialization<ObservableCollection<IceServer>>
+            try
+            {
+                if (SettingsController.Instance.localSettings.Values["IceServersList"] != null)
+                {
+                    if (!(XmlSerialization<ObservableCollection<IceServer>>
                 .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"])).Any())
-            {
-                AddDefaultIceServers(IceServersList);
+                    {
+                        AddDefaultIceServers(IceServersList);
 
-                ObservableCollection<IceServer> list =
-                    XmlSerialization<ObservableCollection<IceServer>>
-                    .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
+                        ObservableCollection<IceServer> list =
+                            XmlSerialization<ObservableCollection<IceServer>>
+                            .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
 
-                foreach (IceServer ice in list)
-                    IceServersList.Add(ice);
+                        foreach (IceServer ice in list)
+                            IceServersList.Add(ice);
+                    }
+                    else
+                    {
+                        ObservableCollection<IceServer> list =
+                            XmlSerialization<ObservableCollection<IceServer>>
+                            .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
+
+                        foreach (IceServer ice in list)
+                            IceServersList.Add(ice);
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                ObservableCollection<IceServer> list = 
-                    XmlSerialization<ObservableCollection<IceServer>>
-                    .Deserialize((string)SettingsController.Instance.localSettings.Values["IceServersList"]);
-
-                foreach (IceServer ice in list)
-                    IceServersList.Add(ice);
+                Debug.WriteLine("[Error] SettingsConnectionPageViewModel message: " + ex.Message);
             }
         }
 
