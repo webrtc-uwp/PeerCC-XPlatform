@@ -132,7 +132,6 @@
     <Compile Include="Signaling\HttpSignaler.cs" />
     <Compile Include="Signaling\HttpSignalerEvents.cs" />
     <Compile Include="Signaling\Peer.cs" />
-    <Compile Include="Signaling\SignalerFactory.cs" />
     <Compile Include="Signaling\Util.cs" />
     <Compile Include="WebRTCImpl\Call\Call.cs" />
     <Compile Include="WebRTCImpl\Call\CallInfo.cs" />
