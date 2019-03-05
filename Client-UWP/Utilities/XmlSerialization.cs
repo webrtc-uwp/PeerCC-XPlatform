@@ -27,6 +27,9 @@ namespace Client_UWP.Utilities
         /// </summary>
         public static T Deserialize(string xml)
         {
+            if (xml == null)
+                return default(T);
+
             StringReader sr = new StringReader(xml);
             XmlSerializer serializer = new XmlSerializer(typeof(T));
 

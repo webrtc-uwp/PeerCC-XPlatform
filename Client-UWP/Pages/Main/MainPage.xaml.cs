@@ -18,6 +18,7 @@ using PeerCC.WebRTCImpl.Call;
 using PeerCC.Account;
 using Client_UWP.Utilities;
 using Client_UWP.Models;
+using Client_UWP.Pages.SettingsAccount;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -41,7 +42,7 @@ namespace Client_UWP
 
             AccountSetup accountSetup = (AccountSetup)accountFactory;
 
-            Account account = accountSetup.GetSignaler("http://peercc-server.ortclib.org", 8888, new HttpSignaler());
+            PeerCC.Account.Account account = accountSetup.GetSignaler("http://peercc-server.ortclib.org", 8888, new HttpSignaler());
 
             _httpSignaler = (HttpSignaler)account.Signaler;
 
@@ -147,6 +148,8 @@ namespace Client_UWP
             Port.Text = DefaultSettings.Port.ToString();
 
             peersListView.Tapped += PeersListView_Tapped;
+
+            AccountSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
 
             ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 

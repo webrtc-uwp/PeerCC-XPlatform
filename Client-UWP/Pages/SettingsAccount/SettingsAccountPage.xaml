@@ -1,0 +1,85 @@
+﻿<Page
+    x:Class="Client_UWP.Pages.SettingsAccount.SettingsAccountPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client_UWP.Pages.SettingsAccount"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <StackPanel>
+        <CommandBar>
+            <AppBarButton x:Name="GoToMainPage" 
+                          Icon="Back"
+                          Label="Back"/>
+            <CommandBar.Content>
+                <TextBlock Text="Account Settings"
+                           Margin="12,12,0,18"
+                           FontWeight="Bold"
+                           Foreground="Gray"/>
+            </CommandBar.Content>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="DevicesSettings" 
+                              Label="Devices"/>
+                <AppBarButton x:Name="DebugSettings" 
+                              Label="Debug"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+        <ListView x:Name="AccountsList" 
+                  ItemsSource="{x:Bind ViewModel.AccountsList}"
+                  Width="300"
+                  Margin="0,20,0,0"
+                  Background="White"
+                  SelectionMode="Single"
+                  IsItemClickEnabled="True">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ListViewItem Background="White">
+                        <Grid Width="300" 
+                              Padding="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding AccountName}"
+                                       Grid.ColumnSpan="2"
+                                       Foreground="Blue"/>
+                            <TextBlock Text="IP: "
+                                       Grid.Row="1"
+                                       Grid.Column="0"/>
+                            <TextBlock Text="{Binding IP}"
+                                       Grid.Row="1"
+                                       Grid.Column="1"
+                                       Foreground="Blue"/>
+                            <TextBlock Text="User: "
+                                       Grid.Row="2"
+                                       Grid.Column="0"/>
+                            <TextBlock Text="{Binding Port}"
+                                       Grid.Row="2"
+                                       Grid.Column="1"
+                                       Foreground="Blue"/>
+                        </Grid>
+                    </ListViewItem>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+            <Button x:Name="AddAccount"
+                    Content=" + "
+                    Margin="20,10"/>
+            <Button x:Name="RemoveAccount"
+                    Content=" - "
+                    Margin="20,10"/>
+            <Button x:Name="EditAccount"
+                    Content="Edit"
+                    Margin="20,10"/>
+        </StackPanel>
+    </StackPanel>
+</Page>

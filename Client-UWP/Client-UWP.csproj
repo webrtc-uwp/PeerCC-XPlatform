@@ -99,6 +99,7 @@
     <Compile Include="Controllers\InitializationController.cs" />
     <Compile Include="Controllers\MediaDevicesController.cs" />
     <Compile Include="Controllers\SettingsController.cs" />
+    <Compile Include="Models\Account.cs" />
     <Compile Include="MVVM\BindableBase.cs" />
     <Compile Include="MVVM\DispatcherBindableBase.cs" />
     <Compile Include="Pages\Main\MainViewModel.cs" />
@@ -112,6 +113,10 @@
     <Compile Include="Pages\Main\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\SettingsAccount\SettingsAccountPage.xaml.cs">
+      <DependentUpon>SettingsAccountPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\SettingsAccount\SettingsAccountPageViewModel.cs" />
     <Compile Include="Pages\SettingsConnection\SettingsConnectionIceServerEditorPage.xaml.cs">
       <DependentUpon>SettingsConnectionIceServerEditorPage.xaml</DependentUpon>
     </Compile>
@@ -155,6 +160,10 @@
     <Page Include="Pages\Main\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Pages\SettingsAccount\SettingsAccountPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\SettingsConnection\SettingsConnectionIceServerEditorPage.xaml">
       <SubType>Designer</SubType>
