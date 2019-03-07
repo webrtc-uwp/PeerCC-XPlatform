@@ -122,7 +122,7 @@
   <ItemGroup>
     <Compile Include="Account\Account.cs" />
     <Compile Include="Account\AccountProvider.cs" />
-    <Compile Include="Account\AccountSetupFactory.cs" />
+    <Compile Include="Account\AccountProviderFactory.cs" />
     <Compile Include="Contacts\ContactDisposition.cs" />
     <Compile Include="Contacts\ContactManager.cs" />
     <Compile Include="Contacts\ContactManagerFactory.cs" />

@@ -2,7 +2,7 @@
 
 namespace ClientCore.Factory
 {
-    public interface IAccountSetupFactory
+    public interface IAccountProviderFactory
     {
         IAccountProvider Create();
     }

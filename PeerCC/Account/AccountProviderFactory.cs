@@ -3,9 +3,9 @@ using ClientCore.Factory;
 
 namespace PeerCC.Account
 {
-    public class AccountSetupFactory : IAccountSetupFactory
+    public class AccountProviderFactory : IAccountProviderFactory
     {
-        IAccountProvider IAccountSetupFactory.Create()
+        IAccountProvider IAccountProviderFactory.Create()
         {
             return AccountProvider.Create();
         }
