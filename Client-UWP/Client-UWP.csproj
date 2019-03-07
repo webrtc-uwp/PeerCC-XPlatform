@@ -203,6 +203,10 @@
       <Project>{cbec4040-1498-4aee-84c9-bb341371afd4}</Project>
       <Name>PeerCC</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WebRtcAdapter\WebRtcAdapter.csproj">
+      <Project>{f7366bc6-a5ab-4e1a-9412-6255af84199c}</Project>
+      <Name>WebRtcAdapter</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

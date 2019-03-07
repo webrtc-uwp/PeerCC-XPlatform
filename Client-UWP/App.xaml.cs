@@ -48,8 +48,9 @@ namespace Client_UWP
         {
             // Install the signaler and the calling factories
             PeerCC.Setup.Install();
+            WebRtcAdapter.Setup.Install();
 
-            ClientCore.Account.IAccountProvider accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
+            //ClientCore.Account.IAccountProvider accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
 
             Frame rootFrame = Window.Current.Content as Frame;
 

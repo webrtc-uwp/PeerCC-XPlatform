@@ -1,27 +1,23 @@
-﻿using ClientCore.Account;
+﻿using ClientCore.Call;
 
 namespace ClientCore.Factory
 {
     public class CallFactory
     {
         private static CallFactory _singleton = new CallFactory();
-#if CHANGE
-        private IAccountSetupFactory _accountSetupFactory = null;
-#endif
+        private ICallProviderFactory _callProviderFactory = null;
 
         public static CallFactory Singleton { get { return _singleton; } }
 
-#if CHANGE
-        public IAccountSetupFactory AccountSetupFactory
+        public ICallProviderFactory CallProviderFactory
         {
-            get {return _accountSetupFactory;}
-            set {_accountSetupFactory = value;}
+            get { return _callProviderFactory; }
+            set { _callProviderFactory = value; }
         }
 
-        public IAccountSetup CreateIAccountSetup()
+        public ICallProvider CreateICallProvider()
         {
-            return AccountSetupFactory.Create();
+            return CallProviderFactory.Create();
         }
-#endif
     }
 }

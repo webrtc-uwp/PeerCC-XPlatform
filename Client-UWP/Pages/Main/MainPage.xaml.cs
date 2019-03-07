@@ -16,6 +16,7 @@ using ClientCore.Signaling;
 using PeerCC.Signaling;
 using PeerCC.Account;
 using Client_UWP.Pages.SettingsAccount;
+using WebRtcAdapter.Call;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -35,13 +36,19 @@ namespace Client_UWP
             ApplicationView.PreferredLaunchViewSize = new Size(450, 700);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
+            // Account 
             ClientCore.Account.IAccountProvider accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
 
-            AccountProvider accountSetup = (AccountProvider)accountFactory;
+            AccountProvider accountProvider = (AccountProvider)accountFactory;
 
-            PeerCC.Account.Account account = accountSetup.GetSignaler("http://peercc-server.ortclib.org", 8888, new HttpSignaler());
+            Account account = accountProvider.GetSignaler("http://peercc-server.ortclib.org", 8888, new HttpSignaler());
 
             _httpSignaler = (HttpSignaler)account.Signaler;
+
+            // Call
+            ClientCore.Call.ICallProvider callFactory = ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+
+            CallProvider callProvider = (CallProvider)callFactory;
 
 
             InitializeComponent();

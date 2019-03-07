@@ -126,6 +126,7 @@
     <Compile Include="Call\CallConfiguration.cs" />
     <Compile Include="Call\ICall.cs" />
     <Compile Include="Call\ICallInfo.cs" />
+    <Compile Include="Call\ICallProvider.cs" />
     <Compile Include="Call\IceServer.cs" />
     <Compile Include="Call\ICodec.cs" />
     <Compile Include="Call\IMedia.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Contacts\IContactManager.cs" />
     <Compile Include="Factory\CallFactory.cs" />
     <Compile Include="Factory\IAccountProviderFactory.cs" />
+    <Compile Include="Factory\ICallProviderFactory.cs" />
     <Compile Include="Factory\SignalingFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Signaling\EnhancedMessage.cs" />
@@ -148,7 +150,6 @@
     <Compile Include="Signaling\Message.cs" />
     <Compile Include="Signaling\SignalerType.cs" />
     <Compile Include="Signaling\SimpleMessage.cs" />
-    <Compile Include="WebRTCCalling\CallProvider.cs" />
     <Compile Include="WebRTCCalling\MediaProvider.cs" />
     <EmbeddedResource Include="Properties\ClientCore.rd.xml" />
   </ItemGroup>
