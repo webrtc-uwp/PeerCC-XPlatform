@@ -9,7 +9,7 @@ namespace ClientCore.Factory
 
         public static SignalingFactory Singleton { get { return _singleton; } }
 
-        public IAccountProviderFactory AccountSetupFactory
+        public IAccountProviderFactory AccountProviderFactory
         {
             get { return _accountProviderFactory; }
             set { _accountProviderFactory = value; }
@@ -17,7 +17,7 @@ namespace ClientCore.Factory
 
         public IAccountProvider CreateIAccountProvider()
         {
-            return AccountSetupFactory.Create();
+            return AccountProviderFactory.Create();
         }
     }
 }

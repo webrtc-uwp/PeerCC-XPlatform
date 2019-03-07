@@ -6,7 +6,7 @@ namespace PeerCC
     {
         public static void Install()
         {
-            SignalingFactory.Singleton.AccountSetupFactory = new Account.AccountProviderFactory();
+            SignalingFactory.Singleton.AccountProviderFactory = new Account.AccountProviderFactory();
         }
     }
 }
