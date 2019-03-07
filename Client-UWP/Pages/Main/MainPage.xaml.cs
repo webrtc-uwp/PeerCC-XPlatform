@@ -38,7 +38,7 @@ namespace Client_UWP
             ApplicationView.PreferredLaunchViewSize = new Size(450, 700);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
-            ClientCore.Account.IAccountSetup accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountSetup();
+            ClientCore.Account.IAccountProvider accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountSetup();
 
             AccountSetup accountSetup = (AccountSetup)accountFactory;
 

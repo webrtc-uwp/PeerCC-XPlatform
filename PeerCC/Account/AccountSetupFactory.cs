@@ -5,7 +5,7 @@ namespace PeerCC.Account
 {
     public class AccountSetupFactory : IAccountSetupFactory
     {
-        IAccountSetup IAccountSetupFactory.Create()
+        IAccountProvider IAccountSetupFactory.Create()
         {
             return AccountSetup.Create();
         }

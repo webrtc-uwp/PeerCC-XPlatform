@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PeerCC.Account
 {
-    public class AccountSetup : IAccountSetup
+    public class AccountSetup : IAccountProvider
     {
         public static AccountSetup Create()
         {

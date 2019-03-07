@@ -121,7 +121,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Account\IAccount.cs" />
-    <Compile Include="Account\IAccountSetup.cs" />
+    <Compile Include="Account\IAccountProvider.cs" />
     <Compile Include="Account\LoginInfo.cs" />
     <Compile Include="Call\CallConfiguration.cs" />
     <Compile Include="Call\ICall.cs" />

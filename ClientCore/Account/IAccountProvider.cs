@@ -2,7 +2,7 @@
 
 namespace ClientCore.Account
 {
-    public interface IAccountSetup
+    public interface IAccountProvider
     {
         /// <summary>
         /// Obtains a URL to display inside a browser control in order to

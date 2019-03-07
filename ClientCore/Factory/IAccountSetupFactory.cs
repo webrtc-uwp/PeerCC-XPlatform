@@ -4,6 +4,6 @@ namespace ClientCore.Factory
 {
     public interface IAccountSetupFactory
     {
-        IAccountSetup Create();
+        IAccountProvider Create();
     }
 }
