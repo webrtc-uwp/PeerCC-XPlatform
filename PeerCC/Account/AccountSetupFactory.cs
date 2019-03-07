@@ -7,7 +7,7 @@ namespace PeerCC.Account
     {
         IAccountProvider IAccountSetupFactory.Create()
         {
-            return AccountSetup.Create();
+            return AccountProvider.Create();
         }
     }
 }

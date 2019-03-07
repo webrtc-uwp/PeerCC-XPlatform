@@ -15,7 +15,7 @@ namespace ClientCore.Factory
             set { _accountSetupFactory = value; }
         }
 
-        public IAccountProvider CreateIAccountSetup()
+        public IAccountProvider CreateIAccountProvider()
         {
             return AccountSetupFactory.Create();
         }

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace PeerCC.Account
 {
-    public class AccountSetup : IAccountProvider
+    public class AccountProvider : IAccountProvider
     {
-        public static AccountSetup Create()
+        public static AccountProvider Create()
         {
-            return new AccountSetup();
+            return new AccountProvider();
         }
 
         public Task<string> LoginAysnc(LoginInfo info)

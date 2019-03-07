@@ -121,7 +121,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Account\Account.cs" />
-    <Compile Include="Account\AccountSetup.cs" />
+    <Compile Include="Account\AccountProvider.cs" />
     <Compile Include="Account\AccountSetupFactory.cs" />
     <Compile Include="Contacts\ContactDisposition.cs" />
     <Compile Include="Contacts\ContactManager.cs" />

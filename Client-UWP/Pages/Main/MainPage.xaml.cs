@@ -38,9 +38,9 @@ namespace Client_UWP
             ApplicationView.PreferredLaunchViewSize = new Size(450, 700);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
-            ClientCore.Account.IAccountProvider accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountSetup();
+            ClientCore.Account.IAccountProvider accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
 
-            AccountSetup accountSetup = (AccountSetup)accountFactory;
+            AccountProvider accountSetup = (AccountProvider)accountFactory;
 
             PeerCC.Account.Account account = accountSetup.GetSignaler("http://peercc-server.ortclib.org", 8888, new HttpSignaler());
 
