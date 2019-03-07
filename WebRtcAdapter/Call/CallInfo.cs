@@ -1,6 +1,6 @@
 ﻿using ClientCore.Call;
 
-namespace PeerCC.WebRTCImpl.Call
+namespace WebRtcAdapter.Call
 {
     public class CallInfo : ICallInfo
     {

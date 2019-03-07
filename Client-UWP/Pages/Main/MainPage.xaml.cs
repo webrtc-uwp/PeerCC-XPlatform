@@ -14,10 +14,7 @@ using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Pages.SettingsDebug;
 using ClientCore.Signaling;
 using PeerCC.Signaling;
-using PeerCC.WebRTCImpl.Call;
 using PeerCC.Account;
-using Client_UWP.Utilities;
-using Client_UWP.Models;
 using Client_UWP.Pages.SettingsAccount;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409

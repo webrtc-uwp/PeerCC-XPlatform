@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace PeerCC.WebRTCImpl.Call
+namespace WebRtcAdapter.Call
 {
     public class Call : ICall
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PeerCC.WebRTCImpl.Call
+namespace WebRtcAdapter.Call
 {
     public class Media : IMedia
     {

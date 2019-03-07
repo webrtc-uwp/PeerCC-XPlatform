@@ -120,6 +120,11 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Call\Call.cs" />
+    <Compile Include="Call\CallInfo.cs" />
+    <Compile Include="Call\Codec.cs" />
+    <Compile Include="Call\Media.cs" />
+    <Compile Include="Call\MediaDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\WebRtcAdapter.rd.xml" />
   </ItemGroup>
@@ -127,6 +132,12 @@
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.1.9</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClientCore\ClientCore.csproj">
+      <Project>{22cbd286-a132-4396-a410-5fa051f7dbef}</Project>
+      <Name>ClientCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

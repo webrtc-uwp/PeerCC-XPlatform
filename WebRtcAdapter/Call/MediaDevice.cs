@@ -1,7 +1,7 @@
 ﻿using ClientCore.Call;
 using System.Collections.Generic;
 
-namespace PeerCC.WebRTCImpl.Call
+namespace WebRtcAdapter.Call
 {
     public class MediaDevice : IMediaDevice
     {
