@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace ClientCore.WebRTCCalling
 {
-    public class MediaFactory
+    public class MediaProvider
     {
         static Task<IMedia> GetMediaAsync()
         {

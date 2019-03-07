@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace ClientCore.WebRTCCalling
 {
-    public class CallFactory
+    public class CallProvider
     {
         public static Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
         {
