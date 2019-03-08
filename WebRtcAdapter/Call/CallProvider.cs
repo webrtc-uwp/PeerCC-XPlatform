@@ -10,13 +10,13 @@ namespace WebRtcAdapter.Call
             return new CallProvider();
         }
 
-        public static Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
+        public Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
         {
             //return Task.Run(() => (ICallInfo)new CallInfo());
             return null;
         }
 
-        public static Task<ICallInfo> AnswerCallAsync(
+        public Task<ICallInfo> AnswerCallAsync(
             CallConfiguration config,
             string sdpOfRemoteParty
             )
