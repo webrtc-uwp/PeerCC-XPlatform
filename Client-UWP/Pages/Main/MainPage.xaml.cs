@@ -17,6 +17,7 @@ using PeerCC.Signaling;
 using PeerCC.Account;
 using Client_UWP.Pages.SettingsAccount;
 using WebRtcAdapter.Call;
+using Client_UWP.Controllers;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -41,7 +42,7 @@ namespace Client_UWP
 
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
-            Account account = accountProvider.GetSignaler("http://peercc-server.ortclib.org", 8888, new HttpSignaler());
+            Account account = accountProvider.GetSignaler("http://peercc-server.ortclib.org", 8888, HttpSignaler.Instance);
 
             _httpSignaler = (HttpSignaler)account.Signaler;
 
@@ -121,7 +122,6 @@ namespace Client_UWP
                 Debug.WriteLine($"Peer is our local peer: {peer.ToString()}");
                 return;
             }
-            peersListView.Items.Add(peer);
         }
 
         private async void Signaler_PeerDisconnected(object sender, Peer peer)
@@ -134,17 +134,12 @@ namespace Client_UWP
         private void HandlePeerDisconnected(object sender, Peer peer)
         {
             Debug.WriteLine($"Peer disconnected {peer.Name} / {peer.Id}");
-
-            for (int i = 0; i < peersListView.Items.Count(); i++)
-            {
-                Peer p = (Peer)peersListView.Items[i];
-                if (p.Name == peer.Name)
-                    peersListView.Items.Remove(peersListView.Items[i]);
-            }
         }
 
         private void InitView()
         {
+            peersListView.ItemsSource = HttpSignaler.Instance._peers;
+
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = null;
 
@@ -174,7 +169,7 @@ namespace Client_UWP
 
                 await _httpSignaler.SignOut();
 
-                peersListView.Items.Clear();
+                HttpSignaler.Instance._peers.Clear();
 
                 DisconnectPeer.IsEnabled = false;
                 ConnectPeer.IsEnabled = true;

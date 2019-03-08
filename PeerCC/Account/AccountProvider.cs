@@ -7,7 +7,7 @@ namespace PeerCC.Account
 {
     public class AccountProvider : IAccountProvider
     {
-        public static AccountProvider Create()
+        public static IAccountProvider Create()
         {
             return new AccountProvider();
         }
@@ -26,9 +26,14 @@ namespace PeerCC.Account
         {
             Account account = new Account();
             account.SetSelfIdentityUri($"{ip}:{port}");
-            account.SetSignaler(new HttpSignaler());
+            account.SetSignaler(httpSignaler);
 
             return account;
+        }
+
+        public IAccount GetAccount()
+        {
+            return new Account();
         }
     }
 }

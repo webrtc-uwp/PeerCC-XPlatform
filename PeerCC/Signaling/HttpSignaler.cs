@@ -24,6 +24,23 @@ namespace PeerCC.Signaling
         private static int _port = 8888;
         #endregion
 
+        private static HttpSignaler instance = null;
+        private static readonly object InstanceLock = new object();
+
+        public static HttpSignaler Instance
+        {
+            get
+            {
+                lock (InstanceLock)
+                {
+                    if (instance == null)
+                        instance = new HttpSignaler();
+
+                    return instance;
+                }
+            }
+        }
+
         private readonly HttpClient _httpClient = new HttpClient();
         private State _state;
         private Uri _baseHttpAddress;
