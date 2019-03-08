@@ -67,8 +67,8 @@ namespace Client_UWP.Pages.SettingsAccount
                 Debug.WriteLine("Edit Account: " + account.AccountName);
 
                 tbAccountName.Text = account.AccountName;
-                tbIP.Text = account.IP;
-                tbPort.Text = account.Port;
+                tbServiceUri.Text = account.ServiceUri;
+                tbIdentityUri.Text = account.IdentityUri;
                 btnAdd.Visibility = Visibility.Collapsed;
                 btnSave.Visibility = Visibility.Visible;
                 btnDelete.Visibility = Visibility.Visible;
@@ -94,8 +94,8 @@ namespace Client_UWP.Pages.SettingsAccount
                     ViewModel.AccountsList.Add(new Account
                     {
                         AccountName = tbAccountName.Text,
-                        IP = tbIP.Text,
-                        Port = tbPort.Text
+                        ServiceUri = tbServiceUri.Text,
+                        IdentityUri = tbIdentityUri.Text
                     });
 
                     // Save AccountsList
@@ -112,8 +112,8 @@ namespace Client_UWP.Pages.SettingsAccount
                 ViewModel.AccountsList.Add(new Account
                 {
                     AccountName = tbAccountName.Text,
-                    IP = tbIP.Text,
-                    Port = tbPort.Text
+                    ServiceUri = tbServiceUri.Text,
+                    IdentityUri = tbIdentityUri.Text
                 });
 
                 // Save AccountsList

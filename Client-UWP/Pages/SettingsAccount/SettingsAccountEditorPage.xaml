@@ -36,18 +36,18 @@
         <TextBox x:Name="tbAccountName" 
                  Width="300"
                  Foreground="Black"/>
-        <TextBlock Text="IP"
+        <TextBlock Text="Service Uri"
                    Width="300"
                    Margin="0,20,0,10"
                    Foreground="Black"/>
-        <TextBox x:Name="tbIP" 
+        <TextBox x:Name="tbServiceUri" 
                  Width="300"
                  Foreground="Black"/>
-        <TextBlock Text="Port"
+        <TextBlock Text="IdentityUri"
                    Width="300"
                    Margin="0,20,0,10"
                    Foreground="Black"/>
-        <TextBox x:Name="tbPort" 
+        <TextBox x:Name="tbIdentityUri" 
                  Width="300"
                  Foreground="Black"/>
 
