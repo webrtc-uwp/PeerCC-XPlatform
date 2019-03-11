@@ -40,7 +40,7 @@ namespace Client_UWP.Pages.SettingsAccount
             InitializeComponent();
 
             ViewModel = new SettingsAccountPageViewModel();
-            
+
             InitView();
         }
 
@@ -48,6 +48,20 @@ namespace Client_UWP.Pages.SettingsAccount
 
         private void InitView()
         {
+            AccountsListView.Loaded += (sender, args) => 
+            {
+                Account account = XmlSerialization<Account>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+
+                for (int i = 0; i < AccountsListView.Items.Count; i++)
+                {
+                    Account item = (Account)AccountsListView.Items[i];
+
+                    if (account.AccountName == item.AccountName)
+                        if (account.ServiceUri == item.ServiceUri)
+                            AccountsListView.SelectedIndex = i;
+                }
+            };
+
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
 
             ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
@@ -103,7 +117,13 @@ namespace Client_UWP.Pages.SettingsAccount
             };
         }
 
-        private void AccountsListView_Tapped(object sender, TappedRoutedEventArgs e) =>
+        private void AccountsListView_Tapped(object sender, TappedRoutedEventArgs e)
+        {
             AccountsListView.SelectedItem = (Account)((FrameworkElement)e.OriginalSource).DataContext;
+
+            localSettings.Values["SelectedAccount"] =
+                XmlSerialization<Account>.Serialize((Account)AccountsListView.SelectedItem);
+        }
+            
     }
 }

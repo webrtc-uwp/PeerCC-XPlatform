@@ -22,18 +22,14 @@ namespace PeerCC.Account
             throw new NotImplementedException();
         }
 
-        public Account GetSignaler(string ip, int port, HttpSignaler httpSignaler)
+        public Account GetAccount(string serviceUri, string identityUri, HttpSignaler httpSignaler)
         {
             Account account = new Account();
-            account.SetSelfIdentityUri($"{ip}:{port}");
+            account.SetServiceUri(serviceUri);
+            account.SetSelfIdentityUri(identityUri);
             account.SetSignaler(httpSignaler);
 
             return account;
-        }
-
-        public IAccount GetAccount()
-        {
-            return new Account();
         }
     }
 }

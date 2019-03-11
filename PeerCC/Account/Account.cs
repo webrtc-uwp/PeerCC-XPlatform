@@ -8,6 +8,8 @@ namespace PeerCC.Account
 {
     public class Account : IAccount
     {
+        public string ServiceUri { get; private set; }
+
         public string SelfIdentityUri { get; private set; }
 
         public ISignaler Signaler { get; private set; }
@@ -19,6 +21,11 @@ namespace PeerCC.Account
         public Task Logout()
         {
             throw new NotImplementedException();
+        }
+
+        public void SetServiceUri(string serviceUri)
+        {
+            ServiceUri = serviceUri;
         }
 
         public void SetSelfIdentityUri(string selfIdentityUri)

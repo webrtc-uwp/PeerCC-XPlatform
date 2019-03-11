@@ -42,7 +42,7 @@ namespace Client_UWP
 
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
-            Account account = accountProvider.GetSignaler("http://peercc-server.ortclib.org", 8888, HttpSignaler.Instance);
+            Account account = accountProvider.GetAccount("http://peercc-server.ortclib.org", "", HttpSignaler.Instance);
 
             _httpSignaler = (HttpSignaler)account.Signaler;
 
