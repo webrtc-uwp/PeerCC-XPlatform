@@ -9,6 +9,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -45,11 +46,12 @@ namespace Client_UWP
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            ApplicationView.PreferredLaunchViewSize = new Size(450, 620);
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
             // Install the signaler and the calling factories
             PeerCC.Setup.Install();
             WebRtcAdapter.Setup.Install();
-
-            //ClientCore.Account.IAccountProvider accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
 
             Frame rootFrame = Window.Current.Content as Frame;
 

@@ -34,8 +34,8 @@ namespace Client_UWP
 
         public MainPage()
         {
-            ApplicationView.PreferredLaunchViewSize = new Size(450, 700);
-            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+            InitializeComponent();
+            Loaded += OnLoaded;
 
             // Account 
             ClientCore.Account.IAccountProvider accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
@@ -65,8 +65,6 @@ namespace Client_UWP
 
             media.GetCodecsAsync(ClientCore.Call.MediaKind.Audio);
 
-            InitializeComponent();
-
             string name = _httpSignaler.LocalPeer.Name;
             Debug.WriteLine($"Connecting to server from local peer: {name}");
 
@@ -76,6 +74,11 @@ namespace Client_UWP
             _httpSignaler.PeerDisconnected += Signaler_PeerDisconnected;
 
             InitView();
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationView.GetForCurrentView().TryResizeView(new Size(450, 620));
         }
 
         /// <summary>
