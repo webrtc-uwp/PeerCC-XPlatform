@@ -19,11 +19,6 @@ namespace PeerCC.Signaling
     /// </summary>
     public class HttpSignaler : HttpSignalerEvents, ISignaler
     {
-        #region Signaling server config
-        private static string _url = "http://peercc-server.ortclib.org";
-        private static int _port = 8888;
-        #endregion
-
         private static HttpSignaler instance = null;
         private static readonly object InstanceLock = new object();
 
@@ -56,7 +51,6 @@ namespace PeerCC.Signaling
             _state = State.NotConnected;
             _myId = -1;
             _clientName = LocalPeer.Name;
-            _baseHttpAddress = new Uri(_url + ":" + _port);
         }
 
         /// <summary>
@@ -71,8 +65,9 @@ namespace PeerCC.Signaling
         /// <summary>
         /// Connects to the server.
         /// </summary>
-        public async Task<bool> Connect()
+        public async Task<bool> Connect(string serviceUri)
         {
+            _baseHttpAddress = new Uri(serviceUri);
             try
             {
                 if (_state != State.NotConnected)

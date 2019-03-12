@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -17,7 +16,8 @@ using PeerCC.Signaling;
 using PeerCC.Account;
 using Client_UWP.Pages.SettingsAccount;
 using WebRtcAdapter.Call;
-using Client_UWP.Controllers;
+using Client_UWP.Utilities;
+using Windows.Storage;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -31,6 +31,9 @@ namespace Client_UWP
         HttpSignaler _httpSignaler;
 
         private MainViewModel _mainViewModel;
+
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
 
         public MainPage()
         {
@@ -173,7 +176,9 @@ namespace Client_UWP
             {
                 Debug.WriteLine("Connects to server.");
 
-                await _httpSignaler.Connect();
+                Models.Account account = XmlSerialization<Models.Account>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+
+                await _httpSignaler.Connect(account.ServiceUri);
 
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
