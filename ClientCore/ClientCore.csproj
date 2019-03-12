@@ -153,7 +153,6 @@
     <Compile Include="Signaling\Message.cs" />
     <Compile Include="Signaling\SignalerType.cs" />
     <Compile Include="Signaling\SimpleMessage.cs" />
-    <Compile Include="WebRTCCalling\MediaProvider.cs" />
     <EmbeddedResource Include="Properties\ClientCore.rd.xml" />
   </ItemGroup>
   <ItemGroup>
