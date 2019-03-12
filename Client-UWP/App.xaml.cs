@@ -46,7 +46,7 @@ namespace Client_UWP
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-            ApplicationView.PreferredLaunchViewSize = new Size(450, 620);
+            ApplicationView.PreferredLaunchViewSize = new Size(450, 700);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
             // Install the signaler and the calling factories

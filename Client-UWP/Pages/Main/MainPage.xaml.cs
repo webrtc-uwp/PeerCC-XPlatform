@@ -35,22 +35,30 @@ namespace Client_UWP
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
+        Account account;
+
         public MainPage()
         {
             InitializeComponent();
             Loaded += OnLoaded;
 
+            Models.Account modelAccount = 
+                XmlSerialization<Models.Account>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+
             // Account 
-            ClientCore.Account.IAccountProvider accountFactory = ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
+            ClientCore.Account.IAccountProvider accountFactory = 
+                ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
 
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
-            Account account = (Account)accountProvider.GetAccount("http://peercc-server.ortclib.org", "", HttpSignaler.Instance);
+            account = (Account)accountProvider
+                .GetAccount(modelAccount.ServiceUri, HttpSignaler.Instance.LocalPeer.Name, HttpSignaler.Instance);
 
             _httpSignaler = (HttpSignaler)account.Signaler;
 
             // Call
-            ClientCore.Call.ICallProvider callFactory = ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+            ClientCore.Call.ICallProvider callFactory = 
+                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
 
             CallProvider callProvider = (CallProvider)callFactory;
 
@@ -60,7 +68,8 @@ namespace Client_UWP
             call.OnResolutionChanged += (x, y) => { };
 
             // Media
-            ClientCore.Call.IMediaProvider mediaFactory = ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
+            ClientCore.Call.IMediaProvider mediaFactory = 
+                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
 
             MediaProvider mediaProvider = (MediaProvider)mediaFactory;
 
@@ -81,7 +90,7 @@ namespace Client_UWP
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            ApplicationView.GetForCurrentView().TryResizeView(new Size(450, 620));
+            ApplicationView.GetForCurrentView().TryResizeView(new Size(450, 700));
         }
 
         /// <summary>
@@ -157,6 +166,9 @@ namespace Client_UWP
 
         private void InitView()
         {
+            tbServiceUri.Text = $"Service Uri: { account.ServiceUri }";
+            tbIdentityUri.Text = $"Self Identity Uri: { account.SelfIdentityUri }";
+
             peersListView.ItemsSource = HttpSignaler.Instance._peers;
 
             peersListView.SelectedIndex = -1;
