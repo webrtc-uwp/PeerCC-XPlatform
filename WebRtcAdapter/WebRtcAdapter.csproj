@@ -127,6 +127,8 @@
     <Compile Include="Call\Codec.cs" />
     <Compile Include="Call\Media.cs" />
     <Compile Include="Call\MediaDevice.cs" />
+    <Compile Include="Call\MediaProvider.cs" />
+    <Compile Include="Call\MediaProviderFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.cs" />
     <EmbeddedResource Include="Properties\WebRtcAdapter.rd.xml" />

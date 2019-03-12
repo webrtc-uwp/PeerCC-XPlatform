@@ -132,6 +132,7 @@
     <Compile Include="Call\IMedia.cs" />
     <Compile Include="Call\IMediaDevice.cs" />
     <Compile Include="Call\IMediaElement.cs" />
+    <Compile Include="Call\IMediaProvider.cs" />
     <Compile Include="Call\IMediaVideoFormat.cs" />
     <Compile Include="Call\MediaDirection.cs" />
     <Compile Include="Call\MediaKind.cs" />
@@ -142,6 +143,8 @@
     <Compile Include="Factory\CallFactory.cs" />
     <Compile Include="Factory\IAccountProviderFactory.cs" />
     <Compile Include="Factory\ICallProviderFactory.cs" />
+    <Compile Include="Factory\IMediaProviderFactory.cs" />
+    <Compile Include="Factory\MediaFactory.cs" />
     <Compile Include="Factory\SignalingFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Signaling\EnhancedMessage.cs" />

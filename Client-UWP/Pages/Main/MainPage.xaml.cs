@@ -42,7 +42,7 @@ namespace Client_UWP
 
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
-            Account account = accountProvider.GetAccount("http://peercc-server.ortclib.org", "", HttpSignaler.Instance);
+            Account account = (Account)accountProvider.GetAccount("http://peercc-server.ortclib.org", "", HttpSignaler.Instance);
 
             _httpSignaler = (HttpSignaler)account.Signaler;
 
@@ -51,6 +51,19 @@ namespace Client_UWP
 
             CallProvider callProvider = (CallProvider)callFactory;
 
+            Call call = (Call)callProvider.GetCall();
+
+            call.OnFrameRateChanged += (x, y) => { };
+            call.OnResolutionChanged += (x, y) => { };
+
+            // Media
+            ClientCore.Call.IMediaProvider mediaFactory = ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
+
+            MediaProvider mediaProvider = (MediaProvider)mediaFactory;
+
+            Media media = (Media)mediaProvider.GetMedia();
+
+            media.GetCodecsAsync(ClientCore.Call.MediaKind.Audio);
 
             InitializeComponent();
 

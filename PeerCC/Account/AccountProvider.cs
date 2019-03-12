@@ -22,7 +22,7 @@ namespace PeerCC.Account
             throw new NotImplementedException();
         }
 
-        public Account GetAccount(string serviceUri, string identityUri, HttpSignaler httpSignaler)
+        public IAccount GetAccount(string serviceUri, string identityUri, HttpSignaler httpSignaler)
         {
             Account account = new Account();
             account.SetServiceUri(serviceUri);

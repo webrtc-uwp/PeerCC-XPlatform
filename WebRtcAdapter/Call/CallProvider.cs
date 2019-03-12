@@ -24,5 +24,10 @@ namespace WebRtcAdapter.Call
             //return Task.Run(() => (ICallInfo)new CallInfo());
             return null;
         }
+
+        public ICall GetCall()
+        {
+            return new Call();
+        }
     }
 }
