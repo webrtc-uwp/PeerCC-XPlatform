@@ -19,14 +19,14 @@ namespace Client_UWP.Pages.SettingsAccount
             {
                 if (localSettings.Values["AccountsList"] != null)
                 {
-                    if (XmlSerialization<ObservableCollection<Account>>
+                    if (XmlSerialization<ObservableCollection<AccountModel>>
                     .Deserialize((string)localSettings.Values["AccountsList"]).Any())
                     {
-                        ObservableCollection<Account> list =
-                        XmlSerialization<ObservableCollection<Account>>
+                        ObservableCollection<AccountModel> list =
+                        XmlSerialization<ObservableCollection<AccountModel>>
                         .Deserialize((string)localSettings.Values["AccountsList"]);
 
-                        foreach (Account a in list)
+                        foreach (AccountModel a in list)
                             AccountsList.Add(a);
                     }
                 }
@@ -37,7 +37,7 @@ namespace Client_UWP.Pages.SettingsAccount
             }
         }
 
-        public ObservableCollection<Account> AccountsList { get; set; } =
-            new ObservableCollection<Account>();
+        public ObservableCollection<AccountModel> AccountsList { get; set; } =
+            new ObservableCollection<AccountModel>();
     }
 }

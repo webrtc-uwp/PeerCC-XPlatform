@@ -18,6 +18,7 @@ using Client_UWP.Pages.SettingsAccount;
 using WebRtcAdapter.Call;
 using Client_UWP.Utilities;
 using Windows.Storage;
+using Client_UWP.Models;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -42,22 +43,22 @@ namespace Client_UWP
             InitializeComponent();
             Loaded += OnLoaded;
 
-            Models.Account modelAccount = 
-                XmlSerialization<Models.Account>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+            AccountModel accountModel =
+                XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
 
             // Account 
-            ClientCore.Account.IAccountProvider accountFactory = 
+            ClientCore.Account.IAccountProvider accountFactory =
                 ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
 
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
             account = (Account)accountProvider
-                .GetAccount(modelAccount.ServiceUri, HttpSignaler.Instance.LocalPeer.Name, HttpSignaler.Instance);
+                .GetAccount(accountModel?.ServiceUri, HttpSignaler.Instance.LocalPeer.Name, HttpSignaler.Instance);
 
             _httpSignaler = (HttpSignaler)account.Signaler;
 
             // Call
-            ClientCore.Call.ICallProvider callFactory = 
+            ClientCore.Call.ICallProvider callFactory =
                 ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
 
             CallProvider callProvider = (CallProvider)callFactory;
@@ -68,7 +69,7 @@ namespace Client_UWP
             call.OnResolutionChanged += (x, y) => { };
 
             // Media
-            ClientCore.Call.IMediaProvider mediaFactory = 
+            ClientCore.Call.IMediaProvider mediaFactory =
                 ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
 
             MediaProvider mediaProvider = (MediaProvider)mediaFactory;
@@ -166,8 +167,8 @@ namespace Client_UWP
 
         private void InitView()
         {
-            tbServiceUri.Text = $"Service Uri: { account.ServiceUri }";
-            tbIdentityUri.Text = $"Self Identity Uri: { account.SelfIdentityUri }";
+            tbServiceUri.Text = $"Service Uri: { account?.ServiceUri }";
+            tbIdentityUri.Text = $"Self Identity Uri: { account?.SelfIdentityUri }";
 
             peersListView.ItemsSource = HttpSignaler.Instance._peers;
 
@@ -188,7 +189,7 @@ namespace Client_UWP
             {
                 Debug.WriteLine("Connects to server.");
 
-                Models.Account account = XmlSerialization<Models.Account>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+                Models.AccountModel account = XmlSerialization<Models.AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
 
                 await _httpSignaler.Connect(account.ServiceUri);
 

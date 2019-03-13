@@ -50,15 +50,16 @@ namespace Client_UWP.Pages.SettingsAccount
         {
             AccountsListView.Loaded += (sender, args) => 
             {
-                Account account = XmlSerialization<Account>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+                AccountModel account = XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
 
                 for (int i = 0; i < AccountsListView.Items.Count; i++)
                 {
-                    Account item = (Account)AccountsListView.Items[i];
+                    AccountModel item = (AccountModel)AccountsListView.Items[i];
 
-                    if (account.AccountName == item.AccountName)
-                        if (account.ServiceUri == item.ServiceUri)
-                            AccountsListView.SelectedIndex = i;
+                    if (account != null)
+                        if (account.AccountName == item.AccountName)
+                            if (account.ServiceUri == item.ServiceUri)
+                                AccountsListView.SelectedIndex = i;
                 }
             };
 
@@ -82,7 +83,7 @@ namespace Client_UWP.Pages.SettingsAccount
                     return;
                 }
 
-                Account account = AccountsListView.SelectedItem as Account;
+                AccountModel account = AccountsListView.SelectedItem as AccountModel;
                 if (account == null) return;
 
                 Debug.WriteLine($"Remove Account {account.AccountName}");
@@ -92,7 +93,7 @@ namespace Client_UWP.Pages.SettingsAccount
 
                 // Save AccoutsList
                 localSettings.Values["AccountsList"] =
-                XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
+                XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
             };
 
             EditAccount.Click += async (sender, args) => 
@@ -103,7 +104,7 @@ namespace Client_UWP.Pages.SettingsAccount
                     return;
                 }
 
-                Account account = AccountsListView.SelectedItem as Account;
+                AccountModel account = AccountsListView.SelectedItem as AccountModel;
                 if (account == null) return;
 
                 // Remove Account from AccountsList
@@ -111,7 +112,7 @@ namespace Client_UWP.Pages.SettingsAccount
 
                 // Save AccountsList
                 localSettings.Values["AccountsList"] =
-                    XmlSerialization<ObservableCollection<Account>>.Serialize(ViewModel.AccountsList);
+                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
 
                 Frame.Navigate(typeof(SettingsAccountEditorPage), account);
             };
@@ -119,10 +120,10 @@ namespace Client_UWP.Pages.SettingsAccount
 
         private void AccountsListView_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            AccountsListView.SelectedItem = (Account)((FrameworkElement)e.OriginalSource).DataContext;
+            AccountsListView.SelectedItem = (AccountModel)((FrameworkElement)e.OriginalSource).DataContext;
 
             localSettings.Values["SelectedAccount"] =
-                XmlSerialization<Account>.Serialize((Account)AccountsListView.SelectedItem);
+                XmlSerialization<AccountModel>.Serialize((AccountModel)AccountsListView.SelectedItem);
         }
             
     }

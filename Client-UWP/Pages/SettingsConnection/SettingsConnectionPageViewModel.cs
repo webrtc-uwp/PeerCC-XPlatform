@@ -24,7 +24,10 @@ namespace Client_UWP.Pages.SettingsConnection
                     if (!(XmlSerialization<ObservableCollection<IceServer>>
                 .Deserialize((string)localSettings.Values["IceServersList"])).Any())
                     {
-                        AddDefaultIceServers(IceServersList);
+                        ObservableCollection<IceServer> iceServersList = AddDefaultIceServers(IceServersList);
+
+                        localSettings.Values["IceServersList"] =
+                            XmlSerialization<ObservableCollection<IceServer>>.Serialize(iceServersList);
 
                         ObservableCollection<IceServer> list =
                             XmlSerialization<ObservableCollection<IceServer>>
@@ -42,6 +45,13 @@ namespace Client_UWP.Pages.SettingsConnection
                         foreach (IceServer ice in list)
                             IceServersList.Add(ice);
                     }
+                }
+                else if (localSettings.Values["IceServersList"] == null)
+                {
+                    ObservableCollection<IceServer> iceServersList = AddDefaultIceServers(IceServersList);
+
+                    localSettings.Values["IceServersList"] =
+                            XmlSerialization<ObservableCollection<IceServer>>.Serialize(iceServersList);
                 }
             }
             catch (Exception ex)
