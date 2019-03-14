@@ -37,6 +37,7 @@ namespace Client_UWP
             ApplicationData.Current.LocalSettings;
 
         Account account;
+        Call call;
 
         public MainPage()
         {
@@ -63,14 +64,10 @@ namespace Client_UWP
 
             CallProvider callProvider = (CallProvider)callFactory;
 
-            Call call = (Call)callProvider.GetCall();
+            call = (Call)callProvider.GetCall();
 
             call.OnFrameRateChanged += (x, y) => { };
             call.OnResolutionChanged += (x, y) => { };
-
-            bool pc = call.CreatePeerConnection();
-
-            Debug.WriteLine("Peer connection created: " + pc);
 
             // Media
             ClientCore.Call.IMediaProvider mediaFactory =
@@ -226,14 +223,15 @@ namespace Client_UWP
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
-                //RTCController.Instance.ConnectToPeer(remotePeer);
+                var message = new Message();
 
-                var m = new Message();
-                m.Id = "1";
-                m.PeerId = remotePeer.Id.ToString();
-                m.Content = "test message";
+                string content = await call.ConnectToPeer();
 
-                await _httpSignaler.SentToPeerAsync(m);
+                message.Id = "1";
+                message.PeerId = remotePeer.Id.ToString();
+                message.Content = content;
+
+                await _httpSignaler.SentToPeerAsync(message);
             };
         }
 
