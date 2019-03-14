@@ -68,6 +68,10 @@ namespace Client_UWP
             call.OnFrameRateChanged += (x, y) => { };
             call.OnResolutionChanged += (x, y) => { };
 
+            bool pc = call.CreatePeerConnection();
+
+            Debug.WriteLine("Peer connection created: " + pc);
+
             // Media
             ClientCore.Call.IMediaProvider mediaFactory =
                 ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
