@@ -22,6 +22,13 @@ namespace WebRtcAdapter.Call
 
         readonly List<RTCIceServer> _iceServers;
 
+        public Call()
+        {
+            WebRtcLib.Setup(new WebRtcLibConfiguration());
+
+            _iceServers = new List<RTCIceServer>();
+        }
+
         /// <summary>
         /// Creates a peer connection.
         /// </summary>
@@ -66,7 +73,17 @@ namespace WebRtcAdapter.Call
                 var offerOptions = new RTCOfferOptions();
                 offerOptions.OfferToReceiveAudio = true;
                 offerOptions.OfferToReceiveVideo = true;
-                //IRTCSessionDescription offer = await _peerConnection.CreateOffer(offerOptions);
+                IRTCSessionDescription offer = await _peerConnection.CreateOffer(offerOptions);
+
+                string offerSdp = offer.Sdp;
+                RTCSessionDescriptionInit sdpInit = new RTCSessionDescriptionInit();
+                sdpInit.Sdp = offerSdp;
+                sdpInit.Type = offer.SdpType;
+                var modifiedOffer = new RTCSessionDescription(sdpInit);
+
+                await _peerConnection.SetLocalDescription(modifiedOffer);
+
+                Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
                 return "Test message!";
             }
