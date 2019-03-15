@@ -85,10 +85,45 @@ namespace WebRtcAdapter.Call
 
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
-                return "Test message!";
+                JsonObject json = SendSdp(modifiedOffer);
+
+                return json.Stringify();
             }
 
             return null;
+        }
+
+        // SDP negotiation attributes
+        private static readonly string kCandidateSdpMidName = "sdpMid";
+        private static readonly string kCandidateSdpMlineIndexName = "sdpMLineIndex";
+        private static readonly string kCandidateSdpName = "candidate";
+        private static readonly string kSessionDescriptionTypeName = "type";
+        private static readonly string kSessionDescriptionSdpName = "sdp";
+
+        /// <summary>
+        /// Sends SDP message.
+        /// </summary>
+        /// <param name="description">RTC session description.</param>
+        private JsonObject SendSdp(IRTCSessionDescription description)
+        {
+            JsonObject json = new JsonObject();
+            string messageType = null;
+
+            switch (description.SdpType)
+            {
+                case RTCSdpType.Offer: messageType = "offer"; break;
+                case RTCSdpType.Answer: messageType = "answer"; break;
+                case RTCSdpType.Pranswer: messageType = "pranswer"; break;
+                default: Debug.Assert(false, description.SdpType.ToString()); break;
+            }
+
+            json = new JsonObject
+            {
+                { kSessionDescriptionTypeName, JsonValue.CreateStringValue(messageType) },
+                { kSessionDescriptionSdpName, JsonValue.CreateStringValue(description.Sdp) }
+            };
+
+            return json;
         }
     }
 }
