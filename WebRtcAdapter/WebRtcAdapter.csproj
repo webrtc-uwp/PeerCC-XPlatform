@@ -120,6 +120,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Adapter.cs" />
     <Compile Include="Call\Call.cs" />
     <Compile Include="Call\CallInfo.cs" />
     <Compile Include="Call\CallProvider.cs" />

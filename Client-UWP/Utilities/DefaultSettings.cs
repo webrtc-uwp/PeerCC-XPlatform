@@ -9,17 +9,14 @@ namespace Client_UWP.Utilities
 {
     public static class DefaultSettings
     {
-        public static string IP = "127.0.0.1";
-        public static int Port = 8888;
-
         // Default ICE servers
-        public static List<IceServer> IceServersList = new List<IceServer>
+        public static List<IceServerModel> IceServersList = new List<IceServerModel>
         {
-            new IceServer("stun.l.google.com", "STUN", "19302"),
-            new IceServer("stun1.l.google.com", "STUN", "19302"),
-            new IceServer("stun2.l.google.com", "STUN", "19302"),
-            new IceServer("stun3.l.google.com", "STUN", "19302"),
-            new IceServer("stun4.l.google.com", "STUN", "19302")
+            new IceServerModel("stun.l.google.com:19302", "", ""),
+            new IceServerModel("stun1.l.google.com:19302", "", ""),
+            new IceServerModel("stun2.l.google.com:19302", "", ""),
+            new IceServerModel("stun3.l.google.com:19302", "", ""),
+            new IceServerModel("stun4.l.google.com:19302", "", "")
         };
 
         // Codecs test data

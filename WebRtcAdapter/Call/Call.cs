@@ -20,13 +20,11 @@ namespace WebRtcAdapter.Call
 
         RTCPeerConnection _peerConnection;
 
-        readonly List<RTCIceServer> _iceServers;
+        
 
         public Call()
         {
             WebRtcLib.Setup(new WebRtcLibConfiguration());
-
-            _iceServers = new List<RTCIceServer>();
         }
 
         /// <summary>
@@ -41,7 +39,7 @@ namespace WebRtcAdapter.Call
             {
                 BundlePolicy = RTCBundlePolicy.Balanced,
                 IceTransportPolicy = RTCIceTransportPolicy.All,
-                IceServers = _iceServers
+                IceServers = Adapter.Instance._iceServers
             };
 
             Debug.WriteLine("Creating peer connection.");

@@ -40,9 +40,6 @@ namespace Client_UWP.Pages.SettingsConnection
 
             ViewModel = new SettingsConnectionPageViewModel();
 
-            cbType.Items.Add("STUN");
-            cbType.Items.Add("TURN");
-
             GoToSettingsConnectionPage.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 
             AccountSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
@@ -60,22 +57,20 @@ namespace Client_UWP.Pages.SettingsConnection
 
             if (e.Parameter != null)
             {
-                IceServer iceServer = (IceServer)e.Parameter;
+                IceServerModel iceServer = (IceServerModel)e.Parameter;
 
                 // Add new IceServer to IceServersList
                 ViewModel.IceServersList.Add(iceServer);
 
                 // Save IceServersList
                 localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
 
-                Debug.WriteLine("Edit ice server: " + iceServer.ServerDetails);
+                Debug.WriteLine("Edit ice server: " + iceServer.Url);
 
                 tbServerUrl.Text = iceServer.Url;
-                cbType.SelectedIndex = cbType.Items.IndexOf(iceServer.Type);
-                tbPort.Text = iceServer.Port;
                 tbUsername.Text = iceServer.Username != null ? iceServer.Username : string.Empty;
-                pbPassword.Password = iceServer.Password != null ? iceServer.Password : string.Empty;
+                pbCredential.Password = iceServer.Credential != null ? iceServer.Credential : string.Empty;
                 btnAdd.Visibility = Visibility.Collapsed;
                 btnSave.Visibility = Visibility.Visible;
                 btnDelete.Visibility = Visibility.Visible;
@@ -87,7 +82,7 @@ namespace Client_UWP.Pages.SettingsConnection
 
                     // Save IceServersList
                     localSettings.Values["IceServersList"] =
-                        XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
+                        XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
                 };
@@ -98,18 +93,17 @@ namespace Client_UWP.Pages.SettingsConnection
                     ViewModel.IceServersList.Remove(iceServer);
 
                     // Add new IceServer to IceServersList
-                    ViewModel.IceServersList.Add(new IceServer
+                    ViewModel.IceServersList.Add(new IceServerModel
                     {
                         Url = tbServerUrl.Text,
-                        Type = cbType.Items[cbType.SelectedIndex].ToString(),
-                        Port = tbPort.Text,
+                        Type = tbServerUrl.Text.ToLower().Contains("stun") ? "STUN" : "TURN",
                         Username = tbUsername.Text,
-                        Password = pbPassword.Password
+                        Credential = pbCredential.Password
                     });
 
                     // Save IceServersList
                     localSettings.Values["IceServersList"] =
-                        XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
+                        XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
                 };
@@ -118,18 +112,17 @@ namespace Client_UWP.Pages.SettingsConnection
             btnAdd.Click += (sender, args) => 
             {
                 // Add new IceServer to IceServersList
-                ViewModel.IceServersList.Add(new IceServer
+                ViewModel.IceServersList.Add(new IceServerModel
                 {
                     Url = tbServerUrl.Text,
-                    Type = cbType.Items[cbType.SelectedIndex].ToString(),
-                    Port = tbPort.Text,
+                    Type = tbServerUrl.Text.ToLower().Contains("stun") ? "STUN" : "TURN",
                     Username = tbUsername.Text,
-                    Password = pbPassword.Password
+                    Credential = pbCredential.Password
                 });
 
                 // Save IceServersList
                 localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
 
                 Frame.Navigate(typeof(SettingsConnectionPage));
             };

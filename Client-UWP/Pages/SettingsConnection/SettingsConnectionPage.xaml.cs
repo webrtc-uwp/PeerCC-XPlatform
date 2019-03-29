@@ -45,7 +45,7 @@ namespace Client_UWP.Pages.SettingsConnection
         }
 
         private void IceServersListView_Tapped(object sender, TappedRoutedEventArgs e) =>
-            IceServersListView.SelectedItem = (IceServer)((FrameworkElement)e.OriginalSource).DataContext;
+            IceServersListView.SelectedItem = (IceServerModel)((FrameworkElement)e.OriginalSource).DataContext;
 
         public SettingsConnectionPageViewModel ViewModel { get; set; }
 
@@ -69,7 +69,7 @@ namespace Client_UWP.Pages.SettingsConnection
                     return;
                 }
 
-                IceServer iceServer = IceServersListView.SelectedItem as IceServer;
+                IceServerModel iceServer = IceServersListView.SelectedItem as IceServerModel;
                 if (iceServer == null) return;
 
                 // Remove IceServer from IceServersList
@@ -77,7 +77,7 @@ namespace Client_UWP.Pages.SettingsConnection
 
                 // Save IceServersList
                 localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
 
                 Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), iceServer);
             };
@@ -92,17 +92,17 @@ namespace Client_UWP.Pages.SettingsConnection
                     return;
                 }
 
-                IceServer iceServer = IceServersListView.SelectedItem as IceServer;
+                IceServerModel iceServer = IceServersListView.SelectedItem as IceServerModel;
                 if (iceServer == null) return;
 
-                Debug.WriteLine($"Remove Ice Server {iceServer.ServerDetails}");
+                Debug.WriteLine($"Remove Ice Server {iceServer.Url}");
 
                 // Remove IceServer from IceServersList
                 ViewModel.IceServersList.Remove(iceServer);
 
                 // Save IceServersList
                 localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServer>>.Serialize(ViewModel.IceServersList);
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
             };
         }
     }

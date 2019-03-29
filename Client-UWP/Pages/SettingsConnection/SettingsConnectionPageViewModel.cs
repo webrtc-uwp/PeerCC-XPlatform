@@ -1,11 +1,12 @@
-﻿using Client_UWP.Controllers;
-using Client_UWP.Models;
+﻿using Client_UWP.Models;
 using Client_UWP.Utilities;
+using ClientCore.Call;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using WebRtcAdapter;
 using Windows.Storage;
 
 namespace Client_UWP.Pages.SettingsConnection
@@ -21,37 +22,42 @@ namespace Client_UWP.Pages.SettingsConnection
             {
                 if (localSettings.Values["IceServersList"] != null)
                 {
-                    if (!(XmlSerialization<ObservableCollection<IceServer>>
+                    if (!(XmlSerialization<ObservableCollection<IceServerModel>>
                 .Deserialize((string)localSettings.Values["IceServersList"])).Any())
                     {
-                        ObservableCollection<IceServer> iceServersList = AddDefaultIceServers(IceServersList);
+                        ObservableCollection<IceServerModel> iceServersList = AddDefaultIceServers(IceServersList);
 
                         localSettings.Values["IceServersList"] =
-                            XmlSerialization<ObservableCollection<IceServer>>.Serialize(iceServersList);
+                            XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(iceServersList);
 
-                        ObservableCollection<IceServer> list =
-                            XmlSerialization<ObservableCollection<IceServer>>
+                        ObservableCollection<IceServerModel> list =
+                            XmlSerialization<ObservableCollection<IceServerModel>>
                             .Deserialize((string)localSettings.Values["IceServersList"]);
 
-                        foreach (IceServer ice in list)
-                            IceServersList.Add(ice);
+                        List<IceServer> iceServerList = new List<IceServer>();
+
+                        foreach (IceServerModel ice in list)
+                        {
+                            List<string> urls = new List<string>();
+                            urls.Add(ice.Url);
+                            IceServer iceServer = new IceServer();
+                            iceServer.Urls = urls;
+                            iceServer.Username = ice.Username;
+                            iceServer.Credential = ice.Credential;
+                            iceServerList.Add(iceServer);
+                        }
+
+                        Adapter.Instance.ConfigureIceServers(iceServerList);
                     }
                     else
                     {
-                        ObservableCollection<IceServer> list =
-                            XmlSerialization<ObservableCollection<IceServer>>
+                        ObservableCollection<IceServerModel> list =
+                            XmlSerialization<ObservableCollection<IceServerModel>>
                             .Deserialize((string)localSettings.Values["IceServersList"]);
 
-                        foreach (IceServer ice in list)
+                        foreach (IceServerModel ice in list)
                             IceServersList.Add(ice);
                     }
-                }
-                else if (localSettings.Values["IceServersList"] == null)
-                {
-                    ObservableCollection<IceServer> iceServersList = AddDefaultIceServers(IceServersList);
-
-                    localSettings.Values["IceServersList"] =
-                            XmlSerialization<ObservableCollection<IceServer>>.Serialize(iceServersList);
                 }
             }
             catch (Exception ex)
@@ -60,13 +66,13 @@ namespace Client_UWP.Pages.SettingsConnection
             }
         }
 
-        public ObservableCollection<IceServer> IceServersList { get; set; } = new ObservableCollection<IceServer>();
+        public ObservableCollection<IceServerModel> IceServersList { get; set; } = new ObservableCollection<IceServerModel>();
 
-        public static ObservableCollection<IceServer> AddDefaultIceServers(ObservableCollection<IceServer> IceServersList)
+        public static ObservableCollection<IceServerModel> AddDefaultIceServers(ObservableCollection<IceServerModel> IceServersList)
         {
-            List<IceServer> list = DefaultSettings.IceServersList;
+            List<IceServerModel> list = DefaultSettings.IceServersList;
 
-            foreach (IceServer ice in list)
+            foreach (IceServerModel ice in list)
                 IceServersList.Add(ice);
 
             return IceServersList;

@@ -53,7 +53,7 @@
                                     <ColumnDefinition Width="90"/>
                                     <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding ServerDetails}"
+                                <TextBlock Text="{Binding Url}"
                                        Grid.ColumnSpan="2"
                                        Foreground="Blue"/>
                                 <TextBlock Text="Type: "

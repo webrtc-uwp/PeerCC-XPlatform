@@ -36,21 +36,6 @@
         <TextBox x:Name="tbServerUrl" 
                  Width="300"
                  Foreground="Black"/>
-        <TextBlock Text="Type"
-                   Width="300"
-                   Margin="0,20,0,10"
-                   Foreground="Black"/>
-        <ComboBox x:Name="cbType"
-                  Width="300"
-                  HorizontalAlignment="Center"
-                  Foreground="Black"/>
-        <TextBlock Text="Port"
-                   Width="300"
-                   Margin="0,20,0,10"
-                   Foreground="Black"/>
-        <TextBox x:Name="tbPort" 
-                 Width="300"
-                 Foreground="Black"/>
         <TextBlock Text="Username"
                    Width="300"
                    Margin="0,20,0,10"
@@ -58,11 +43,11 @@
         <TextBox x:Name="tbUsername" 
                  Width="300"
                  Foreground="Black"/>
-        <TextBlock Text="Password"
+        <TextBlock Text="Credential"
                    Width="300"
                    Margin="0,20,0,10"
                    Foreground="Black"/>
-        <PasswordBox x:Name="pbPassword"
+        <PasswordBox x:Name="pbCredential"
                  Width="300"
                  Foreground="Black"/>
 
