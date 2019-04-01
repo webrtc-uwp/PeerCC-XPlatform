@@ -31,12 +31,18 @@ namespace WebRtcAdapter.Call
         /// Creates a peer connection.
         /// </summary>
         /// <returns>True if connection to a peer is successfully created.</returns>
-        public bool CreatePeerConnection()
+        public bool CreatePeerConnection(System.Threading.CancellationToken ct)
         {
             Debug.Assert(_peerConnection == null);
 
+            if (ct.IsCancellationRequested) return false;
+
+            var factoryConfig = new WebRtcFactoryConfiguration();
+            WebRtcFactory factory = new WebRtcFactory(factoryConfig);
+
             var config = new RTCConfiguration()
             {
+                Factory = factory,
                 BundlePolicy = RTCBundlePolicy.Balanced,
                 IceTransportPolicy = RTCIceTransportPolicy.All,
                 IceServers = Adapter.Instance._iceServers
@@ -64,7 +70,11 @@ namespace WebRtcAdapter.Call
                 return null;
             }
 
-            bool connectResult = CreatePeerConnection();
+            var connectToPeerCancelationTokenSource = new System.Threading.CancellationTokenSource();
+
+            bool connectResult = CreatePeerConnection(connectToPeerCancelationTokenSource.Token);
+
+            connectToPeerCancelationTokenSource.Dispose();
 
             if (connectResult)
             {
