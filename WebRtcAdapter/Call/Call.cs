@@ -24,7 +24,12 @@ namespace WebRtcAdapter.Call
 
         public Call()
         {
-            WebRtcLib.Setup(new WebRtcLibConfiguration());
+            WebRtcLibConfiguration configuration = new WebRtcLibConfiguration();
+            configuration.AudioCaptureFrameProcessingQueue = EventQueue.GetOrCreateThreadQueueByName("AudioCaptureProcessingQueue");
+            configuration.AudioRenderFrameProcessingQueue = EventQueue.GetOrCreateThreadQueueByName("AudioRenderProcessingQueue");
+            configuration.VideoFrameProcessingQueue = EventQueue.GetOrCreateThreadQueueByName("VideoFrameProcessingQueue");
+
+            WebRtcLib.Setup(configuration);
         }
 
         /// <summary>

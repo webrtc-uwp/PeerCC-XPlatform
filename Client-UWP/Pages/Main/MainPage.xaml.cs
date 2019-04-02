@@ -86,6 +86,7 @@ namespace Client_UWP
             _httpSignaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
             _httpSignaler.PeerConnected += Signaler_PeerConnected;
             _httpSignaler.PeerDisconnected += Signaler_PeerDisconnected;
+            _httpSignaler.MessageFromPeer += Signaler_MessageFromPeer;
 
             InitView();
         }
@@ -233,6 +234,14 @@ namespace Client_UWP
 
                 await _httpSignaler.SentToPeerAsync(message);
             };
+        }
+
+        private void Signaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
+        {
+            Debug.WriteLine("Message from peer MainPage!");
+            Debug.WriteLine("Message id: " + e.Message.Id);
+            Debug.WriteLine("Message content: " + e.Message.Content);
+            Debug.WriteLine("Peer id: " + e.Message.PeerId);
         }
 
         private void PeersListView_Tapped(object sender, TappedRoutedEventArgs e) =>

@@ -55,7 +55,7 @@ namespace PeerCC.Signaling
         {
             PeerHangup?.Invoke(this, peer);
         }
-        protected void OnMessageFromPeer(Message message)
+        public void OnMessageFromPeer(Message message)
         {
             MessageFromPeer?.Invoke(this, new HttpSignalerMessageEvent(message));
         }
