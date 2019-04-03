@@ -19,6 +19,7 @@ using WebRtcAdapter.Call;
 using Client_UWP.Utilities;
 using Windows.Storage;
 using Client_UWP.Models;
+using WebRtcAdapter;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -242,6 +243,10 @@ namespace Client_UWP
             Debug.WriteLine("Message id: " + e.Message.Id);
             Debug.WriteLine("Message content: " + e.Message.Content);
             Debug.WriteLine("Peer id: " + e.Message.PeerId);
+
+            string message = e.Message.Content;
+
+            Adapter.Instance.MessageFromPeerTaskRun(message);
         }
 
         private void PeersListView_Tapped(object sender, TappedRoutedEventArgs e) =>

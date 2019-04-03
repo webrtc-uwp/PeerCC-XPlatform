@@ -18,7 +18,7 @@ namespace WebRtcAdapter.Call
             throw new NotImplementedException();
         }
 
-        RTCPeerConnection _peerConnection;
+        
 
         
 
@@ -38,7 +38,7 @@ namespace WebRtcAdapter.Call
         /// <returns>True if connection to a peer is successfully created.</returns>
         public bool CreatePeerConnection(System.Threading.CancellationToken ct)
         {
-            Debug.Assert(_peerConnection == null);
+            Debug.Assert(Adapter.Instance._peerConnection == null);
 
             if (ct.IsCancellationRequested) return false;
 
@@ -54,9 +54,9 @@ namespace WebRtcAdapter.Call
             };
 
             Debug.WriteLine("Creating peer connection.");
-            _peerConnection = new RTCPeerConnection(config);
+            Adapter.Instance._peerConnection = new RTCPeerConnection(config);
 
-            if (_peerConnection == null)
+            if (Adapter.Instance._peerConnection == null)
             {
                 throw new NullReferenceException("Peer connection is not created.");
             }
@@ -69,7 +69,7 @@ namespace WebRtcAdapter.Call
         /// </summary>
         public async Task<string> ConnectToPeer()
         {
-            if (_peerConnection != null)
+            if (Adapter.Instance._peerConnection != null)
             {
                 Debug.WriteLine("[Error] We only support connecting to one peer at a time.");
                 return null;
@@ -86,7 +86,7 @@ namespace WebRtcAdapter.Call
                 var offerOptions = new RTCOfferOptions();
                 offerOptions.OfferToReceiveAudio = true;
                 offerOptions.OfferToReceiveVideo = true;
-                IRTCSessionDescription offer = await _peerConnection.CreateOffer(offerOptions);
+                IRTCSessionDescription offer = await Adapter.Instance._peerConnection.CreateOffer(offerOptions);
 
                 string offerSdp = offer.Sdp;
                 RTCSessionDescriptionInit sdpInit = new RTCSessionDescriptionInit();
@@ -94,7 +94,7 @@ namespace WebRtcAdapter.Call
                 sdpInit.Type = offer.SdpType;
                 var modifiedOffer = new RTCSessionDescription(sdpInit);
 
-                await _peerConnection.SetLocalDescription(modifiedOffer);
+                await Adapter.Instance._peerConnection.SetLocalDescription(modifiedOffer);
 
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 

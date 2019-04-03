@@ -521,11 +521,6 @@ namespace PeerCC.Signaling
                                 message.PeerId = peerId.ToString();
                                 message.Content = result;
 
-                                Debug.WriteLine("OnMessageFromPeer! " +
-                                    "message id: " + message.Id +
-                                    " , peer id: " + message.PeerId +
-                                    " , message content: " + message.Content);
-
                                 lock (_locker)
                                 {
                                     messagesList.Add(message);
