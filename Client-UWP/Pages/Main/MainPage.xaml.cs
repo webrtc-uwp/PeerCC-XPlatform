@@ -227,7 +227,8 @@ namespace Client_UWP
 
                 var message = new Message();
 
-                string content = await call.ConnectToPeer();
+                //string content = await call.ConnectToPeer();
+                string content = await Adapter.Instance.ConnectToPeer(remotePeer.Id);
 
                 message.Id = "1";
                 message.PeerId = remotePeer.Id.ToString();
@@ -240,13 +241,14 @@ namespace Client_UWP
         private void Signaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
         {
             Debug.WriteLine("Message from peer MainPage!");
+            Debug.WriteLine("Peer id: " + e.Message.PeerId);
             Debug.WriteLine("Message id: " + e.Message.Id);
             Debug.WriteLine("Message content: " + e.Message.Content);
-            Debug.WriteLine("Peer id: " + e.Message.PeerId);
 
+            int peerId = int.Parse(e.Message.PeerId);
             string message = e.Message.Content;
 
-            Adapter.Instance.MessageFromPeerTaskRun(message);
+            Adapter.Instance.MessageFromPeerTaskRun(peerId, message);
         }
 
         private void PeersListView_Tapped(object sender, TappedRoutedEventArgs e) =>
