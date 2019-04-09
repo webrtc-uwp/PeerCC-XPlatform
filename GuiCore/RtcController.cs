@@ -1,12 +1,17 @@
-﻿using ClientCore.Call;
+﻿using ClientCore.Account;
+using ClientCore.Call;
+using GuiCore.Utilities;
 using Org.WebRtc;
+using PeerCC.Account;
 using PeerCC.Signaling;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using WebRtcAdapter.Call;
 using Windows.Data.Json;
+using Windows.Storage;
 
 namespace GuiCore
 {
@@ -29,9 +34,61 @@ namespace GuiCore
             }
         }
 
+        public class AccountModel
+        {
+            public string AccountName { get; set; }
+            public string ServiceUri { get; set; }
+            public string IdentityUri { get; set; }
+
+            public AccountModel() { }
+        }
+
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
+
+        public HttpSignaler _httpSignaler;
+
+        public Account account;
+        public Call call;
+
         private RtcController()
         {
             _iceServers = new List<RTCIceServer>();
+
+            AccountModel accountModel =
+                XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+
+            // Account 
+            IAccountProvider accountFactory =
+                ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
+
+            AccountProvider accountProvider = (AccountProvider)accountFactory;
+
+            account = (Account)accountProvider
+                .GetAccount(accountModel?.ServiceUri, HttpSignaler.Instance.LocalPeer.Name, HttpSignaler.Instance);
+
+            _httpSignaler = (HttpSignaler)account.Signaler;
+
+            // Call
+            ICallProvider callFactory =
+                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+
+            CallProvider callProvider = (CallProvider)callFactory;
+
+            call = (Call)callProvider.GetCall();
+
+            call.OnFrameRateChanged += (x, y) => { };
+            call.OnResolutionChanged += (x, y) => { };
+
+            // Media
+            IMediaProvider mediaFactory =
+                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
+
+            MediaProvider mediaProvider = (MediaProvider)mediaFactory;
+
+            Media media = (Media)mediaProvider.GetMedia();
+
+            media.GetCodecsAsync(MediaKind.Audio);
         }
 
         private readonly List<RTCIceServer> _iceServers;
@@ -147,11 +204,11 @@ namespace GuiCore
 
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
-                SendSdp(modifiedOffer);
+                //SendSdp(modifiedOffer);
 
-                //JsonObject json = SendSdp(modifiedOffer);
+                JsonObject json = SendSdp(modifiedOffer);
 
-                //return json.Stringify();
+                return json.Stringify();
             }
 
             return null;
@@ -161,7 +218,7 @@ namespace GuiCore
         /// Sends SDP message.
         /// </summary>
         /// <param name="description">RTC session description.</param>
-        private void SendSdp(IRTCSessionDescription description)
+        private JsonObject SendSdp(IRTCSessionDescription description)
         {
             JsonObject json = null;
             Debug.WriteLine($"Sent session description: {description.Sdp}");
@@ -183,7 +240,7 @@ namespace GuiCore
                 { "sdp", JsonValue.CreateStringValue(description.Sdp) }
             };
 
-            // return json;
+            return json;
         }
 
         public void MessageFromPeerTaskRun(int peerId, string message)
@@ -229,8 +286,16 @@ namespace GuiCore
 
                             if (!connectResult)
                             {
+                                Debug.WriteLine("Failed to initialize our PeerConnection instance");
+
+                                // await Signaller.SignOut();
+                                return;
+                            }
+                            else if (_peerId != peerId)
+                            {
                                 Debug.WriteLine("Received a message from unknown peer while already " +
                                     "in a conversation with a different peer.");
+
                                 return;
                             }
                         }
@@ -282,6 +347,7 @@ namespace GuiCore
                     {
                         var answerOptions = new RTCAnswerOptions();
                         IRTCSessionDescription answer = await PeerConnection.CreateAnswer(answerOptions);
+                        await PeerConnection.SetLocalDescription(answer);
                         // Send answer
                         SendSdp(answer);
                     }

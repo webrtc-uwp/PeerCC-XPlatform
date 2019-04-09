@@ -3,6 +3,7 @@ using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Utilities;
+using GuiCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

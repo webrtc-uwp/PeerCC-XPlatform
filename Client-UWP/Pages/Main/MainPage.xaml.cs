@@ -21,6 +21,7 @@ using Windows.Storage;
 using Client_UWP.Models;
 using WebRtcAdapter;
 using GuiCore;
+using GuiCore.Utilities;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -31,64 +32,26 @@ namespace Client_UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        HttpSignaler _httpSignaler;
+        //HttpSignaler _httpSignaler;
 
         private MainViewModel _mainViewModel;
 
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
-        Account account;
-        Call call;
-
         public MainPage()
         {
             InitializeComponent();
             Loaded += OnLoaded;
 
-            AccountModel accountModel =
-                XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
-
-            // Account 
-            ClientCore.Account.IAccountProvider accountFactory =
-                ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
-
-            AccountProvider accountProvider = (AccountProvider)accountFactory;
-
-            account = (Account)accountProvider
-                .GetAccount(accountModel?.ServiceUri, HttpSignaler.Instance.LocalPeer.Name, HttpSignaler.Instance);
-
-            _httpSignaler = (HttpSignaler)account.Signaler;
-
-            // Call
-            ClientCore.Call.ICallProvider callFactory =
-                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
-
-            CallProvider callProvider = (CallProvider)callFactory;
-
-            call = (Call)callProvider.GetCall();
-
-            call.OnFrameRateChanged += (x, y) => { };
-            call.OnResolutionChanged += (x, y) => { };
-
-            // Media
-            ClientCore.Call.IMediaProvider mediaFactory =
-                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
-
-            MediaProvider mediaProvider = (MediaProvider)mediaFactory;
-
-            Media media = (Media)mediaProvider.GetMedia();
-
-            media.GetCodecsAsync(ClientCore.Call.MediaKind.Audio);
-
-            string name = _httpSignaler.LocalPeer.Name;
+            string name = RtcController.Instance._httpSignaler.LocalPeer.Name;
             Debug.WriteLine($"Connecting to server from local peer: {name}");
 
-            _httpSignaler.SignedIn += Signaler_SignedIn;
-            _httpSignaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
-            _httpSignaler.PeerConnected += Signaler_PeerConnected;
-            _httpSignaler.PeerDisconnected += Signaler_PeerDisconnected;
-            _httpSignaler.MessageFromPeer += Signaler_MessageFromPeer;
+            RtcController.Instance._httpSignaler.SignedIn += Signaler_SignedIn;
+            RtcController.Instance._httpSignaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
+            RtcController.Instance._httpSignaler.PeerConnected += Signaler_PeerConnected;
+            RtcController.Instance._httpSignaler.PeerDisconnected += Signaler_PeerDisconnected;
+            RtcController.Instance._httpSignaler.MessageFromPeer += Signaler_MessageFromPeer;
 
             InitView();
         }
@@ -150,7 +113,7 @@ namespace Client_UWP
                 return;
             }
 
-            if (_httpSignaler.LocalPeer.Name == peer.Name)
+            if (RtcController.Instance._httpSignaler.LocalPeer.Name == peer.Name)
             {
                 Debug.WriteLine($"Peer is our local peer: {peer.ToString()}");
                 return;
@@ -171,8 +134,8 @@ namespace Client_UWP
 
         private void InitView()
         {
-            tbServiceUri.Text = $"Service Uri: { account?.ServiceUri }";
-            tbIdentityUri.Text = $"Self Identity Uri: { account?.SelfIdentityUri }";
+            tbServiceUri.Text = $"Service Uri: { RtcController.Instance.account?.ServiceUri }";
+            tbIdentityUri.Text = $"Self Identity Uri: { RtcController.Instance.account?.SelfIdentityUri }";
 
             peersListView.ItemsSource = HttpSignaler.Instance._peers;
 
@@ -193,9 +156,9 @@ namespace Client_UWP
             {
                 Debug.WriteLine("Connects to server.");
 
-                AccountModel account = XmlSerialization<Models.AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+                AccountModel account = XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
 
-                await _httpSignaler.Connect(account.ServiceUri);
+                await RtcController.Instance._httpSignaler.Connect(account.ServiceUri);
 
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -205,7 +168,7 @@ namespace Client_UWP
             {
                 Debug.WriteLine("Disconnects from server.");
 
-                await _httpSignaler.SignOut();
+                await RtcController.Instance._httpSignaler.SignOut();
 
                 HttpSignaler.Instance._peers.Clear();
 
@@ -234,7 +197,7 @@ namespace Client_UWP
                 message.PeerId = remotePeer.Id.ToString();
                 message.Content = content;
 
-                await _httpSignaler.SentToPeerAsync(message);
+                await RtcController.Instance._httpSignaler.SentToPeerAsync(message);
             };
         }
 

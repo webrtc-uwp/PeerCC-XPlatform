@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace Client_UWP.Utilities
+namespace GuiCore.Utilities
 {
-    internal static class XmlSerialization<T>
+    public static class XmlSerialization<T>
     {
         /// <summary>
         /// Serialize to Xml.

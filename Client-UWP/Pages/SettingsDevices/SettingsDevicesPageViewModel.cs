@@ -1,5 +1,6 @@
 ﻿using Client_UWP.Models;
 using Client_UWP.Utilities;
+using GuiCore.Utilities;
 using System.Collections.Generic;
 using Windows.Storage;
 

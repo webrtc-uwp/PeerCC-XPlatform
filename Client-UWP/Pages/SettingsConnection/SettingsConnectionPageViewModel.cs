@@ -2,6 +2,7 @@
 using Client_UWP.Utilities;
 using ClientCore.Call;
 using GuiCore;
+using GuiCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
