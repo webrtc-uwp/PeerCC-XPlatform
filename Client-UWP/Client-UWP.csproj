@@ -199,6 +199,10 @@
       <Project>{22cbd286-a132-4396-a410-5fa051f7dbef}</Project>
       <Name>ClientCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GuiCore\GuiCore.csproj">
+      <Project>{27bbb28c-aa87-48e4-a483-5047a60c7006}</Project>
+      <Name>GuiCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PeerCC\PeerCC.csproj">
       <Project>{cbec4040-1498-4aee-84c9-bb341371afd4}</Project>
       <Name>PeerCC</Name>
