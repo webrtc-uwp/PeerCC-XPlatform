@@ -1,6 +1,7 @@
 ﻿using Client_UWP.Models;
 using Client_UWP.Utilities;
 using ClientCore.Call;
+using GuiCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -47,7 +48,7 @@ namespace Client_UWP.Pages.SettingsConnection
                             iceServerList.Add(iceServer);
                         }
 
-                        Adapter.Instance.ConfigureIceServers(iceServerList);
+                        RtcController.Instance.ConfigureIceServers(iceServerList);
                     }
                     else
                     {

@@ -20,6 +20,7 @@ using Client_UWP.Utilities;
 using Windows.Storage;
 using Client_UWP.Models;
 using WebRtcAdapter;
+using GuiCore;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -192,7 +193,7 @@ namespace Client_UWP
             {
                 Debug.WriteLine("Connects to server.");
 
-                Models.AccountModel account = XmlSerialization<Models.AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+                AccountModel account = XmlSerialization<Models.AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
 
                 await _httpSignaler.Connect(account.ServiceUri);
 
@@ -227,8 +228,7 @@ namespace Client_UWP
 
                 var message = new Message();
 
-                //string content = await call.ConnectToPeer();
-                string content = await Adapter.Instance.ConnectToPeer(remotePeer.Id);
+                string content = await RtcController.Instance.ConnectToPeer(remotePeer.Id);
 
                 message.Id = "1";
                 message.PeerId = remotePeer.Id.ToString();
@@ -248,7 +248,7 @@ namespace Client_UWP
             int peerId = int.Parse(e.Message.PeerId);
             string message = e.Message.Content;
 
-            Adapter.Instance.MessageFromPeerTaskRun(peerId, message);
+            RtcController.Instance.MessageFromPeerTaskRun(peerId, message);
         }
 
         private void PeersListView_Tapped(object sender, TappedRoutedEventArgs e) =>

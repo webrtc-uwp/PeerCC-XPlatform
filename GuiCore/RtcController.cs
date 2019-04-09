@@ -1,5 +1,6 @@
 ﻿using ClientCore.Call;
 using Org.WebRtc;
+using PeerCC.Signaling;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,31 +8,33 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 
-namespace WebRtcAdapter
+namespace GuiCore
 {
-    public class Adapter
+    public class RtcController
     {
-        private static Adapter instance = null;
+        private static RtcController instance = null;
         private static readonly object InstanceLock = new object();
 
-        public static Adapter Instance
+        public static RtcController Instance
         {
             get
             {
                 lock (InstanceLock)
                 {
                     if (instance == null)
-                        instance = new Adapter();
+                        instance = new RtcController();
 
                     return instance;
                 }
             }
         }
 
-        private Adapter()
+        private RtcController()
         {
             _iceServers = new List<RTCIceServer>();
         }
+
+        private readonly List<RTCIceServer> _iceServers;
 
         private readonly object _peerConnectionLock = new object();
         private RTCPeerConnection _peerConnection_DoNotUse;
@@ -59,8 +62,6 @@ namespace WebRtcAdapter
                 }
             }
         }
-
-        public readonly List<RTCIceServer> _iceServers;
 
         public void ConfigureIceServers(List<IceServer> iceServers)
         {
@@ -113,15 +114,17 @@ namespace WebRtcAdapter
         /// <summary>
         /// Calls to connect to the selected peer.
         /// </summary>
+        /// <param name="peerId"></param>
+        /// <returns></returns>
         public async Task<string> ConnectToPeer(int peerId)
         {
             if (PeerConnection != null)
             {
-                Debug.WriteLine("[Error] We only support connecting to one peer at a time.");
+                Debug.WriteLine("[Error] We only support connection to one peer at a time.");
                 return null;
             }
 
-            var connectToPeerCancelationTokenSource = new System.Threading.CancellationTokenSource();
+            var connectToPeerCancelationTokenSource = new CancellationTokenSource();
 
             bool connectResult = await CreatePeerConnection(connectToPeerCancelationTokenSource.Token);
 
@@ -135,9 +138,8 @@ namespace WebRtcAdapter
                 offerOptions.OfferToReceiveVideo = true;
                 IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
-                string offerSdp = offer.Sdp;
-                RTCSessionDescriptionInit sdpInit = new RTCSessionDescriptionInit();
-                sdpInit.Sdp = offerSdp;
+                var sdpInit = new RTCSessionDescriptionInit();
+                sdpInit.Sdp = offer.Sdp;
                 sdpInit.Type = offer.SdpType;
                 var modifiedOffer = new RTCSessionDescription(sdpInit);
 
@@ -145,9 +147,11 @@ namespace WebRtcAdapter
 
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
-                JsonObject json = SendSdp(modifiedOffer);
+                SendSdp(modifiedOffer);
 
-                return json.Stringify();
+                //JsonObject json = SendSdp(modifiedOffer);
+
+                //return json.Stringify();
             }
 
             return null;
@@ -157,9 +161,12 @@ namespace WebRtcAdapter
         /// Sends SDP message.
         /// </summary>
         /// <param name="description">RTC session description.</param>
-        private JsonObject SendSdp(IRTCSessionDescription description)
+        private void SendSdp(IRTCSessionDescription description)
         {
-            JsonObject json = new JsonObject();
+            JsonObject json = null;
+            Debug.WriteLine($"Sent session description: {description.Sdp}");
+
+            json = new JsonObject();
             string messageType = null;
 
             switch (description.SdpType)
@@ -176,12 +183,12 @@ namespace WebRtcAdapter
                 { "sdp", JsonValue.CreateStringValue(description.Sdp) }
             };
 
-            return json;
+            // return json;
         }
 
         public void MessageFromPeerTaskRun(int peerId, string message)
         {
-            Task.Run(async () =>
+            Task.Run(async () => 
             {
                 Debug.Assert(_peerId == peerId || _peerId == -1);
                 Debug.Assert(message.Length > 0);
@@ -208,7 +215,7 @@ namespace WebRtcAdapter
                     {
                         // Create the peer connection only when call is 
                         // about to get initiated. Otherwise ignore the 
-                        // messages from peers which dould be result 
+                        // message from peers which could be result 
                         // of old (but not yet fully closed) connections.
                         if (type == "offer" || type == "answer" || type == "json")
                         {
@@ -222,15 +229,8 @@ namespace WebRtcAdapter
 
                             if (!connectResult)
                             {
-                                Debug.WriteLine("Failed to initialize our PeerConnection instance");
-
-                                //await Signaller.SignOut();
-                                return;
-                            }
-                            else if (_peerId != peerId)
-                            {
                                 Debug.WriteLine("Received a message from unknown peer while already " +
-                                    "in a convesation with a different peer.");
+                                    "in a conversation with a different peer.");
                                 return;
                             }
                         }
@@ -257,7 +257,6 @@ namespace WebRtcAdapter
                     if (string.IsNullOrEmpty(sdp))
                     {
                         Debug.WriteLine("Can't parse received session description message.");
-
                         return;
                     }
 
@@ -272,7 +271,7 @@ namespace WebRtcAdapter
                         default: Debug.Assert(false, type); break;
                     }
 
-                    RTCSessionDescriptionInit sdpInit = new RTCSessionDescriptionInit();
+                    var sdpInit = new RTCSessionDescriptionInit();
                     sdpInit.Sdp = sdp;
                     sdpInit.Type = messageType;
                     var description = new RTCSessionDescription(sdpInit);
@@ -281,9 +280,8 @@ namespace WebRtcAdapter
 
                     if (messageType == RTCSdpType.Offer)
                     {
-                        RTCAnswerOptions answerOptions = new RTCAnswerOptions();
-                        var answer = await PeerConnection.CreateAnswer(answerOptions);
-                        await PeerConnection.SetLocalDescription(answer);
+                        var answerOptions = new RTCAnswerOptions();
+                        IRTCSessionDescription answer = await PeerConnection.CreateAnswer(answerOptions);
                         // Send answer
                         SendSdp(answer);
                     }
@@ -292,15 +290,12 @@ namespace WebRtcAdapter
                 {
                     RTCIceCandidate candidate = null;
 
-                    string sdpMid = jMessage.ContainsKey("sdpMid")
-                    ? jMessage.GetNamedString("sdpMid") 
-                    : null;
-                    double sdpMlineIndex = jMessage.ContainsKey("sdpMLineIndex")
-                    ? jMessage.GetNamedNumber("sdpMLineIndex")
-                    : -1;
-                    string sdp = jMessage.ContainsKey("candidate")
-                    ? jMessage.GetNamedString("candidate")
-                    : null;
+                    string sdpMid = 
+                        jMessage.ContainsKey("sdpMid") ? jMessage.GetNamedString("sdpMid") : null;
+                    double sdpMlineIndex = 
+                        jMessage.ContainsKey("sdpMLineIndex") ? jMessage.GetNamedNumber("sdpMLineIndex") : -1;
+                    string sdp =
+                        jMessage.ContainsKey("candidate") ? jMessage.GetNamedString("candidate") : null;
 
                     if (string.IsNullOrEmpty(sdpMid) || sdpMlineIndex == -1 || string.IsNullOrEmpty(sdp))
                     {
@@ -308,7 +303,7 @@ namespace WebRtcAdapter
                         return;
                     }
 
-                    RTCIceCandidateInit candidateInit = new RTCIceCandidateInit();
+                    var candidateInit = new RTCIceCandidateInit();
                     candidateInit.Candidate = sdp;
                     candidateInit.SdpMid = sdpMid;
                     candidateInit.SdpMLineIndex = (ushort)sdpMlineIndex;
@@ -323,10 +318,9 @@ namespace WebRtcAdapter
 
         private void SendMessage(IJsonValue json)
         {
-            Debug.WriteLine($"[MainPage] SendMessage {json}");
+            Debug.WriteLine($"Send message json: {json}");
 
-            // Don't await, send it async
-            //var task = _httpSignaler.SendToPeer(_peerId, json);
+            HttpSignaler.Instance.SendToPeer(_peerId, json.Stringify());
         }
     }
 }
