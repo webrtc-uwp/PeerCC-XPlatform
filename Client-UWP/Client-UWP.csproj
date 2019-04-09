@@ -95,10 +95,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controllers\DevicesController.cs" />
-    <Compile Include="Controllers\InitializationController.cs" />
-    <Compile Include="Controllers\MediaDevicesController.cs" />
-    <Compile Include="Controllers\SettingsController.cs" />
     <Compile Include="Models\AccountModel.cs" />
     <Compile Include="MVVM\BindableBase.cs" />
     <Compile Include="MVVM\DispatcherBindableBase.cs" />

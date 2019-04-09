@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using WebRtcAdapter;
 using Windows.Storage;
 
 namespace Client_UWP.Pages.SettingsConnection

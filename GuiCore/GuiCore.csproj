@@ -120,6 +120,8 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DevicesController.cs" />
+    <Compile Include="InitializationController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RtcController.cs" />
     <EmbeddedResource Include="Properties\GuiCore.rd.xml" />

@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Media.Capture;
 
-namespace Client_UWP.Controllers
+namespace GuiCore
 {
     public sealed class DevicesController
     {
@@ -59,7 +56,7 @@ namespace Client_UWP.Controllers
 
             Task initTask = mediaAccessRequester.InitializeAsync(mediaSettings).AsTask();
 
-            return initTask.ContinueWith(initResult => 
+            return initTask.ContinueWith(initResult =>
             {
                 bool accessRequestAccepted = true;
                 if (initResult.Exception != null)

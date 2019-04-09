@@ -1,5 +1,5 @@
-﻿using Client_UWP.Controllers;
-using Client_UWP.MVVM;
+﻿using Client_UWP.MVVM;
+using GuiCore;
 using System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
