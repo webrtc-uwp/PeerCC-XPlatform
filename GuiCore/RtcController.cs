@@ -1,5 +1,6 @@
 ﻿using ClientCore.Account;
 using ClientCore.Call;
+using ClientCore.Signaling;
 using GuiCore.Utilities;
 using Org.WebRtc;
 using PeerCC.Account;
@@ -166,6 +167,33 @@ namespace GuiCore
             return true;
         }
 
+        /// <summary>
+        /// Logs in local peer to server.
+        /// </summary>
+        /// <returns></returns>
+        public async Task LogInToServer()
+        {
+            Debug.WriteLine("Connects to server.");
+
+            AccountModel account =
+                    XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+
+            await _httpSignaler.Connect(account.ServiceUri);
+        }
+
+        /// <summary>
+        /// Logs out local peer from server.
+        /// </summary>
+        /// <returns></returns>
+        public async Task LogOutFromServer()
+        {
+            Debug.WriteLine("Disconnects from server.");
+
+            await _httpSignaler.SignOut();
+
+            _httpSignaler._peers.Clear();
+        }
+
         private int _peerId = -1;
 
         /// <summary>
@@ -214,6 +242,19 @@ namespace GuiCore
             return null;
         }
 
+        public async Task CallRemotePeer(int remotePeerId)
+        {
+            var message = new Message();
+
+            string content = await ConnectToPeer(remotePeerId);
+
+            message.Id = "1";
+            message.PeerId = remotePeerId.ToString();
+            message.Content = content;
+
+            await _httpSignaler.SentToPeerAsync(message);
+        }
+
         /// <summary>
         /// Sends SDP message.
         /// </summary>
@@ -243,12 +284,20 @@ namespace GuiCore
             return json;
         }
 
-        public void MessageFromPeerTaskRun(int peerId, string message)
+        public void MessageFromPeerTaskRun(Message message)
         {
+            Debug.WriteLine("Message from peer!");
+            Debug.WriteLine("Peer id: " + message.PeerId);
+            Debug.WriteLine("Message id: " + message.Id);
+            Debug.WriteLine("Message content: " + message.Content);
+
+            int peerId = int.Parse(message.PeerId);
+            string content = message.Content;
+
             Task.Run(async () => 
             {
                 Debug.Assert(_peerId == peerId || _peerId == -1);
-                Debug.Assert(message.Length > 0);
+                Debug.Assert(content.Length > 0);
 
                 if (_peerId != peerId || _peerId == -1)
                 {
@@ -258,9 +307,9 @@ namespace GuiCore
                     return;
                 }
 
-                if (!JsonObject.TryParse(message, out JsonObject jMessage))
+                if (!JsonObject.TryParse(content, out JsonObject jMessage))
                 {
-                    Debug.WriteLine($"Received unknown message: {message}");
+                    Debug.WriteLine($"Received unknown message: {content}");
                     return;
                 }
 
@@ -325,7 +374,7 @@ namespace GuiCore
                         return;
                     }
 
-                    Debug.WriteLine($"Received session description:\n{message}");
+                    Debug.WriteLine($"Received session description:\n{content}");
 
                     RTCSdpType messageType = RTCSdpType.Offer;
                     switch (type)
@@ -365,7 +414,7 @@ namespace GuiCore
 
                     if (string.IsNullOrEmpty(sdpMid) || sdpMlineIndex == -1 || string.IsNullOrEmpty(sdp))
                     {
-                        Debug.WriteLine($"[Error] Can't parse received message.\n{message}");
+                        Debug.WriteLine($"[Error] Can't parse received message.\n{content}");
                         return;
                     }
 
@@ -377,7 +426,7 @@ namespace GuiCore
 
                     await PeerConnection.AddIceCandidate(candidate);
 
-                    Debug.WriteLine($"Receiving ice candidate:\n{message}");
+                    Debug.WriteLine($"Receiving ice candidate:\n{content}");
                 }
             }).Wait();
         }

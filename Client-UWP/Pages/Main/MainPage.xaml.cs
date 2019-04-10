@@ -137,7 +137,7 @@ namespace Client_UWP
             tbServiceUri.Text = $"Service Uri: { RtcController.Instance.account?.ServiceUri }";
             tbIdentityUri.Text = $"Self Identity Uri: { RtcController.Instance.account?.SelfIdentityUri }";
 
-            peersListView.ItemsSource = HttpSignaler.Instance._peers;
+            peersListView.ItemsSource = RtcController.Instance._httpSignaler._peers;
 
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = null;
@@ -154,11 +154,7 @@ namespace Client_UWP
 
             ConnectPeer.Click += async (sender, args) =>
             {
-                Debug.WriteLine("Connects to server.");
-
-                AccountModel account = XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
-
-                await RtcController.Instance._httpSignaler.Connect(account.ServiceUri);
+                await RtcController.Instance.LogInToServer();
 
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -166,11 +162,7 @@ namespace Client_UWP
 
             DisconnectPeer.Click += async (sender, args) =>
             {
-                Debug.WriteLine("Disconnects from server.");
-
-                await RtcController.Instance._httpSignaler.SignOut();
-
-                HttpSignaler.Instance._peers.Clear();
+                await RtcController.Instance.LogOutFromServer();
 
                 DisconnectPeer.IsEnabled = false;
                 ConnectPeer.IsEnabled = true;
@@ -189,29 +181,13 @@ namespace Client_UWP
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
-                var message = new Message();
-
-                string content = await RtcController.Instance.ConnectToPeer(remotePeer.Id);
-
-                message.Id = "1";
-                message.PeerId = remotePeer.Id.ToString();
-                message.Content = content;
-
-                await RtcController.Instance._httpSignaler.SentToPeerAsync(message);
+                await RtcController.Instance.CallRemotePeer(remotePeer.Id);
             };
         }
 
         private void Signaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
         {
-            Debug.WriteLine("Message from peer MainPage!");
-            Debug.WriteLine("Peer id: " + e.Message.PeerId);
-            Debug.WriteLine("Message id: " + e.Message.Id);
-            Debug.WriteLine("Message content: " + e.Message.Content);
-
-            int peerId = int.Parse(e.Message.PeerId);
-            string message = e.Message.Content;
-
-            RtcController.Instance.MessageFromPeerTaskRun(peerId, message);
+            RtcController.Instance.MessageFromPeerTaskRun(e.Message);
         }
 
         private void PeersListView_Tapped(object sender, TappedRoutedEventArgs e) =>
