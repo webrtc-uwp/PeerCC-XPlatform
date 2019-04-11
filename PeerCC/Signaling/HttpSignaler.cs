@@ -46,7 +46,7 @@ namespace PeerCC.Signaling
         private ConcurrentQueue<Tuple<int, string>> _sendMessageQueue = new ConcurrentQueue<Tuple<int, string>>();
         private Thread _sendThread;
 
-        public HttpSignaler()
+        private HttpSignaler()
         {
             _state = State.NotConnected;
             _myId = -1;

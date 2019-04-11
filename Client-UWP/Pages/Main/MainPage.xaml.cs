@@ -44,7 +44,7 @@ namespace Client_UWP
         {
             InitializeComponent();
 
-            _httpSignaler = new HttpSignaler();
+            _httpSignaler = HttpSignaler.Instance;
 
             Loaded += OnLoaded;
 
