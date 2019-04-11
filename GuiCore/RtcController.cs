@@ -54,6 +54,8 @@ namespace GuiCore
 
         private RtcController()
         {
+            _httpSignaler = new HttpSignaler();
+
             _iceServers = new List<RTCIceServer>();
 
             AccountModel accountModel =
@@ -66,7 +68,7 @@ namespace GuiCore
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
             account = (Account)accountProvider
-                .GetAccount(accountModel?.ServiceUri, HttpSignaler.Instance.LocalPeer.Name, HttpSignaler.Instance);
+                .GetAccount(accountModel?.ServiceUri, _httpSignaler.LocalPeer.Name, _httpSignaler);
 
             _httpSignaler = (HttpSignaler)account.Signaler;
 
@@ -190,8 +192,6 @@ namespace GuiCore
             Debug.WriteLine("Disconnects from server.");
 
             await _httpSignaler.SignOut();
-
-            _httpSignaler._peers.Clear();
         }
 
         private int _peerId = -1;
@@ -435,7 +435,7 @@ namespace GuiCore
         {
             Debug.WriteLine($"Send message json: {json}");
 
-            HttpSignaler.Instance.SendToPeer(_peerId, json.Stringify());
+            _httpSignaler.SendToPeer(_peerId, json.Stringify());
         }
     }
 }
