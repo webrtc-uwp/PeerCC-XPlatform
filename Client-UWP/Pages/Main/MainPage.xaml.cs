@@ -22,6 +22,7 @@ using Client_UWP.Models;
 using WebRtcAdapter;
 using GuiCore;
 using GuiCore.Utilities;
+using System.Linq;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -32,7 +33,7 @@ namespace Client_UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        //HttpSignaler _httpSignaler;
+        private readonly HttpSignaler _httpSignaler;
 
         private MainViewModel _mainViewModel;
 
@@ -42,18 +43,34 @@ namespace Client_UWP
         public MainPage()
         {
             InitializeComponent();
+
+            _httpSignaler = new HttpSignaler();
+
             Loaded += OnLoaded;
 
-            string name = RtcController.Instance._httpSignaler.LocalPeer.Name;
+            string name = _httpSignaler.LocalPeer.Name;
             Debug.WriteLine($"Connecting to server from local peer: {name}");
 
-            RtcController.Instance._httpSignaler.SignedIn += Signaler_SignedIn;
-            RtcController.Instance._httpSignaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
-            RtcController.Instance._httpSignaler.PeerConnected += Signaler_PeerConnected;
-            RtcController.Instance._httpSignaler.PeerDisconnected += Signaler_PeerDisconnected;
-            RtcController.Instance._httpSignaler.MessageFromPeer += Signaler_MessageFromPeer;
+            peersListView.SelectedIndex = -1;
+            peersListView.SelectedItem = 0;
+
+            _httpSignaler.SignedIn += Signaler_SignedIn;
+            _httpSignaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
+            _httpSignaler.PeerConnected += Signaler_PeerConnected;
+            _httpSignaler.PeerDisconnected += Signaler_PeerDisconnected;
+            _httpSignaler.MessageFromPeer += Signaler_MessageFromPeer;
 
             InitView();
+        }
+
+        private void Signaler_RemoteConnected(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Remote peer connected.");
+        }
+
+        private void Signaler_RemoteDisconnected(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Remote peer disconnected.");
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -113,11 +130,12 @@ namespace Client_UWP
                 return;
             }
 
-            if (RtcController.Instance._httpSignaler.LocalPeer.Name == peer.Name)
+            if (_httpSignaler.LocalPeer.Name == peer.Name)
             {
                 Debug.WriteLine($"Peer is our local peer: {peer.ToString()}");
                 return;
             }
+            peersListView.Items.Add(peer);
         }
 
         private async void Signaler_PeerDisconnected(object sender, Peer peer)
@@ -130,14 +148,19 @@ namespace Client_UWP
         private void HandlePeerDisconnected(object sender, Peer peer)
         {
             Debug.WriteLine($"Peer disconnected {peer.Name} / {peer.Id}");
+
+            for (int i = 0; i < peersListView.Items.Count(); i++)
+            {
+                Peer p = (Peer)peersListView.Items[i];
+                if (p.Name == peer.Name)
+                    peersListView.Items.Remove(peersListView.Items[i]);
+            }
         }
 
         private void InitView()
         {
             tbServiceUri.Text = $"Service Uri: { RtcController.Instance.account?.ServiceUri }";
             tbIdentityUri.Text = $"Self Identity Uri: { RtcController.Instance.account?.SelfIdentityUri }";
-
-            peersListView.ItemsSource = RtcController.Instance._httpSignaler._peers;
 
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = null;
@@ -154,7 +177,13 @@ namespace Client_UWP
 
             ConnectPeer.Click += async (sender, args) =>
             {
-                await RtcController.Instance.LogInToServer();
+                //await RtcController.Instance.LogInToServer();
+
+                Debug.WriteLine("Connects to server.");
+                AccountModel account =
+                    XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () => await _httpSignaler.Connect(account.ServiceUri));
 
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -162,7 +191,13 @@ namespace Client_UWP
 
             DisconnectPeer.Click += async (sender, args) =>
             {
-                await RtcController.Instance.LogOutFromServer();
+                //await RtcController.Instance.LogOutFromServer();
+
+                Debug.WriteLine("Disconnects from server.");
+
+                peersListView.Items.Clear();
+
+                await _httpSignaler.SignOut();
 
                 DisconnectPeer.IsEnabled = false;
                 ConnectPeer.IsEnabled = true;
