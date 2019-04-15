@@ -13,10 +13,7 @@ using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Pages.SettingsDebug;
 using PeerCC.Signaling;
 using Client_UWP.Pages.SettingsAccount;
-using Windows.Storage;
-using Client_UWP.Models;
 using GuiCore;
-using GuiCore.Utilities;
 using System.Linq;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -188,7 +185,7 @@ namespace Client_UWP
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
-                await RtcController.Instance.CallRemotePeer(remotePeer.Id);
+                RtcController.Instance.ConnectToPeer(remotePeer.Id);
             };
         }
 

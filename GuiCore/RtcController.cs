@@ -35,6 +35,16 @@ namespace GuiCore
             }
         }
 
+        // SDP negotiation attributes
+        public class NegotiationAtributes
+        {
+            public static readonly string SdpMid = "sdpMid";
+            public static readonly string SdpMLineIndex = "sdpMLineIndex";
+            public static readonly string Candidate = "candidate";
+            public static readonly string Type = "type";
+            public static readonly string Sdp = "sdp";
+        }
+
         public class AccountModel
         {
             public string AccountName { get; set; }
@@ -141,11 +151,9 @@ namespace GuiCore
         /// Creates a peer connection.
         /// </summary>
         /// <returns>True if connection to a peer is successfully created.</returns>
-        public async Task<bool> CreatePeerConnection(CancellationToken ct)
+        public async Task<bool> CreatePeerConnection()
         {
             Debug.Assert(PeerConnection == null);
-
-            if (ct.IsCancellationRequested) return false;
 
             var factoryConfig = new WebRtcFactoryConfiguration();
             WebRtcFactory factory = new WebRtcFactory(factoryConfig);
@@ -201,19 +209,17 @@ namespace GuiCore
         /// </summary>
         /// <param name="peerId"></param>
         /// <returns></returns>
-        public async Task<string> ConnectToPeer(int peerId)
+        public async void ConnectToPeer(int peerId)
         {
+            Debug.Assert(_peerId == -1);
+
             if (PeerConnection != null)
             {
                 Debug.WriteLine("[Error] We only support connection to one peer at a time.");
-                return null;
+                return;
             }
 
-            var connectToPeerCancelationTokenSource = new CancellationTokenSource();
-
-            bool connectResult = await CreatePeerConnection(connectToPeerCancelationTokenSource.Token);
-
-            connectToPeerCancelationTokenSource.Dispose();
+            bool connectResult = await CreatePeerConnection();
 
             if (connectResult)
             {
@@ -232,34 +238,34 @@ namespace GuiCore
 
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
-                //SendSdp(modifiedOffer);
+                SendSdp(modifiedOffer);
 
-                JsonObject json = SendSdp(modifiedOffer);
+                //JsonObject json = SendSdp(modifiedOffer);
 
-                return json.Stringify();
+                //return json.Stringify();
             }
 
-            return null;
+            //return null;
         }
 
-        public async Task CallRemotePeer(int remotePeerId)
-        {
-            var message = new Message();
+        //public async Task CallRemotePeer(int remotePeerId)
+        //{
+        //    var message = new Message();
 
-            string content = await ConnectToPeer(remotePeerId);
+        //    string content = await ConnectToPeer(remotePeerId);
 
-            message.Id = "1";
-            message.PeerId = remotePeerId.ToString();
-            message.Content = content;
+        //    message.Id = "1";
+        //    message.PeerId = remotePeerId.ToString();
+        //    message.Content = content;
 
-            await _httpSignaler.SentToPeerAsync(message);
-        }
+        //    await _httpSignaler.SentToPeerAsync(message);
+        //}
 
         /// <summary>
         /// Sends SDP message.
         /// </summary>
         /// <param name="description">RTC session description.</param>
-        private JsonObject SendSdp(IRTCSessionDescription description)
+        private void SendSdp(IRTCSessionDescription description)
         {
             JsonObject json = null;
             Debug.WriteLine($"Sent session description: {description.Sdp}");
@@ -277,11 +283,13 @@ namespace GuiCore
 
             json = new JsonObject
             {
-                { "type", JsonValue.CreateStringValue(messageType) },
-                { "sdp", JsonValue.CreateStringValue(description.Sdp) }
+                { NegotiationAtributes.Type, JsonValue.CreateStringValue(messageType) },
+                { NegotiationAtributes.Sdp, JsonValue.CreateStringValue(description.Sdp) }
             };
 
-            return json;
+            //return json;
+
+            SendMessage(json);
         }
 
         public void MessageFromPeerTaskRun(Message message)
@@ -299,7 +307,7 @@ namespace GuiCore
                 Debug.Assert(_peerId == peerId || _peerId == -1);
                 Debug.Assert(content.Length > 0);
 
-                if (_peerId != peerId || _peerId == -1)
+                if (_peerId != peerId && _peerId != -1)
                 {
                     Debug.WriteLine("Received a message from unknown peer " +
                         "while already in a conversation with a different peer.");
@@ -313,7 +321,9 @@ namespace GuiCore
                     return;
                 }
 
-                string type = jMessage.ContainsKey("type") ? jMessage.GetNamedString("type") : null;
+                string type = jMessage.ContainsKey(NegotiationAtributes.Type) 
+                       ? jMessage.GetNamedString(NegotiationAtributes.Type) 
+                       : null;
 
                 if (PeerConnection == null)
                 {
@@ -328,16 +338,13 @@ namespace GuiCore
                             Debug.Assert(_peerId == -1);
                             _peerId = peerId;
 
-                            var connectToPeerCancelationTokenSource = new CancellationTokenSource();
-                            bool connectResult = await CreatePeerConnection(connectToPeerCancelationTokenSource.Token);
-
-                            connectToPeerCancelationTokenSource.Dispose();
+                            bool connectResult = await CreatePeerConnection();
 
                             if (!connectResult)
                             {
                                 Debug.WriteLine("Failed to initialize our PeerConnection instance");
 
-                                // await Signaller.SignOut();
+                                await _httpSignaler.SignOut();
                                 return;
                             }
                             else if (_peerId != peerId)
@@ -351,7 +358,7 @@ namespace GuiCore
                     }
                     else
                     {
-                        Debug.WriteLine("Received an untyped message after closing peer connection.");
+                        Debug.WriteLine("[Warn] Received an untyped message after closing peer connection.");
                         return;
                     }
                 }
@@ -366,11 +373,13 @@ namespace GuiCore
 
                     string sdp = null;
 
-                    sdp = jMessage.ContainsKey("sdp") ? jMessage.GetNamedString("sdp") : null;
+                    sdp = jMessage.ContainsKey(NegotiationAtributes.Sdp) 
+                          ? jMessage.GetNamedString(NegotiationAtributes.Sdp) 
+                          : null;
 
                     if (string.IsNullOrEmpty(sdp))
                     {
-                        Debug.WriteLine("Can't parse received session description message.");
+                        Debug.WriteLine("[Error] Can't parse received session description message.");
                         return;
                     }
 
@@ -405,23 +414,28 @@ namespace GuiCore
                 {
                     RTCIceCandidate candidate = null;
 
-                    string sdpMid = 
-                        jMessage.ContainsKey("sdpMid") ? jMessage.GetNamedString("sdpMid") : null;
-                    double sdpMlineIndex = 
-                        jMessage.ContainsKey("sdpMLineIndex") ? jMessage.GetNamedNumber("sdpMLineIndex") : -1;
-                    string sdp =
-                        jMessage.ContainsKey("candidate") ? jMessage.GetNamedString("candidate") : null;
+                    string sdpMid = jMessage.ContainsKey(NegotiationAtributes.SdpMid) 
+                           ? jMessage.GetNamedString(NegotiationAtributes.SdpMid) 
+                           : null;
 
-                    if (string.IsNullOrEmpty(sdpMid) || sdpMlineIndex == -1 || string.IsNullOrEmpty(sdp))
+                    double sdpMLineIndex = jMessage.ContainsKey(NegotiationAtributes.SdpMLineIndex) 
+                           ? jMessage.GetNamedNumber(NegotiationAtributes.SdpMLineIndex) 
+                           : -1;
+
+                    string sdpCandidate = jMessage.ContainsKey(NegotiationAtributes.Candidate) 
+                           ? jMessage.GetNamedString(NegotiationAtributes.Candidate) 
+                           : null;
+
+                    if (string.IsNullOrEmpty(sdpMid) || sdpMLineIndex == -1 || string.IsNullOrEmpty(sdpCandidate))
                     {
                         Debug.WriteLine($"[Error] Can't parse received message.\n{content}");
                         return;
                     }
 
                     var candidateInit = new RTCIceCandidateInit();
-                    candidateInit.Candidate = sdp;
+                    candidateInit.Candidate = sdpCandidate;
                     candidateInit.SdpMid = sdpMid;
-                    candidateInit.SdpMLineIndex = (ushort)sdpMlineIndex;
+                    candidateInit.SdpMLineIndex = (ushort)sdpMLineIndex;
                     candidate = new RTCIceCandidate(candidateInit);
 
                     await PeerConnection.AddIceCandidate(candidate);
