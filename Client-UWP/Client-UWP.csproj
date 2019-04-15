@@ -98,6 +98,9 @@
     <Compile Include="Models\AccountModel.cs" />
     <Compile Include="MVVM\BindableBase.cs" />
     <Compile Include="MVVM\DispatcherBindableBase.cs" />
+    <Compile Include="Pages\Call\CallPage.xaml.cs">
+      <DependentUpon>CallPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Main\MainViewModel.cs" />
     <Compile Include="Models\AudioCodec.cs" />
     <Compile Include="Models\CaptureFrameRate.cs" />
@@ -155,6 +158,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Pages\Call\CallPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\Main\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

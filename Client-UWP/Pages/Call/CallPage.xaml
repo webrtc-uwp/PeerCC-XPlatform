@@ -1,0 +1,37 @@
+﻿<Page
+    x:Class="Client_UWP.Pages.Call.CallPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Client_UWP.Pages.Call"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="LightGray">
+
+    <StackPanel>
+        <CommandBar>
+            <CommandBar.Content>
+                <TextBlock Text="Peer Connection Client"
+                           Margin="12,12,0,18"
+                           FontWeight="Bold"
+                           Foreground="Gray"/>
+            </CommandBar.Content>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="AccountSettings" 
+                              Label="Account"/>
+                <AppBarButton x:Name="ConnectionSettings" 
+                              Label="Connection"/>
+                <AppBarButton x:Name="DevicesSettings" 
+                              Label="Devices"/>
+                <AppBarButton x:Name="DebugSettings" 
+                              Label="Debug"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+        
+        <Button x:Name="Hangup" 
+                Content="Hangup"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0,20"/>
+    </StackPanel>
+</Page>

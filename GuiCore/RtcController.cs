@@ -239,27 +239,96 @@ namespace GuiCore
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
                 SendSdp(modifiedOffer);
-
-                //JsonObject json = SendSdp(modifiedOffer);
-
-                //return json.Stringify();
             }
-
-            //return null;
         }
 
-        //public async Task CallRemotePeer(int remotePeerId)
-        //{
-        //    var message = new Message();
+        /// <summary>
+        /// Calls to disconnect from peer.
+        /// </summary>
+        public void DisconnectFromPeer()
+        {
+            SendHangupMessage();
 
-        //    string content = await ConnectToPeer(remotePeerId);
+            ClosePeerConnection();
+        }
 
-        //    message.Id = "1";
-        //    message.PeerId = remotePeerId.ToString();
-        //    message.Content = content;
+        /// <summary>
+        /// Helper method to send a hangup message to a peer.
+        /// </summary>
+        private void SendHangupMessage()
+        {
+            _httpSignaler.SendToPeer(_peerId, "BYE");
+        }
 
-        //    await _httpSignaler.SentToPeerAsync(message);
-        //}
+        /// <summary>
+        /// Closes a peer connection.
+        /// </summary>
+        private void ClosePeerConnection()
+        {
+            if (PeerConnection != null)
+            {
+                _peerId = -1;
+
+                PeerConnection.OnIceCandidate -= PeerConnection_OnIceCandidate;
+                PeerConnection.OnTrack -= PeerConnection_OnTrack;
+                PeerConnection.OnRemoveTrack -= PeerConnection_OnRemoveTrack;
+
+                PeerConnection = null;
+
+                GC.Collect(); // Ensure all references are truly dropped.
+            }
+        }
+
+        /// <summary>
+        /// Invoked when the remote peer removed a media stream from the peer connection.
+        /// </summary>
+        private void PeerConnection_OnRemoveTrack(IRTCTrackEvent Event)
+        {
+            if (Event.Track.Kind == "video")
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Invoked when the remote peer added media stream to the peer connection.
+        /// </summary>
+        private void PeerConnection_OnTrack(IRTCTrackEvent Event)
+        {
+            if (Event.Track.Kind == "video")
+            {
+
+            }
+            else if (Event.Track.Kind == "audio")
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Called when WebRTC detects another ICE candidate.
+        /// This candidate needs to be sent to the other peer.
+        /// </summary>
+        /// <param name="Event">Details about RTCPeerConnectionIceEvent</param>
+        private void PeerConnection_OnIceCandidate(IRTCPeerConnectionIceEvent Event)
+        {
+            if (Event.Candidate == null) return;
+
+            double index = (double)Event.Candidate.SdpMLineIndex;
+
+            JsonObject json = null;
+
+            json = new JsonObject
+            {
+                { NegotiationAtributes.SdpMid, JsonValue.CreateStringValue(Event.Candidate.SdpMid) },
+                { NegotiationAtributes.SdpMLineIndex, JsonValue.CreateNumberValue(index) },
+                { NegotiationAtributes.Candidate, JsonValue.CreateStringValue(Event.Candidate.Candidate) }
+            };
+
+            Debug.WriteLine($"Send ice candidate:\n{json?.Stringify()}");
+
+            SendMessage(json);
+        }
 
         /// <summary>
         /// Sends SDP message.
