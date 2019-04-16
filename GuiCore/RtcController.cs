@@ -147,6 +147,8 @@ namespace GuiCore
             }
         }
 
+        WebRtcFactory _factory;
+
         /// <summary>
         /// Creates a peer connection.
         /// </summary>
@@ -156,11 +158,11 @@ namespace GuiCore
             Debug.Assert(PeerConnection == null);
 
             var factoryConfig = new WebRtcFactoryConfiguration();
-            WebRtcFactory factory = new WebRtcFactory(factoryConfig);
+            _factory = new WebRtcFactory(factoryConfig);
 
             var config = new RTCConfiguration()
             {
-                Factory = factory,
+                Factory = _factory,
                 BundlePolicy = RTCBundlePolicy.Balanced,
                 IceTransportPolicy = RTCIceTransportPolicy.All,
                 IceServers = _iceServers
@@ -174,7 +176,132 @@ namespace GuiCore
                 throw new NullReferenceException("Peer connection is not created.");
             }
 
+            PeerConnection.OnIceGatheringStateChange += () =>
+            {
+                Debug.WriteLine("Ice connection state change, gathering-state = " 
+                    + PeerConnection.IceGatheringState.ToString().ToLower());
+            };
+
+            PeerConnection.OnIceConnectionStateChange += () =>
+            {
+                Debug.WriteLine("Ice connection state change, state=" 
+                    + (PeerConnection != null ? PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
+            };
+
+            PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
+            PeerConnection.OnTrack += PeerConnection_OnTrack;
+            PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
+
+            Debug.WriteLine("Getting user media.");
+
+            IReadOnlyList<IConstraint> mandatoryConstraints = new List<IConstraint>();
+            //{
+            //    new Constraint("maxWidth", VideoCaptureProfile.Width.ToString()),
+            //    new Constraint("minWidth", VideoCaptureProfile.Width.ToString()),
+            //    new Constraint("maxHeight", VideoCaptureProfile.Height.ToString()),
+            //    new Constraint("minHeight", VideoCaptureProfile.Height.ToString()),
+            //    new Constraint("maxFrameRate", VideoCaptureProfile.FrameRate.ToString()),
+            //    new Constraint("minFrameRate", VideoCaptureProfile.FrameRate.ToString())
+            //};
+
+            IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
+            IMediaConstraints mediaConstraints = new MediaConstraints(mandatoryConstraints, optionalConstraints);
+
+            //var videoCapturer = VideoCapturer.Create(_selectedVideoDevice.DisplayName, _selectedVideoDevice.Id, false);
+
+            //var videoOptions = new VideoOptions();
+            //videoOptions.Factory = _factory;
+            //videoOptions.Capturer = videoCapturer;
+            //videoOptions.Constraints = mediaConstraints;
+
+            //var videoTrackSource = VideoTrackSource.Create(videoOptions);
+            //_selfVideoTrack = MediaStreamTrack.CreateVideoTrack("SELF_VIDEO", videoTrackSource);
+
+            var audioOptions = new AudioOptions();
+            audioOptions.Factory = _factory;
+
+            var audioTrackSource = AudioTrackSource.Create(audioOptions);
+            _selfAudioTrack = MediaStreamTrack.CreateAudioTrack("SELF_AUDIO", audioTrackSource);
+
+            Debug.WriteLine("Adding local media tracks.");
+            PeerConnection.AddTrack(_selfVideoTrack);
+            PeerConnection.AddTrack(_selfAudioTrack);
+
+            OnAddLocalTrack?.Invoke(_selfVideoTrack);
+            OnAddLocalTrack?.Invoke(_selfAudioTrack);
+
+            if (_selfVideoTrack != null)
+            {
+                if (VideoLoopbackEnabled)
+                {
+                    //_selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
+                }
+            }
+
             return true;
+        }
+
+        public void SelectedVideoDevice(MediaDevice device)
+        {
+            _selectedVideoDevice = device;
+        }
+
+        public void SelectedAudioCaptureDevice(MediaDevice device)
+        {
+            _selectedAudioCaptureDevice = device;
+        }
+
+        public void SelectedAudioPlayoutDevice(MediaDevice device)
+        {
+            _selectedAudioCaptureDevice = device;
+        }
+
+        bool _videoLoopbackEnabled = true;
+        public bool VideoLoopbackEnabled
+        {
+            get
+            {
+                return _videoLoopbackEnabled;
+            }
+            set
+            {
+                if (_videoLoopbackEnabled == value) return;
+
+                _videoLoopbackEnabled = value;
+                if (_videoLoopbackEnabled)
+                {
+                    if (_selfVideoTrack != null)
+                    {
+                        Debug.WriteLine("Enabling video loopback.");
+                    }
+                }
+            }
+        }
+
+        public event Action<IMediaStreamTrack> OnAddLocalTrack;
+
+        private IMediaStreamTrack _peerVideoTrack;
+        private IMediaStreamTrack _selfVideoTrack;
+        private IMediaStreamTrack _peerAudioTrack;
+        private IMediaStreamTrack _selfAudioTrack;
+
+        MediaDevice _selectedVideoDevice = null;
+        MediaDevice _selectedAudioCaptureDevice = null;
+        MediaDevice _selectedAudioPlayoutDevice = null;
+
+        /// <summary>
+        /// Video capture details (frame rate, resolution)
+        /// </summary>
+        public CaptureCapability VideoCaptureProfile;
+
+        public class CaptureCapability
+        {
+            public uint Width { get; set; }
+            public uint Height { get; set; }
+            public uint FrameRate { get; set; }
+            public bool MrcEnabled { get; set; }
+            public string ResolutionDescription { get; set; }
+            public string FrameRateDescription { get; set; }
         }
 
         /// <summary>
@@ -282,27 +409,54 @@ namespace GuiCore
         /// <summary>
         /// Invoked when the remote peer removed a media stream from the peer connection.
         /// </summary>
+        public event Action<IMediaStreamTrack> OnRemoveRemoteTrack;
+
         private void PeerConnection_OnRemoveTrack(IRTCTrackEvent Event)
         {
             if (Event.Track.Kind == "video")
             {
-
+                _peerVideoTrack.Element = null;
             }
+
+            OnRemoveRemoteTrack?.Invoke(Event.Track);
         }
+
+        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
+
+        public event Action<string, string> FramesPerSecondChanged;
+
+        public event Action<string, uint, uint> ResolutionChanged;
 
         /// <summary>
         /// Invoked when the remote peer added media stream to the peer connection.
         /// </summary>
+        public event Action<IMediaStreamTrack> OnAddRemoteTrack;
+
         private void PeerConnection_OnTrack(IRTCTrackEvent Event)
         {
             if (Event.Track.Kind == "video")
             {
+                _peerVideoTrack = Event.Track;
 
+                if (_peerVideoTrack != null)
+                {
+                    _peerVideoTrack.Element = MediaElementMaker.Bind(PeerVideo);
+                    ((MediaStreamTrack)_peerVideoTrack).OnFrameRateChanged += (float frameRate) =>
+                    {
+                        FramesPerSecondChanged?.Invoke("PEER", frameRate.ToString("0.0"));
+                    };
+                    ((MediaStreamTrack)_peerVideoTrack).OnResolutionChanged += (uint width, uint height) =>
+                    {
+                        ResolutionChanged?.Invoke("PEER", width, height);
+                    };
+                }
             }
             else if (Event.Track.Kind == "audio")
             {
-
+                _peerAudioTrack = Event.Track;
             }
+
+            OnAddRemoteTrack?.Invoke(Event.Track);
         }
 
         /// <summary>
