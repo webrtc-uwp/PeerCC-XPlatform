@@ -1,7 +1,9 @@
 ﻿using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
+using GuiCore;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -29,8 +31,15 @@ namespace Client_UWP.Pages.SettingsDevices
 
             List<string> camerasList = new List<string>();
 
-            foreach (var camera in ViewModel.Cameras)
-                camerasList.Add(camera.Name);
+            IList<RtcController.MediaDeviceModel> videoDevices;
+
+            Task.Run(async() =>
+            {
+                videoDevices = await RtcController.GetVideoCaptureDevices();
+
+                foreach (RtcController.MediaDeviceModel videoCaptureDevice in videoDevices)
+                    camerasList.Add(videoCaptureDevice.Name);
+            });
 
             cbCamera.ItemsSource = camerasList;
             cbCamera.SelectedIndex = 0;

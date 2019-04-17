@@ -1,18 +1,18 @@
 ﻿namespace Client_UWP.Models
 {
-    public class MediaDevice
+    public class MediaDeviceModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
 
-        public MediaDevice() { }
+        public MediaDeviceModel() { }
 
-        public MediaDevice(string name)
+        public MediaDeviceModel(string name)
         {
             Name = name;
         }
 
-        public MediaDevice(string id, string name)
+        public MediaDeviceModel(string id, string name)
         {
             Id = id;
             Name = name;

@@ -2,7 +2,6 @@
 using Client_UWP.Utilities;
 using GuiCore.Utilities;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Windows.Storage;
 
 namespace Client_UWP.Pages.SettingsDevices
@@ -18,11 +17,11 @@ namespace Client_UWP.Pages.SettingsDevices
 
             if (localSettings.Values["Cameras"] != null)
             {
-                List<MediaDevice> camerasList =
-                    XmlSerialization<List<MediaDevice>>
+                List<MediaDeviceModel> camerasList =
+                    XmlSerialization<List<MediaDeviceModel>>
                     .Deserialize((string)localSettings.Values["Cameras"]);
 
-                foreach (MediaDevice camera in camerasList)
+                foreach (MediaDeviceModel camera in camerasList)
                     Cameras.Add(camera);
             }
 
@@ -59,14 +58,14 @@ namespace Client_UWP.Pages.SettingsDevices
             }
         }
 
-        public List<MediaDevice> Cameras { get; set; } = new List<MediaDevice>();
+        public List<MediaDeviceModel> Cameras { get; set; } = new List<MediaDeviceModel>();
 
         public List<AudioCodec> AudioCodecsList { get; set; } = new List<AudioCodec>();
         public List<VideoCodec> VideoCodecsList { get; set; } = new List<VideoCodec>();
 
-        public static List<MediaDevice> AddTestCamera(List<MediaDevice> Cameras)
+        public static List<MediaDeviceModel> AddTestCamera(List<MediaDeviceModel> Cameras)
         {
-            Cameras.Add(new MediaDevice("1", "TestCamera"));
+            Cameras.Add(new MediaDeviceModel("1", "TestCamera"));
 
             return Cameras;
         }

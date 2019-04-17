@@ -11,6 +11,9 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using WebRtcAdapter.Call;
 using Windows.Data.Json;
+using Windows.Foundation;
+using Windows.Media.Capture;
+using Windows.Media.MediaProperties;
 using Windows.Storage;
 
 namespace GuiCore
@@ -147,6 +150,69 @@ namespace GuiCore
         }
 
         WebRtcFactory _factory;
+
+        public IAsyncOperation<IList<CaptureCapability>> GetVideoCapabilities(string deviceId)
+        {
+            var mediaCapture = new MediaCapture();
+            var mediaSettings = new MediaCaptureInitializationSettings();
+
+            mediaSettings.VideoDeviceId = deviceId;
+
+            Task initTask = mediaCapture.InitializeAsync(mediaSettings).AsTask();
+
+            return initTask.ContinueWith(initResult => 
+            {
+                if (initResult.Exception != null)
+                {
+                    Debug.WriteLine("Failed to initialize video device: " + initResult.Exception.Message);
+                    return null;
+                }
+                var streamProperties =
+                    mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
+
+                IList<CaptureCapability> capabilityList = new List<CaptureCapability>();
+
+                foreach (VideoEncodingProperties property in streamProperties)
+                {
+                    uint frameRate = property.FrameRate.Numerator / property.FrameRate.Denominator;
+
+                    capabilityList.Add(new CaptureCapability
+                    {
+                        Width = property.Width,
+                        Height = property.Height,
+                        FrameRate = frameRate,
+                        MrcEnabled = true,
+                        FrameRateDescription = $"{frameRate} fps",
+                        ResolutionDescription = $"{property.Width} x {property.Height}"
+                    });
+                }
+                return capabilityList;
+            }).AsAsyncOperation<IList<CaptureCapability>>();
+        }
+
+        public class MediaDeviceModel
+        {
+            public string Id { get; set; }
+            public string Name { get; set; }
+        }
+
+        public static async Task<IList<MediaDeviceModel>> GetVideoCaptureDevices()
+        {
+            var devices = await VideoCapturer.GetDevices();
+
+            IList<MediaDeviceModel> deviceList = new List<MediaDeviceModel>();
+
+            foreach (var deviceInfo in devices)
+            {
+                deviceList.Add(new MediaDeviceModel
+                {
+                    Id = deviceInfo.Info.Id,
+                    Name = deviceInfo.Info.Name
+                });
+            }
+
+            return deviceList;
+        }
 
         /// <summary>
         /// Creates a peer connection.
