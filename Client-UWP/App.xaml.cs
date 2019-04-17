@@ -33,8 +33,6 @@ namespace Client_UWP
         /// </summary>
         public App()
         {
-            InitializationController.Instance.Initialize();
-
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
@@ -48,6 +46,8 @@ namespace Client_UWP
         {
             ApplicationView.PreferredLaunchViewSize = new Size(450, 700);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
+            InitializationController.Instance.Initialize();
 
             // Install the signaler and the calling factories
             PeerCC.Setup.Install();

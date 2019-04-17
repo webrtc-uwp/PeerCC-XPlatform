@@ -2,6 +2,7 @@
 using Client_UWP.Utilities;
 using GuiCore.Utilities;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Windows.Storage;
 
 namespace Client_UWP.Pages.SettingsDevices
@@ -13,6 +14,18 @@ namespace Client_UWP.Pages.SettingsDevices
 
         public SettingsDevicesPageViewModel()
         {
+            AddTestCamera(Cameras);
+
+            if (localSettings.Values["Cameras"] != null)
+            {
+                List<MediaDevice> camerasList =
+                    XmlSerialization<List<MediaDevice>>
+                    .Deserialize((string)localSettings.Values["Cameras"]);
+
+                foreach (MediaDevice camera in camerasList)
+                    Cameras.Add(camera);
+            }
+
             if (localSettings.Values["AudioCodecs"] == null)
             {
                 AddDefaultAudioCodecs(AudioCodecsList);
@@ -46,8 +59,17 @@ namespace Client_UWP.Pages.SettingsDevices
             }
         }
 
+        public List<MediaDevice> Cameras { get; set; } = new List<MediaDevice>();
+
         public List<AudioCodec> AudioCodecsList { get; set; } = new List<AudioCodec>();
         public List<VideoCodec> VideoCodecsList { get; set; } = new List<VideoCodec>();
+
+        public static List<MediaDevice> AddTestCamera(List<MediaDevice> Cameras)
+        {
+            Cameras.Add(new MediaDevice("1", "TestCamera"));
+
+            return Cameras;
+        }
 
         public static List<AudioCodec> AddDefaultAudioCodecs(List<AudioCodec> AudioCodecsList)
         {

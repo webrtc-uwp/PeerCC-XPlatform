@@ -8,7 +8,6 @@ using PeerCC.Signaling;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using WebRtcAdapter.Call;
 using Windows.Data.Json;

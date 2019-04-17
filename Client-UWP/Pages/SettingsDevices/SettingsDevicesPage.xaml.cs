@@ -27,6 +27,14 @@ namespace Client_UWP.Pages.SettingsDevices
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
+            List<string> camerasList = new List<string>();
+
+            foreach (var camera in ViewModel.Cameras)
+                camerasList.Add(camera.Name);
+
+            cbCamera.ItemsSource = camerasList;
+            cbCamera.SelectedIndex = 0;
+
             List<string> acList = new List<string>();
 
             foreach (var ac in ViewModel.AudioCodecsList)
