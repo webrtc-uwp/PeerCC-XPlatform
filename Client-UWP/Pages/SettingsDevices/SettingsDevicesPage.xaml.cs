@@ -5,6 +5,7 @@ using GuiCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -15,11 +16,13 @@ namespace Client_UWP.Pages.SettingsDevices
     /// </summary>
     public sealed partial class SettingsDevicesPage : Page
     {
+        private SettingsDevicesPageViewModel _settingsDevicesPageViewModel;
+
         public SettingsDevicesPage()
         {
             InitializeComponent();
 
-            ViewModel = new SettingsDevicesPageViewModel();
+            //ViewModel = new SettingsDevicesPageViewModel();
 
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
 
@@ -29,11 +32,23 @@ namespace Client_UWP.Pages.SettingsDevices
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
+            
+        }
+
+        /// <summary>
+        /// See Page.OnNavigatedTo()
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            _settingsDevicesPageViewModel = (SettingsDevicesPageViewModel)e.Parameter;
+            DataContext = _settingsDevicesPageViewModel;
+
             List<string> camerasList = new List<string>();
 
             IList<GuiLogic.MediaDeviceModel> videoDevices;
 
-            Task.Run(async() =>
+            Task.Run(async () =>
             {
                 videoDevices = await GuiLogic.GetVideoCaptureDevices();
 
@@ -44,23 +59,23 @@ namespace Client_UWP.Pages.SettingsDevices
             cbCamera.ItemsSource = camerasList;
             cbCamera.SelectedIndex = 0;
 
-            List<string> acList = new List<string>();
+            //List<string> acList = new List<string>();
 
-            foreach (var ac in ViewModel.AudioCodecsList)
-                acList.Add(ac.Name);
+            //foreach (var ac in _settingsDevicesPageViewModel.AudioCodecsList)
+            //    acList.Add(ac.Name);
 
-            cbAudioCodec.ItemsSource = acList;
-            cbAudioCodec.SelectedIndex = 0;
+            //cbAudioCodec.ItemsSource = acList;
+            //cbAudioCodec.SelectedIndex = 0;
 
-            List<string> vcList = new List<string>();
+            //List<string> vcList = new List<string>();
 
-            foreach (var vc in ViewModel.VideoCodecsList)
-                vcList.Add(vc.Name);
+            //foreach (var vc in _settingsDevicesPageViewModel.VideoCodecsList)
+            //    vcList.Add(vc.Name);
 
-            cbVideoCodec.ItemsSource = vcList;
-            cbVideoCodec.SelectedIndex = 0;
+            //cbVideoCodec.ItemsSource = vcList;
+            //cbVideoCodec.SelectedIndex = 0;
         }
 
-        public SettingsDevicesPageViewModel ViewModel { get; set; }
+        //SettingsDevicesPageViewModel ViewModel { get; set; }
     }
 }

@@ -11,9 +11,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using WebRtcAdapter.Call;
 using Windows.Data.Json;
-using Windows.Foundation;
-using Windows.Media.Capture;
-using Windows.Media.MediaProperties;
 using Windows.Storage;
 
 namespace GuiCore
@@ -150,45 +147,6 @@ namespace GuiCore
         }
 
         WebRtcFactory _factory;
-
-        public IAsyncOperation<IList<CaptureCapability>> GetVideoCapabilities(string deviceId)
-        {
-            var mediaCapture = new MediaCapture();
-            var mediaSettings = new MediaCaptureInitializationSettings();
-
-            mediaSettings.VideoDeviceId = deviceId;
-
-            Task initTask = mediaCapture.InitializeAsync(mediaSettings).AsTask();
-
-            return initTask.ContinueWith(initResult => 
-            {
-                if (initResult.Exception != null)
-                {
-                    Debug.WriteLine("Failed to initialize video device: " + initResult.Exception.Message);
-                    return null;
-                }
-                var streamProperties =
-                    mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
-
-                IList<CaptureCapability> capabilityList = new List<CaptureCapability>();
-
-                foreach (VideoEncodingProperties property in streamProperties)
-                {
-                    uint frameRate = property.FrameRate.Numerator / property.FrameRate.Denominator;
-
-                    capabilityList.Add(new CaptureCapability
-                    {
-                        Width = property.Width,
-                        Height = property.Height,
-                        FrameRate = frameRate,
-                        MrcEnabled = true,
-                        FrameRateDescription = $"{frameRate} fps",
-                        ResolutionDescription = $"{property.Width} x {property.Height}"
-                    });
-                }
-                return capabilityList;
-            }).AsAsyncOperation<IList<CaptureCapability>>();
-        }
 
         public class MediaDeviceModel
         {
@@ -354,20 +312,7 @@ namespace GuiCore
         MediaDevice _selectedAudioCaptureDevice = null;
         MediaDevice _selectedAudioPlayoutDevice = null;
 
-        /// <summary>
-        /// Video capture details (frame rate, resolution)
-        /// </summary>
-        public CaptureCapability VideoCaptureProfile;
-
-        public class CaptureCapability
-        {
-            public uint Width { get; set; }
-            public uint Height { get; set; }
-            public uint FrameRate { get; set; }
-            public bool MrcEnabled { get; set; }
-            public string ResolutionDescription { get; set; }
-            public string FrameRateDescription { get; set; }
-        }
+        
 
         /// <summary>
         /// Logs in local peer to server.

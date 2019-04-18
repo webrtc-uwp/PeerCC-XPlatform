@@ -1,20 +1,23 @@
 ﻿using Client_UWP.Models;
+using Client_UWP.MVVM;
 using Client_UWP.Utilities;
 using GuiCore.Utilities;
 using System.Collections.Generic;
 using Windows.Storage;
+using Windows.UI.Core;
 
 namespace Client_UWP.Pages.SettingsDevices
 {
-    public class SettingsDevicesPageViewModel : ViewModelBase
+    public delegate void InitializedDelegate();
+    internal class SettingsDevicesPageViewModel : DispatcherBindableBase
     {
-        public ApplicationDataContainer localSettings =
-            ApplicationData.Current.LocalSettings;
+        public event InitializedDelegate OnInitialized;
 
-        public SettingsDevicesPageViewModel()
+        ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+
+        public SettingsDevicesPageViewModel(CoreDispatcher uiDispatcher)
+            : base(uiDispatcher)
         {
-            AddTestCamera(Cameras);
-
             if (localSettings.Values["Cameras"] != null)
             {
                 List<MediaDeviceModel> camerasList =
@@ -63,13 +66,6 @@ namespace Client_UWP.Pages.SettingsDevices
         public List<AudioCodec> AudioCodecsList { get; set; } = new List<AudioCodec>();
         public List<VideoCodec> VideoCodecsList { get; set; } = new List<VideoCodec>();
 
-        public static List<MediaDeviceModel> AddTestCamera(List<MediaDeviceModel> Cameras)
-        {
-            Cameras.Add(new MediaDeviceModel("1", "TestCamera"));
-
-            return Cameras;
-        }
-
         public static List<AudioCodec> AddDefaultAudioCodecs(List<AudioCodec> AudioCodecsList)
         {
             List<AudioCodec> list = DefaultSettings.AudioCodecsList;
@@ -88,6 +84,15 @@ namespace Client_UWP.Pages.SettingsDevices
                 VideoCodecsList.Add(vc);
 
             return VideoCodecsList;
+        }
+
+        /// <summary>
+        /// The initializer for MainViewModel.
+        /// </summary>
+        /// <param name="uiDispatcher">The UI dispatcher.</param>
+        private void Initialize(CoreDispatcher uiDispatcher)
+        {
+            RunOnUiThread(() => OnInitialized?.Invoke());
         }
     }
 }
