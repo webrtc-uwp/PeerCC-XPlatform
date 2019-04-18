@@ -31,13 +31,13 @@ namespace Client_UWP.Pages.SettingsDevices
 
             List<string> camerasList = new List<string>();
 
-            IList<RtcController.MediaDeviceModel> videoDevices;
+            IList<GuiLogic.MediaDeviceModel> videoDevices;
 
             Task.Run(async() =>
             {
-                videoDevices = await RtcController.GetVideoCaptureDevices();
+                videoDevices = await GuiLogic.GetVideoCaptureDevices();
 
-                foreach (RtcController.MediaDeviceModel videoCaptureDevice in videoDevices)
+                foreach (GuiLogic.MediaDeviceModel videoCaptureDevice in videoDevices)
                     camerasList.Add(videoCaptureDevice.Name);
             });
 

@@ -3,19 +3,19 @@ using System.Diagnostics;
 
 namespace GuiCore
 {
-    public sealed class InitializationController
+    public sealed class Initialization
     {
-        private static InitializationController instance = null;
+        private static Initialization instance = null;
         private static readonly object InstanceLock = new object();
 
-        public static InitializationController Instance
+        public static Initialization Instance
         {
             get
             {
                 lock (InstanceLock)
                 {
                     if (instance == null)
-                        instance = new InitializationController();
+                        instance = new Initialization();
 
                     return instance;
                 }
@@ -43,7 +43,7 @@ namespace GuiCore
             PeerCC.Setup.Install();
             WebRtcAdapter.Setup.Install();
 
-            DevicesController.Instance.Initialize();
+            Devices.Instance.Initialize();
         }
     }
 }

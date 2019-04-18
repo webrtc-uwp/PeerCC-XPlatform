@@ -6,26 +6,26 @@ using Windows.Media.Capture;
 
 namespace GuiCore
 {
-    public sealed class DevicesController
+    public sealed class Devices
     {
-        private static DevicesController instance = null;
+        private static Devices instance = null;
         private static readonly object InstanceLock = new object();
 
-        public static DevicesController Instance
+        public static Devices Instance
         {
             get
             {
                 lock (InstanceLock)
                 {
                     if (instance == null)
-                        instance = new DevicesController();
+                        instance = new Devices();
 
                     return instance;
                 }
             }
         }
 
-        private DevicesController()
+        private Devices()
         {
 
         }

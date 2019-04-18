@@ -18,19 +18,19 @@ using Windows.Storage;
 
 namespace GuiCore
 {
-    public class RtcController
+    public class GuiLogic
     {
-        private static RtcController instance = null;
+        private static GuiLogic instance = null;
         private static readonly object InstanceLock = new object();
 
-        public static RtcController Instance
+        public static GuiLogic Instance
         {
             get
             {
                 lock (InstanceLock)
                 {
                     if (instance == null)
-                        instance = new RtcController();
+                        instance = new GuiLogic();
 
                     return instance;
                 }
@@ -64,7 +64,7 @@ namespace GuiCore
         public Account account;
         public Call call;
 
-        private RtcController()
+        private GuiLogic()
         {
             _httpSignaler = new HttpSignaler();
 

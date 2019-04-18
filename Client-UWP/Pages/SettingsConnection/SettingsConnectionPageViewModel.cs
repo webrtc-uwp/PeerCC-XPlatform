@@ -48,7 +48,7 @@ namespace Client_UWP.Pages.SettingsConnection
                             iceServerList.Add(iceServer);
                         }
 
-                        RtcController.Instance.ConfigureIceServers(iceServerList);
+                        GuiLogic.Instance.ConfigureIceServers(iceServerList);
                     }
                     else
                     {

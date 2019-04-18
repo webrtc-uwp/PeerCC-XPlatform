@@ -32,7 +32,7 @@ namespace Client_UWP.Pages.Call
 
             Hangup.Click += (sender, args) =>
             {
-                RtcController.Instance.DisconnectFromPeer();
+                GuiLogic.Instance.DisconnectFromPeer();
 
                 // Navigate to MainPage.xaml
                 Frame.Navigate(typeof(MainPage));

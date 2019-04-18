@@ -14,7 +14,7 @@ namespace Client_UWP
         public MainViewModel(CoreDispatcher uiDispatcher)
             : base(uiDispatcher)
         {
-            DevicesController.RequestAccessForMediaCapture().AsTask().ContinueWith(antecedent =>
+            Devices.RequestAccessForMediaCapture().AsTask().ContinueWith(antecedent =>
             {
                 if (antecedent.Result)
                 {

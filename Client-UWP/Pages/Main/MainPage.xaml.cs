@@ -34,7 +34,7 @@ namespace Client_UWP
         {
             InitializeComponent();
 
-            _signaler = RtcController.Instance._httpSignaler;
+            _signaler = GuiLogic.Instance._httpSignaler;
 
             Loaded += OnLoaded;
 
@@ -139,8 +139,8 @@ namespace Client_UWP
 
         private void InitView()
         {
-            tbServiceUri.Text = $"Service Uri: { RtcController.Instance.account?.ServiceUri }";
-            tbIdentityUri.Text = $"Self Identity Uri: { RtcController.Instance.account?.SelfIdentityUri }";
+            tbServiceUri.Text = $"Service Uri: { GuiLogic.Instance.account?.ServiceUri }";
+            tbIdentityUri.Text = $"Self Identity Uri: { GuiLogic.Instance.account?.SelfIdentityUri }";
 
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = null;
@@ -157,7 +157,7 @@ namespace Client_UWP
 
             ConnectPeer.Click += async (sender, args) =>
             {
-                await RtcController.Instance.LogInToServer();
+                await GuiLogic.Instance.LogInToServer();
 
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -165,7 +165,7 @@ namespace Client_UWP
 
             DisconnectPeer.Click += async (sender, args) =>
             {
-                await RtcController.Instance.LogOutFromServer();
+                await GuiLogic.Instance.LogOutFromServer();
 
                 peersListView.Items.Clear();
 
@@ -186,7 +186,7 @@ namespace Client_UWP
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
-                RtcController.Instance.ConnectToPeer(remotePeer.Id);
+                GuiLogic.Instance.ConnectToPeer(remotePeer.Id);
 
                 // Navigate to CallPage.xaml
                 Frame.Navigate(typeof(CallPage));
@@ -195,7 +195,7 @@ namespace Client_UWP
 
         private void Signaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
         {
-            RtcController.Instance.MessageFromPeerTaskRun(e.Message);
+            GuiLogic.Instance.MessageFromPeerTaskRun(e.Message);
         }
 
         private void PeersListView_Tapped(object sender, TappedRoutedEventArgs e) =>
