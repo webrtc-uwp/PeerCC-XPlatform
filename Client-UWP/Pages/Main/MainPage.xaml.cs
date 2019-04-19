@@ -16,6 +16,7 @@ using Client_UWP.Pages.SettingsAccount;
 using GuiCore;
 using System.Linq;
 using Client_UWP.Pages.Call;
+using Org.WebRtc;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -50,7 +51,23 @@ namespace Client_UWP
             _signaler.PeerDisconnected += Signaler_PeerDisconnected;
             _signaler.MessageFromPeer += Signaler_MessageFromPeer;
 
+            GuiLogic.Instance.OnPeerConnectionCreated += () => 
+            {
+                Debug.WriteLine("MainPage: PeerConnection created!");
+            };
+
+            GuiLogic.Instance.OnAddRemoteTrack += Instance_OnAddRemoteTrack;
+
             InitView();
+        }
+
+        /// <summary>
+        /// Add remote media track event handler.
+        /// </summary>
+        /// <param name="track">Media track kind.</param>
+        private void Instance_OnAddRemoteTrack(IMediaStreamTrack track)
+        {
+            Debug.WriteLine("MainPage: Add remote media track!");    
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)

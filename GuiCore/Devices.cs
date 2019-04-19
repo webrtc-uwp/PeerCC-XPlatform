@@ -139,22 +139,22 @@ namespace GuiCore
 
         public ObservableCollection<string> CamerasList = new ObservableCollection<string>();
 
+        public IList<MediaDeviceModel> DeviceList = new List<MediaDeviceModel>();
+
         public async Task<IList<MediaDeviceModel>> GetVideoCaptureDevices()
         {
             var devices = await VideoCapturer.GetDevices();
 
-            IList<MediaDeviceModel> deviceList = new List<MediaDeviceModel>();
-
             foreach (var deviceInfo in devices)
             {
-                deviceList.Add(new MediaDeviceModel
+                DeviceList.Add(new MediaDeviceModel
                 {
                     Id = deviceInfo.Info.Id,
                     Name = deviceInfo.Info.Name
                 });
             }
 
-            return deviceList;
+            return DeviceList;
         }
     }
 }

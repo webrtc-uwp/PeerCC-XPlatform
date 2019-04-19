@@ -148,6 +148,14 @@ namespace GuiCore
 
         WebRtcFactory _factory;
 
+        // Public events to notify about connection status
+        public event Action OnPeerConnectionCreated;
+        public event Action OnPeerConnectionClosed;
+        public event Action OnReadyToConnect; 
+
+        public Windows.UI.Xaml.Controls.MediaElement SelfVideo { get; set; }
+        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
+
         /// <summary>
         /// Creates a peer connection.
         /// </summary>
@@ -187,6 +195,8 @@ namespace GuiCore
                     + (PeerConnection != null ? PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
             };
 
+            OnPeerConnectionCreated?.Invoke();
+
             PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
             PeerConnection.OnTrack += PeerConnection_OnTrack;
             PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
@@ -195,26 +205,30 @@ namespace GuiCore
 
             IReadOnlyList<IConstraint> mandatoryConstraints = new List<IConstraint>();
             //{
-            //    new Constraint("maxWidth", VideoCaptureProfile.Width.ToString()),
-            //    new Constraint("minWidth", VideoCaptureProfile.Width.ToString()),
-            //    new Constraint("maxHeight", VideoCaptureProfile.Height.ToString()),
-            //    new Constraint("minHeight", VideoCaptureProfile.Height.ToString()),
-            //    new Constraint("maxFrameRate", VideoCaptureProfile.FrameRate.ToString()),
-            //    new Constraint("minFrameRate", VideoCaptureProfile.FrameRate.ToString())
+            //    new Constraint("maxWidth", Devices.Instance.VideoCaptureProfile.Width.ToString()),
+            //    new Constraint("minWidth", Devices.Instance.VideoCaptureProfile.Width.ToString()),
+            //    new Constraint("maxHeight", Devices.Instance.VideoCaptureProfile.Height.ToString()),
+            //    new Constraint("minHeight", Devices.Instance.VideoCaptureProfile.Height.ToString()),
+            //    new Constraint("maxFrameRate", Devices.Instance.VideoCaptureProfile.FrameRate.ToString()),
+            //    new Constraint("minFrameRate", Devices.Instance.VideoCaptureProfile.FrameRate.ToString())
             //};
-
+            
             IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
+
+            // TODO: select camera
+            Devices.MediaDeviceModel _selectedVideoDevice = Devices.Instance.DeviceList[0];
+
             IMediaConstraints mediaConstraints = new MediaConstraints(mandatoryConstraints, optionalConstraints);
 
-            //var videoCapturer = VideoCapturer.Create(_selectedVideoDevice.DisplayName, _selectedVideoDevice.Id, false);
+            var videoCapturer = VideoCapturer.Create(_selectedVideoDevice.Name, _selectedVideoDevice.Id, false);
 
-            //var videoOptions = new VideoOptions();
-            //videoOptions.Factory = _factory;
-            //videoOptions.Capturer = videoCapturer;
-            //videoOptions.Constraints = mediaConstraints;
+            var videoOptions = new VideoOptions();
+            videoOptions.Factory = _factory;
+            videoOptions.Capturer = videoCapturer;
+            videoOptions.Constraints = mediaConstraints;
 
-            //var videoTrackSource = VideoTrackSource.Create(videoOptions);
-            //_selfVideoTrack = MediaStreamTrack.CreateVideoTrack("SELF_VIDEO", videoTrackSource);
+            var videoTrackSource = VideoTrackSource.Create(videoOptions);
+            _selfVideoTrack = MediaStreamTrack.CreateVideoTrack("SELF_VIDEO", videoTrackSource);
 
             var audioOptions = new AudioOptions();
             audioOptions.Factory = _factory;
@@ -233,7 +247,15 @@ namespace GuiCore
             {
                 if (VideoLoopbackEnabled)
                 {
-                    //_selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
+                    _selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
+                    ((MediaStreamTrack)_selfVideoTrack).OnFrameRateChanged += (float frameRate) =>
+                    {
+                        FramesPerSecondChanged?.Invoke("SELF", frameRate.ToString("0.0"));
+                    };
+                    ((MediaStreamTrack)_selfVideoTrack).OnResolutionChanged += (uint width, uint height) =>
+                    {
+                        ResolutionChanged?.Invoke("SELF", width, height);
+                    };
                 }
             }
 
@@ -257,6 +279,18 @@ namespace GuiCore
                     if (_selfVideoTrack != null)
                     {
                         Debug.WriteLine("Enabling video loopback.");
+
+                        _selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
+                        ((MediaStreamTrack)_selfVideoTrack).OnFrameRateChanged += (float frameRate) =>
+                        {
+                            FramesPerSecondChanged?.Invoke("SELF", frameRate.ToString("0.0"));
+                        };
+                        ((MediaStreamTrack)_selfVideoTrack).OnResolutionChanged += (uint width, uint height) => 
+                        {
+                            ResolutionChanged?.Invoke("SELF", width, height);
+                        };
+
+                        Debug.WriteLine("Video loopback enabled.");
                     }
                 }
             }
@@ -385,8 +419,6 @@ namespace GuiCore
 
             OnRemoveRemoteTrack?.Invoke(Event.Track);
         }
-
-        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
 
         public event Action<string, string> FramesPerSecondChanged;
 
