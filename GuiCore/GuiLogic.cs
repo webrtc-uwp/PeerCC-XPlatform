@@ -148,30 +148,6 @@ namespace GuiCore
 
         WebRtcFactory _factory;
 
-        public class MediaDeviceModel
-        {
-            public string Id { get; set; }
-            public string Name { get; set; }
-        }
-
-        public static async Task<IList<MediaDeviceModel>> GetVideoCaptureDevices()
-        {
-            var devices = await VideoCapturer.GetDevices();
-
-            IList<MediaDeviceModel> deviceList = new List<MediaDeviceModel>();
-
-            foreach (var deviceInfo in devices)
-            {
-                deviceList.Add(new MediaDeviceModel
-                {
-                    Id = deviceInfo.Info.Id,
-                    Name = deviceInfo.Info.Name
-                });
-            }
-
-            return deviceList;
-        }
-
         /// <summary>
         /// Creates a peer connection.
         /// </summary>

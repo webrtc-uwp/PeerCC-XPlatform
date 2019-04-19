@@ -8,15 +8,11 @@ using Windows.UI.Core;
 
 namespace Client_UWP.Pages.SettingsDevices
 {
-    public delegate void InitializedDelegate();
-    internal class SettingsDevicesPageViewModel : DispatcherBindableBase
+    internal class SettingsDevicesPageViewModel : BindableBase
     {
-        public event InitializedDelegate OnInitialized;
-
         ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
 
-        public SettingsDevicesPageViewModel(CoreDispatcher uiDispatcher)
-            : base(uiDispatcher)
+        public SettingsDevicesPageViewModel()
         {
             if (localSettings.Values["Cameras"] != null)
             {
@@ -84,15 +80,6 @@ namespace Client_UWP.Pages.SettingsDevices
                 VideoCodecsList.Add(vc);
 
             return VideoCodecsList;
-        }
-
-        /// <summary>
-        /// The initializer for MainViewModel.
-        /// </summary>
-        /// <param name="uiDispatcher">The UI dispatcher.</param>
-        private void Initialize(CoreDispatcher uiDispatcher)
-        {
-            RunOnUiThread(() => OnInitialized?.Invoke());
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Org.WebRtc;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -122,6 +124,32 @@ namespace GuiCore
                 }
                 return capabilityList;
             }).AsAsyncOperation<IList<CaptureCapability>>();
+        }
+
+        public class MediaDeviceModel
+        {
+            public string Id { get; set; }
+            public string Name { get; set; }
+        }
+
+        public ObservableCollection<string> CamerasList = new ObservableCollection<string>();
+
+        public async Task<IList<MediaDeviceModel>> GetVideoCaptureDevices()
+        {
+            var devices = await VideoCapturer.GetDevices();
+
+            IList<MediaDeviceModel> deviceList = new List<MediaDeviceModel>();
+
+            foreach (var deviceInfo in devices)
+            {
+                deviceList.Add(new MediaDeviceModel
+                {
+                    Id = deviceInfo.Info.Id,
+                    Name = deviceInfo.Info.Name
+                });
+            }
+
+            return deviceList;
         }
     }
 }

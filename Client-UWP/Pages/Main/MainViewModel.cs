@@ -1,6 +1,8 @@
 ﻿using Client_UWP.MVVM;
 using GuiCore;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 
@@ -24,6 +26,16 @@ namespace Client_UWP
                 {
                     var task = new MessageDialog("Failed to obtain access to multimedia devices!").ShowAsync();
                 }
+            });
+
+            IList<Devices.MediaDeviceModel> videoDevices;
+
+            Task.Run(async () =>
+            {
+                videoDevices = await Devices.Instance.GetVideoCaptureDevices();
+
+                foreach (Devices.MediaDeviceModel videoCaptureDevice in videoDevices)
+                    Devices.Instance.CamerasList.Add(videoCaptureDevice.Name);
             });
         }
 

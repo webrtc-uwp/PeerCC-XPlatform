@@ -3,6 +3,7 @@ using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using GuiCore;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -16,14 +17,19 @@ namespace Client_UWP.Pages.SettingsDevices
     /// </summary>
     public sealed partial class SettingsDevicesPage : Page
     {
-        private SettingsDevicesPageViewModel _settingsDevicesPageViewModel;
+        private SettingsDevicesPageViewModel ViewModel { get; set; }
 
         public SettingsDevicesPage()
         {
             InitializeComponent();
 
-            //ViewModel = new SettingsDevicesPageViewModel();
+            ViewModel = new SettingsDevicesPageViewModel();
 
+            InitView();
+        }
+
+        private void InitView()
+        {
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
 
             AccountSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
@@ -32,50 +38,24 @@ namespace Client_UWP.Pages.SettingsDevices
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
-            
-        }
-
-        /// <summary>
-        /// See Page.OnNavigatedTo()
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            _settingsDevicesPageViewModel = (SettingsDevicesPageViewModel)e.Parameter;
-            DataContext = _settingsDevicesPageViewModel;
-
-            List<string> camerasList = new List<string>();
-
-            IList<GuiLogic.MediaDeviceModel> videoDevices;
-
-            Task.Run(async () =>
-            {
-                videoDevices = await GuiLogic.GetVideoCaptureDevices();
-
-                foreach (GuiLogic.MediaDeviceModel videoCaptureDevice in videoDevices)
-                    camerasList.Add(videoCaptureDevice.Name);
-            });
-
-            cbCamera.ItemsSource = camerasList;
+            cbCamera.ItemsSource = Devices.Instance.CamerasList;
             cbCamera.SelectedIndex = 0;
 
-            //List<string> acList = new List<string>();
+            List<string> acList = new List<string>();
 
-            //foreach (var ac in _settingsDevicesPageViewModel.AudioCodecsList)
-            //    acList.Add(ac.Name);
+            foreach (var ac in ViewModel.AudioCodecsList)
+                acList.Add(ac.Name);
 
-            //cbAudioCodec.ItemsSource = acList;
-            //cbAudioCodec.SelectedIndex = 0;
+            cbAudioCodec.ItemsSource = acList;
+            cbAudioCodec.SelectedIndex = 0;
 
-            //List<string> vcList = new List<string>();
+            List<string> vcList = new List<string>();
 
-            //foreach (var vc in _settingsDevicesPageViewModel.VideoCodecsList)
-            //    vcList.Add(vc.Name);
+            foreach (var vc in ViewModel.VideoCodecsList)
+                vcList.Add(vc.Name);
 
-            //cbVideoCodec.ItemsSource = vcList;
-            //cbVideoCodec.SelectedIndex = 0;
+            cbVideoCodec.ItemsSource = vcList;
+            cbVideoCodec.SelectedIndex = 0;
         }
-
-        //SettingsDevicesPageViewModel ViewModel { get; set; }
     }
 }
