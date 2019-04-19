@@ -240,21 +240,6 @@ namespace GuiCore
             return true;
         }
 
-        public void SelectedVideoDevice(MediaDevice device)
-        {
-            _selectedVideoDevice = device;
-        }
-
-        public void SelectedAudioCaptureDevice(MediaDevice device)
-        {
-            _selectedAudioCaptureDevice = device;
-        }
-
-        public void SelectedAudioPlayoutDevice(MediaDevice device)
-        {
-            _selectedAudioCaptureDevice = device;
-        }
-
         bool _videoLoopbackEnabled = true;
         public bool VideoLoopbackEnabled
         {
@@ -283,12 +268,6 @@ namespace GuiCore
         private IMediaStreamTrack _selfVideoTrack;
         private IMediaStreamTrack _peerAudioTrack;
         private IMediaStreamTrack _selfAudioTrack;
-
-        MediaDevice _selectedVideoDevice = null;
-        MediaDevice _selectedAudioCaptureDevice = null;
-        MediaDevice _selectedAudioPlayoutDevice = null;
-
-        
 
         /// <summary>
         /// Logs in local peer to server.

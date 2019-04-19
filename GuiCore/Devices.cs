@@ -29,14 +29,19 @@ namespace GuiCore
             }
         }
 
-        private Devices()
-        {
-
-        }
+        private Devices() { }
 
         public void Initialize()
         {
+            IList<MediaDeviceModel> videoDevices;
 
+            Task.Run(async () =>
+            {
+                videoDevices = await Instance.GetVideoCaptureDevices();
+
+                foreach (MediaDeviceModel videoCaptureDevice in videoDevices)
+                    Instance.CamerasList.Add(videoCaptureDevice.Name);
+            });
         }
 
         /// <summary>

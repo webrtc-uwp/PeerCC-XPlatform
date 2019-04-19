@@ -1,8 +1,7 @@
 ﻿using Client_UWP.MVVM;
 using GuiCore;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 
@@ -11,41 +10,42 @@ namespace Client_UWP
     public delegate void InitializedDelegate();
     internal class MainViewModel : DispatcherBindableBase
     {
-        public event InitializedDelegate OnInitialized; 
+        public event InitializedDelegate OnInitialized;
 
         public MainViewModel(CoreDispatcher uiDispatcher)
             : base(uiDispatcher)
         {
+            Initialization.Instance.Initialized += Instance_Initialized;
+
             Devices.Instance.RequestAccessForMediaCapture().AsTask().ContinueWith(antecedent =>
             {
                 if (antecedent.Result)
-                {
-                    Initialize(uiDispatcher);
-                }
+                    Initialization.Instance.CofigureWebRtcLib();
                 else
-                {
-                    var task = new MessageDialog("Failed to obtain access to multimedia devices!").ShowAsync();
-                }
-            });
-
-            IList<Devices.MediaDeviceModel> videoDevices;
-
-            Task.Run(async () =>
-            {
-                videoDevices = await Devices.Instance.GetVideoCaptureDevices();
-
-                foreach (Devices.MediaDeviceModel videoCaptureDevice in videoDevices)
-                    Devices.Instance.CamerasList.Add(videoCaptureDevice.Name);
+                    RunOnUiThread(async () 
+                        => await new MessageDialog("Failed to obtain access to multimedia devices!").ShowAsync());
             });
         }
 
-        /// <summary>
-        /// The initializer for MainViewModel.
-        /// </summary>
-        /// <param name="uiDispatcher">The UI dispatcher.</param>
-        private void Initialize(CoreDispatcher uiDispatcher)
+        private string AppVersion = "N/A";
+
+        private void Instance_Initialized(bool succeeded)
         {
-            RunOnUiThread(() => OnInitialized?.Invoke());
+            if (succeeded)
+            {
+                // Configure application version string format
+                var version = Windows.ApplicationModel.Package.Current.Id.Version;
+                AppVersion = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+
+                Debug.WriteLine($"Application version: {AppVersion}");
+
+                Initialization.Instance.InstallFactories();
+                Devices.Instance.Initialize();
+
+                RunOnUiThread(() => OnInitialized?.Invoke());
+            }
+            else
+                RunOnUiThread(async () => await new MessageDialog("Failed to initialize WebRTC library!").ShowAsync());
         }
     }
 }

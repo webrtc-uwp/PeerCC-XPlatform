@@ -47,12 +47,6 @@ namespace Client_UWP
             ApplicationView.PreferredLaunchViewSize = new Size(450, 700);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
-            Initialization.Instance.Initialize();
-
-            // Install the signaler and the calling factories
-            PeerCC.Setup.Install();
-            WebRtcAdapter.Setup.Install();
-
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,

@@ -1,5 +1,5 @@
 ﻿using Org.WebRtc;
-using System.Diagnostics;
+using System;
 
 namespace GuiCore
 {
@@ -22,28 +22,31 @@ namespace GuiCore
             }
         }
 
-        private string AppVersion = "N/A";
+        private Initialization() { }
 
-        public void Initialize()
+        public event Action<bool> Initialized;
+
+        public void CofigureWebRtcLib()
         {
-            // Configure application version string format
-            var version = Windows.ApplicationModel.Package.Current.Id.Version;
-            AppVersion = $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
-
-            Debug.WriteLine($"Application version: {AppVersion}");
-
+            //IEventQueue queue = EventQueueMaker.Bind(uiDispatcher);
             var configuration = new WebRtcLibConfiguration();
+            //configuration.Queue = queue;
             configuration.AudioCaptureFrameProcessingQueue = EventQueue.GetOrCreateThreadQueueByName("AudioCaptureProcessingQueue");
             configuration.AudioRenderFrameProcessingQueue = EventQueue.GetOrCreateThreadQueueByName("AudioRenderProcessingQueue");
             configuration.VideoFrameProcessingQueue = EventQueue.GetOrCreateThreadQueueByName("VideoFrameProcessingQueue");
 
             WebRtcLib.Setup(configuration);
 
-            // Install the signaler and the calling factories
+            Initialized?.Invoke(true);
+        }
+
+        /// <summary>
+        /// Install the signaler and the calling factories.
+        /// </summary>
+        public void InstallFactories()
+        {
             PeerCC.Setup.Install();
             WebRtcAdapter.Setup.Install();
-
-            Devices.Instance.Initialize();
         }
     }
 }
