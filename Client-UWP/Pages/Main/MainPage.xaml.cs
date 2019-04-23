@@ -203,7 +203,7 @@ namespace Client_UWP
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
-                GuiLogic.Instance.ConnectToPeer(remotePeer.Id);
+                await GuiLogic.Instance.ConnectToPeer(remotePeer.Id);
 
                 // Navigate to CallPage.xaml
                 Frame.Navigate(typeof(CallPage));

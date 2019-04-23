@@ -8,6 +8,7 @@ using PeerCC.Signaling;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using WebRtcAdapter.Call;
 using Windows.Data.Json;
@@ -333,9 +334,8 @@ namespace GuiCore
         /// <summary>
         /// Calls to connect to the selected peer.
         /// </summary>
-        /// <param name="peerId"></param>
-        /// <returns></returns>
-        public async void ConnectToPeer(int peerId)
+        /// <param name="peerId">Remote peer id.</param>
+        public async Task ConnectToPeer(int peerId)
         {
             Debug.Assert(_peerId == -1);
 
@@ -355,8 +355,17 @@ namespace GuiCore
                 offerOptions.OfferToReceiveVideo = true;
                 IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
+                var audioCodecList = GetAudioCodecs();
+                var videoCodecList = GetVideoCodecs();
+
+                AudioCodec = audioCodecList.First();
+                VideoCodec = videoCodecList.First();
+
+                // Alter sdp to force usage of selected codecs
+                string modifiedSdp = offer.Sdp;
+                SdpUtils.SelectCodecs(ref modifiedSdp, AudioCodec.PreferredPayloadType, VideoCodec.PreferredPayloadType);
                 var sdpInit = new RTCSessionDescriptionInit();
-                sdpInit.Sdp = offer.Sdp;
+                sdpInit.Sdp = modifiedSdp;
                 sdpInit.Type = offer.SdpType;
                 var modifiedOffer = new RTCSessionDescription(sdpInit);
 
@@ -366,6 +375,49 @@ namespace GuiCore
 
                 SendSdp(modifiedOffer);
             }
+        }
+
+        public static IList<CodecInfoModel> GetAudioCodecs()
+        {
+            var ret = new List<CodecInfoModel>
+            {
+                new CodecInfoModel { PreferredPayloadType = 111, ClockRate = 48000, Name = "opus" },
+                new CodecInfoModel { PreferredPayloadType = 103, ClockRate = 16000, Name = "ISAC" },
+                new CodecInfoModel { PreferredPayloadType = 104, ClockRate = 32000, Name = "ISAC" },
+                new CodecInfoModel { PreferredPayloadType = 9, ClockRate = 8000, Name = "G722" },
+                new CodecInfoModel { PreferredPayloadType = 102, ClockRate = 8000, Name = "ILBC" },
+                new CodecInfoModel { PreferredPayloadType = 0, ClockRate = 8000, Name = "PCMU" },
+                new CodecInfoModel { PreferredPayloadType = 8, ClockRate = 8000, Name = "PCMA" }
+            };
+            return ret;
+        }
+
+        public static IList<CodecInfoModel> GetVideoCodecs()
+        {
+            var ret = new List<CodecInfoModel>
+            {
+                new CodecInfoModel { PreferredPayloadType = 96, ClockRate = 90000, Name = "VP8" },
+                new CodecInfoModel { PreferredPayloadType = 98, ClockRate = 90000, Name = "VP9" },
+                new CodecInfoModel { PreferredPayloadType = 100, ClockRate = 90000, Name = "H264" }
+            };
+            return ret;
+        }
+
+        /// <summary>
+        /// Video codec used in WebRTC session.
+        /// </summary>
+        public CodecInfoModel VideoCodec { get; set; }
+
+        /// <summary>
+        /// Audio codec used in WebRTC session.
+        /// </summary>
+        public CodecInfoModel AudioCodec { get; set; }
+
+        public class CodecInfoModel
+        {
+            public byte PreferredPayloadType { get; set; }
+            public string Name { get; set; }
+            public int ClockRate { get; set; }
         }
 
         /// <summary>
