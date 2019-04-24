@@ -33,5 +33,45 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Margin="0,20"/>
+
+        <RelativePanel Background="White">
+            <Border Name="VideoBorder"
+                    BorderThickness="1"
+                    BorderBrush="Blue"
+                    Margin="30"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Visibility="Visible"
+                    RelativePanel.AlignBottomWithPanel="True"
+                    RelativePanel.AlignTopWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True"
+                    RelativePanel.AlignLeftWithPanel="True">
+                <RelativePanel RelativePanel.AlignLeftWithPanel="True"
+                               RelativePanel.AlignRightWithPanel="True"
+                               RelativePanel.AlignBottomWithPanel="True"
+                               RelativePanel.AlignTopWithPanel="True">
+                    <MediaElement Name="PeerVideo"
+                                  Height="500"
+                                  RealTimePlayback="True"
+                                  RelativePanel.AlignLeftWithPanel="True"
+                                  RelativePanel.AlignRightWithPanel="True"
+                                  RelativePanel.AlignBottomWithPanel="True"
+                                  RelativePanel.AlignTopWithPanel="True"/>
+                </RelativePanel>
+            </Border>
+            <Border BorderThickness="1"
+                    Margin="50"
+                    BorderBrush="Blue"
+                    Visibility="Visible"
+                    RelativePanel.AlignBottomWithPanel="True"
+                    RelativePanel.AlignRightWithPanel="True">
+                <Grid>
+                    <MediaElement Width="200"
+                                  Height="200"
+                                  RealTimePlayback="True"
+                                  Name="SelfVideo"/>
+                </Grid>
+            </Border>
+        </RelativePanel>
     </StackPanel>
 </Page>
