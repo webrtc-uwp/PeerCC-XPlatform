@@ -24,9 +24,13 @@ namespace Client_UWP.Pages.Call
     /// </summary>
     public sealed partial class CallPage : Page
     {
+        private CallPageViewModel ViewModel { get; set; }
+
         public CallPage()
         {
             InitializeComponent();
+
+            ViewModel = new CallPageViewModel();
 
             Loaded += OnLoaded;
 
@@ -39,9 +43,16 @@ namespace Client_UWP.Pages.Call
             };
         }
 
+        
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             ApplicationView.GetForCurrentView().TryResizeView(new Size(700, 700));
+
+            GuiLogic.Instance.BindSelfVideo();
+
+            ViewModel.SelfVideo = SelfVideo;
+            ViewModel.PeerVideo = PeerVideo;
         }
     }
 }

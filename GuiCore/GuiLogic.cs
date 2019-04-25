@@ -186,13 +186,13 @@ namespace GuiCore
 
             PeerConnection.OnIceGatheringStateChange += () =>
             {
-                Debug.WriteLine("Ice connection state change, gathering-state = " 
+                Debug.WriteLine("Ice connection state change, gathering-state = "
                     + PeerConnection.IceGatheringState.ToString().ToLower());
             };
 
             PeerConnection.OnIceConnectionStateChange += () =>
             {
-                Debug.WriteLine("Ice connection state change, state=" 
+                Debug.WriteLine("Ice connection state change, state="
                     + (PeerConnection != null ? PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
             };
 
@@ -201,7 +201,13 @@ namespace GuiCore
             PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
             PeerConnection.OnTrack += PeerConnection_OnTrack;
             PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
+            GettingUserMedia();
 
+            return true;
+        }
+
+        private void GettingUserMedia()
+        {
             Debug.WriteLine("Getting user media.");
 
             IReadOnlyList<IConstraint> mandatoryConstraints = new List<IConstraint>();
@@ -213,7 +219,7 @@ namespace GuiCore
             //    new Constraint("maxFrameRate", Devices.Instance.VideoCaptureProfile.FrameRate.ToString()),
             //    new Constraint("minFrameRate", Devices.Instance.VideoCaptureProfile.FrameRate.ToString())
             //};
-            
+
             IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
 
             // TODO: select camera
@@ -236,14 +242,22 @@ namespace GuiCore
 
             var audioTrackSource = AudioTrackSource.Create(audioOptions);
             _selfAudioTrack = MediaStreamTrack.CreateAudioTrack("SELF_AUDIO", audioTrackSource);
+            AddLocalMediaTracks();
+        }
 
+        private void AddLocalMediaTracks()
+        {
             Debug.WriteLine("Adding local media tracks.");
             PeerConnection.AddTrack(_selfVideoTrack);
             PeerConnection.AddTrack(_selfAudioTrack);
 
             OnAddLocalTrack?.Invoke(_selfVideoTrack);
             OnAddLocalTrack?.Invoke(_selfAudioTrack);
+            //BindSelfVideo();
+        }
 
+        public void BindSelfVideo()
+        {
             if (_selfVideoTrack != null)
             {
                 if (VideoLoopbackEnabled)
@@ -259,8 +273,59 @@ namespace GuiCore
                     };
                 }
             }
+        }
 
-            return true;
+        private bool _cameraEnabled = true;
+        private bool _microphoneIsOn = true;
+
+        /// <summary>
+        /// Add local media track event handler.
+        /// </summary>
+        /// <param name="track">Media track kind.</param>
+        public void Instance_OnAddLocalTrack(IMediaStreamTrack track)
+        {
+            Debug.WriteLine("Add local track!");
+
+            if (track.Kind == "audio")
+            {
+                if (_microphoneIsOn)
+                {
+                    Debug.WriteLine("audio!");
+                }
+            }
+            if (track.Kind == "video")
+            {
+                if (_cameraEnabled)
+                {
+                    Debug.WriteLine("video!");
+                    EnableLocalVideoStream();
+                }
+            }
+        }
+
+        public object MediaLock { get; set; } = new object();
+        private bool VideoEnabled = true;
+
+        /// <summary>
+        /// Enables the local video stream.
+        /// </summary>
+        private void EnableLocalVideoStream()
+        {
+            lock (MediaLock)
+            {
+                if (_selfVideoTrack != null)
+                    _selfVideoTrack.Enabled = true;
+                VideoEnabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Add remote media track event handler.
+        /// </summary>
+        /// <param name="track">Media track kind.</param>
+        public void Instance_OnAddRemoteTrack(IMediaStreamTrack track)
+        {
+            Debug.WriteLine("MainPage: Add remote media track!");
         }
 
         bool _videoLoopbackEnabled = true;
@@ -299,10 +364,10 @@ namespace GuiCore
 
         public event Action<IMediaStreamTrack> OnAddLocalTrack;
 
-        private IMediaStreamTrack _peerVideoTrack;
-        private IMediaStreamTrack _selfVideoTrack;
-        private IMediaStreamTrack _peerAudioTrack;
-        private IMediaStreamTrack _selfAudioTrack;
+        public IMediaStreamTrack _peerVideoTrack;
+        public IMediaStreamTrack _selfVideoTrack;
+        public IMediaStreamTrack _peerAudioTrack;
+        public IMediaStreamTrack _selfAudioTrack;
 
         /// <summary>
         /// Logs in local peer to server.
