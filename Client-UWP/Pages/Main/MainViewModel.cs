@@ -20,7 +20,7 @@ namespace Client_UWP
             Devices.Instance.RequestAccessForMediaCapture().AsTask().ContinueWith(antecedent =>
             {
                 if (antecedent.Result)
-                    Initialization.Instance.CofigureWebRtcLib();
+                    Initialization.Instance.CofigureWebRtcLib(uiDispatcher);
                 else
                     RunOnUiThread(async () 
                         => await new MessageDialog("Failed to obtain access to multimedia devices!").ShowAsync());

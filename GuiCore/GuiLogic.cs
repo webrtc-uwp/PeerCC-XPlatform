@@ -243,6 +243,8 @@ namespace GuiCore
             var audioTrackSource = AudioTrackSource.Create(audioOptions);
             _selfAudioTrack = MediaStreamTrack.CreateAudioTrack("SELF_AUDIO", audioTrackSource);
             AddLocalMediaTracks();
+
+            BindSelfVideo();
         }
 
         private void AddLocalMediaTracks()
@@ -256,12 +258,12 @@ namespace GuiCore
             //BindSelfVideo();
         }
 
-        public void BindSelfVideo()
+        private void BindSelfVideo()
         {
             if (_selfVideoTrack != null)
             {
-                if (VideoLoopbackEnabled)
-                {
+                //if (VideoLoopbackEnabled)
+                //{
                     _selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
                     ((MediaStreamTrack)_selfVideoTrack).OnFrameRateChanged += (float frameRate) =>
                     {
@@ -271,7 +273,7 @@ namespace GuiCore
                     {
                         ResolutionChanged?.Invoke("SELF", width, height);
                     };
-                }
+                //}
             }
         }
 

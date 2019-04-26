@@ -1,10 +1,5 @@
 ﻿using Client_UWP.MVVM;
 using GuiCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 
 namespace Client_UWP.Pages.Call
