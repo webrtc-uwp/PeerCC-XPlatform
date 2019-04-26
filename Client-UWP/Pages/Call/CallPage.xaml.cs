@@ -36,7 +36,7 @@ namespace Client_UWP.Pages.Call
             ApplicationView.GetForCurrentView().TryResizeView(new Size(700, 700));
 
             ViewModel.SelfVideo = SelfVideo;
-            //ViewModel.PeerVideo = PeerVideo;
+            ViewModel.PeerVideo = PeerVideo;
         }
     }
 }

@@ -161,7 +161,7 @@ namespace GuiCore
         /// Creates a peer connection.
         /// </summary>
         /// <returns>True if connection to a peer is successfully created.</returns>
-        public async Task<bool> CreatePeerConnection()
+        public bool CreatePeerConnection()
         {
             Debug.Assert(PeerConnection == null);
 
@@ -201,7 +201,12 @@ namespace GuiCore
             PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
             PeerConnection.OnTrack += PeerConnection_OnTrack;
             PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
+
             GettingUserMedia();
+
+            AddLocalMediaTracks();
+
+            BindSelfVideo();
 
             return true;
         }
@@ -242,9 +247,6 @@ namespace GuiCore
 
             var audioTrackSource = AudioTrackSource.Create(audioOptions);
             _selfAudioTrack = MediaStreamTrack.CreateAudioTrack("SELF_AUDIO", audioTrackSource);
-            AddLocalMediaTracks();
-
-            BindSelfVideo();
         }
 
         private void AddLocalMediaTracks()
@@ -366,10 +368,10 @@ namespace GuiCore
 
         public event Action<IMediaStreamTrack> OnAddLocalTrack;
 
-        public IMediaStreamTrack _peerVideoTrack;
-        public IMediaStreamTrack _selfVideoTrack;
-        public IMediaStreamTrack _peerAudioTrack;
-        public IMediaStreamTrack _selfAudioTrack;
+        private IMediaStreamTrack _peerVideoTrack;
+        private IMediaStreamTrack _selfVideoTrack;
+        private IMediaStreamTrack _peerAudioTrack;
+        private IMediaStreamTrack _selfAudioTrack;
 
         /// <summary>
         /// Logs in local peer to server.
@@ -412,9 +414,7 @@ namespace GuiCore
                 return;
             }
 
-            bool connectResult = await CreatePeerConnection();
-
-            if (connectResult)
+            if (CreatePeerConnection())
             {
                 _peerId = peerId;
                 var offerOptions = new RTCOfferOptions();
@@ -677,9 +677,7 @@ namespace GuiCore
                             Debug.Assert(_peerId == -1);
                             _peerId = peerId;
 
-                            bool connectResult = await CreatePeerConnection();
-
-                            if (!connectResult)
+                            if (!CreatePeerConnection())
                             {
                                 Debug.WriteLine("Failed to initialize our PeerConnection instance");
 

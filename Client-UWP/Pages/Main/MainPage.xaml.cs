@@ -56,7 +56,6 @@ namespace Client_UWP
                 Debug.WriteLine("MainPage: PeerConnection created!");
             };
 
-            GuiLogic.Instance.OnAddRemoteTrack += GuiLogic.Instance.Instance_OnAddRemoteTrack;
             GuiLogic.Instance.OnAddLocalTrack += GuiLogic.Instance.Instance_OnAddLocalTrack;
 
             InitView();
