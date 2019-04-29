@@ -67,9 +67,12 @@ namespace Client_UWP
 
         private void Signaler_PeerHangup(object sender, Peer e)
         {
+            
             GuiLogic.Instance.DisconnectFromPeer();
 
-            Frame.Navigate(typeof(MainPage));
+            Task.Run(async () 
+                => await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
+                => Frame.Navigate(typeof(MainPage))));
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -93,7 +96,8 @@ namespace Client_UWP
             // task thread. To prevent concurrency issues, ensure all
             // notifications from this thread are asynchronously
             // forwarded back to the GUI thread for further processing.
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandleSignedIn(sender, e));
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
+                => HandleSignedIn(sender, e));
         }
 
         private void HandleSignedIn(object sender, EventArgs e)
@@ -104,7 +108,8 @@ namespace Client_UWP
         private async void Signaler_ServerConnectionFailed(object sender, EventArgs e)
         {
             // See method Signaler_SignedIn for concurrency comments.
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandleServerConnectionFailed(sender, e));
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
+                => HandleServerConnectionFailed(sender, e));
 
         }
 
@@ -116,7 +121,8 @@ namespace Client_UWP
         private async void Signaler_PeerConnected(object sender, Peer peer)
         {
             // See method Signaler_SignedIn for concurrency comments.
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandlePeerConnected(sender, peer));
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
+                => HandlePeerConnected(sender, peer));
         }
 
         private void HandlePeerConnected(object sender, Peer peer)
@@ -140,7 +146,8 @@ namespace Client_UWP
         private async void Signaler_PeerDisconnected(object sender, Peer peer)
         {
             // See method Signaler_SignedIn for concurrency comments.
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => HandlePeerDisconnected(sender, peer));
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
+                => HandlePeerDisconnected(sender, peer));
 
         }
 
@@ -206,8 +213,6 @@ namespace Client_UWP
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
                 Task.Run(async () => await GuiLogic.Instance.ConnectToPeer(remotePeer.Id));
-
-                //Frame.Navigate(typeof(CallPage));
             };
         }
 

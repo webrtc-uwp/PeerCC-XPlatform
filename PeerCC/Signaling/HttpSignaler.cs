@@ -493,7 +493,7 @@ namespace PeerCC.Signaling
                         }
                         else
                         {
-                            if (response.ToString().Contains("BYE"))
+                            if (result.Contains("BYE"))
                                 OnPeerHangup(new Peer(peerId, string.Empty));
                             else
                             {
