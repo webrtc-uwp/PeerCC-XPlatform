@@ -179,6 +179,8 @@ namespace GuiCore
             Debug.WriteLine("Creating peer connection.");
             PeerConnection = new RTCPeerConnection(config);
 
+            OnPeerConnectionCreated?.Invoke();
+
             if (PeerConnection == null)
             {
                 throw new NullReferenceException("Peer connection is not created.");
@@ -195,8 +197,6 @@ namespace GuiCore
                 Debug.WriteLine("Ice connection state change, state="
                     + (PeerConnection != null ? PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
             };
-
-            OnPeerConnectionCreated?.Invoke();
 
             PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
             PeerConnection.OnTrack += PeerConnection_OnTrack;

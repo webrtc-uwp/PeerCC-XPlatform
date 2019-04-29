@@ -50,15 +50,25 @@ namespace Client_UWP
             _signaler.PeerConnected += Signaler_PeerConnected;
             _signaler.PeerDisconnected += Signaler_PeerDisconnected;
             _signaler.MessageFromPeer += Signaler_MessageFromPeer;
+            _signaler.PeerHangup += Signaler_PeerHangup;
 
-            GuiLogic.Instance.OnPeerConnectionCreated += () => 
+            GuiLogic.Instance.OnPeerConnectionCreated += async () => 
             {
                 Debug.WriteLine("MainPage: PeerConnection created!");
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
+                    => Frame.Navigate(typeof(CallPage)));
             };
 
             GuiLogic.Instance.OnAddLocalTrack += GuiLogic.Instance.Instance_OnAddLocalTrack;
 
             InitView();
+        }
+
+        private void Signaler_PeerHangup(object sender, Peer e)
+        {
+            GuiLogic.Instance.DisconnectFromPeer();
+
+            Frame.Navigate(typeof(MainPage));
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -196,11 +206,11 @@ namespace Client_UWP
 
                 Task.Run(async () => await GuiLogic.Instance.ConnectToPeer(remotePeer.Id));
 
-                Frame.Navigate(typeof(CallPage));
+                //Frame.Navigate(typeof(CallPage));
             };
         }
 
-        private void Signaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
+        private async void Signaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
         {
             GuiLogic.Instance.MessageFromPeerTaskRun(e.Message);
         }
