@@ -55,6 +55,7 @@ namespace Client_UWP
             GuiLogic.Instance.OnPeerConnectionCreated += async () => 
             {
                 Debug.WriteLine("MainPage: PeerConnection created!");
+
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
                     => Frame.Navigate(typeof(CallPage)));
             };
@@ -210,7 +211,7 @@ namespace Client_UWP
             };
         }
 
-        private async void Signaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
+        private void Signaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
         {
             GuiLogic.Instance.MessageFromPeerTaskRun(e.Message);
         }
