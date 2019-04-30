@@ -31,10 +31,10 @@
                        Height="20"
                        Width="280"
                        Margin="10,10,10,5"/>
-        <TextBlock x:Name="tbIdentityUri"
+        <!--<TextBlock x:Name="tbIdentityUri"
                        Height="20"
                        Width="280"
-                       Margin="10,5,10,0"/>
+                       Margin="10,5,10,0"/>-->
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Center"
                     Margin="0,10,0,5"

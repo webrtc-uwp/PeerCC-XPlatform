@@ -38,7 +38,7 @@
             <Border Name="VideoBorder"
                     BorderThickness="1"
                     BorderBrush="Blue"
-                    Margin="30"
+                    Margin="10"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Visibility="Visible"

@@ -33,7 +33,7 @@ namespace Client_UWP.Pages.Call
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            ApplicationView.GetForCurrentView().TryResizeView(new Size(700, 700));
+            ApplicationView.GetForCurrentView().TryResizeView(new Size(700, 650));
 
             ViewModel.SelfVideo = SelfVideo;
             ViewModel.PeerVideo = PeerVideo;

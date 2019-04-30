@@ -77,7 +77,7 @@ namespace Client_UWP
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            ApplicationView.GetForCurrentView().TryResizeView(new Size(450, 700));
+            ApplicationView.GetForCurrentView().TryResizeView(new Size(700, 650));
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace Client_UWP
         private void InitView()
         {
             tbServiceUri.Text = $"Service Uri: { GuiLogic.Instance.account?.ServiceUri }";
-            tbIdentityUri.Text = $"Self Identity Uri: { GuiLogic.Instance.account?.SelfIdentityUri }";
+            //tbIdentityUri.Text = $"Self Identity Uri: { GuiLogic.Instance.account?.SelfIdentityUri }";
 
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = null;
