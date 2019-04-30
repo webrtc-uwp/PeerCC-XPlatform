@@ -35,6 +35,8 @@ namespace GuiCore
             }
         }
 
+        public List<Peer> peersList = new List<Peer>();
+
         // SDP negotiation attributes
         public class NegotiationAtributes
         {

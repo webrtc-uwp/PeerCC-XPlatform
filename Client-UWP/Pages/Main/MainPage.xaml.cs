@@ -78,6 +78,12 @@ namespace Client_UWP
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             ApplicationView.GetForCurrentView().TryResizeView(new Size(700, 650));
+
+            peersListView.Items.Clear();
+            foreach (Peer peer in GuiLogic.Instance.peersList)
+            {
+                peersListView.Items.Add(peer);
+            }
         }
 
         /// <summary>
@@ -141,6 +147,7 @@ namespace Client_UWP
                 return;
             }
             peersListView.Items.Add(peer);
+            GuiLogic.Instance.peersList.Add(peer);
         }
 
         private async void Signaler_PeerDisconnected(object sender, Peer peer)
@@ -159,7 +166,18 @@ namespace Client_UWP
             {
                 Peer p = (Peer)peersListView.Items[i];
                 if (p.Name == peer.Name)
+                {
                     peersListView.Items.Remove(peersListView.Items[i]);
+                }
+            }
+
+            for (int i = 0; i < GuiLogic.Instance.peersList.Count(); i++)
+            {
+                Peer p = GuiLogic.Instance.peersList[i];
+                if (p.Name == peer.Name)
+                {
+                    GuiLogic.Instance.peersList.Remove(p);
+                }
             }
         }
 
