@@ -78,12 +78,6 @@ namespace Client_UWP
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             ApplicationView.GetForCurrentView().TryResizeView(new Size(700, 650));
-
-            peersListView.Items.Clear();
-            foreach (Peer peer in GuiLogic.Instance.peersList)
-            {
-                peersListView.Items.Add(peer);
-            }
         }
 
         /// <summary>
@@ -146,8 +140,12 @@ namespace Client_UWP
                 Debug.WriteLine($"Peer is our local peer: {peer.ToString()}");
                 return;
             }
-            peersListView.Items.Add(peer);
-            GuiLogic.Instance.peersList.Add(peer);
+
+            if (GuiLogic.Instance.PeerConnectedToServer)
+            {
+                peersListView.Items.Add(peer);
+                GuiLogic.Instance.PeersList.Add(peer);
+            }
         }
 
         private async void Signaler_PeerDisconnected(object sender, Peer peer)
@@ -171,18 +169,35 @@ namespace Client_UWP
                 }
             }
 
-            for (int i = 0; i < GuiLogic.Instance.peersList.Count(); i++)
+            for (int i = 0; i < GuiLogic.Instance.PeersList.Count(); i++)
             {
-                Peer p = GuiLogic.Instance.peersList[i];
+                Peer p = GuiLogic.Instance.PeersList[i];
                 if (p.Name == peer.Name)
                 {
-                    GuiLogic.Instance.peersList.Remove(p);
+                    GuiLogic.Instance.PeersList.Remove(p);
                 }
             }
         }
 
         private void InitView()
         {
+            if (GuiLogic.Instance.PeerConnectedToServer)
+            {
+                ConnectPeer.IsEnabled = false;
+                DisconnectPeer.IsEnabled = true;
+            }
+            else
+            {
+                ConnectPeer.IsEnabled = true;
+                DisconnectPeer.IsEnabled = false;
+            }
+
+            peersListView.Items.Clear();
+            foreach (Peer peer in GuiLogic.Instance.PeersList)
+            {
+                peersListView.Items.Add(peer);
+            }
+
             tbServiceUri.Text = $"Service Uri: { GuiLogic.Instance.account?.ServiceUri }";
             //tbIdentityUri.Text = $"Self Identity Uri: { GuiLogic.Instance.account?.SelfIdentityUri }";
 
@@ -203,6 +218,8 @@ namespace Client_UWP
             {
                 await GuiLogic.Instance.LogInToServer();
 
+                GuiLogic.Instance.PeerConnectedToServer = true;
+
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
             };
@@ -211,10 +228,14 @@ namespace Client_UWP
             {
                 await GuiLogic.Instance.LogOutFromServer();
 
+                GuiLogic.Instance.PeerConnectedToServer = false;
+
                 peersListView.Items.Clear();
 
-                DisconnectPeer.IsEnabled = false;
+                GuiLogic.Instance.PeersList.Clear();
+
                 ConnectPeer.IsEnabled = true;
+                DisconnectPeer.IsEnabled = false;
             };
 
             CallRemotePeer.Click += (sender, args) =>

@@ -35,7 +35,8 @@ namespace GuiCore
             }
         }
 
-        public List<Peer> peersList = new List<Peer>();
+        public List<Peer> PeersList = new List<Peer>();
+        public bool PeerConnectedToServer = false;
 
         // SDP negotiation attributes
         public class NegotiationAtributes
