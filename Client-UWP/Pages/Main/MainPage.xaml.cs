@@ -46,7 +46,7 @@ namespace Client_UWP
 
             GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
 
-            _signaler = (HttpSignaler)GuiLogic.Instance.account.Signaler;
+            _signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
 
             Loaded += OnLoaded;
 
@@ -134,10 +134,15 @@ namespace Client_UWP
         {
             Debug.WriteLine($"Peer connected {peer.Name} / {peer.Id}");
 
-            if (peersListView.Items.Contains(peer))
+            foreach (var item in peersListView.Items)
             {
-                Debug.WriteLine($"Peer already found in list: {peer.ToString()}");
-                return;
+                Peer p = (Peer)item;
+
+                if (p.Id == peer.Id)
+                {
+                    Debug.WriteLine($"Peer already found in list: {peer.ToString()}");
+                    return;
+                }
             }
 
             if (_signaler.LocalPeer.Name == peer.Name)
@@ -146,11 +151,8 @@ namespace Client_UWP
                 return;
             }
 
-            if (GuiLogic.Instance.PeerConnectedToServer)
-            {
-                peersListView.Items.Add(peer);
-                GuiLogic.Instance.PeersList.Add(peer);
-            }
+            peersListView.Items.Add(peer);
+            GuiLogic.Instance.PeersList.Add(peer);
         }
 
         private async void Signaler_PeerDisconnected(object sender, Peer peer)
@@ -203,8 +205,7 @@ namespace Client_UWP
                 peersListView.Items.Add(peer);
             }
 
-            tbServiceUri.Text = $"Service Uri: { GuiLogic.Instance.account?.ServiceUri }";
-            //tbIdentityUri.Text = $"Self Identity Uri: { GuiLogic.Instance.account?.SelfIdentityUri }";
+            tbServiceUri.Text = $"Service Uri: { GuiLogic.Instance.Account?.ServiceUri }";
 
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = null;

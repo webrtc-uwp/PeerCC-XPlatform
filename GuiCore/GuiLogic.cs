@@ -40,9 +40,9 @@ namespace GuiCore
         public HttpSignaler HttpSignaler = new HttpSignaler();
         private readonly List<RTCIceServer> IceServers = new List<RTCIceServer>();
 
-        public Account account;
-        public Call call;
-        public Media media;
+        public Account Account;
+        public Call Call;
+        public Media Media;
 
         private GuiLogic()
         {
@@ -75,7 +75,7 @@ namespace GuiCore
 
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
-            account = (Account)accountProvider
+            Account = (Account)accountProvider
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
@@ -322,7 +322,7 @@ namespace GuiCore
         {
             Debug.WriteLine("Connects to server.");
 
-            await HttpSignaler.Connect(account.ServiceUri);
+            await HttpSignaler.Connect(Account.ServiceUri);
         }
 
         /// <summary>
