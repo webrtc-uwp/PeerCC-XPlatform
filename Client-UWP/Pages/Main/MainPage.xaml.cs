@@ -42,7 +42,7 @@ namespace Client_UWP
             InitializeComponent();
 
             AccountModel accountModel =
-                    XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+                XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
 
             GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
 
@@ -50,8 +50,7 @@ namespace Client_UWP
 
             Loaded += OnLoaded;
 
-            string name = _signaler.LocalPeer.Name;
-            Debug.WriteLine($"Connecting to server from local peer: {name}");
+            Debug.WriteLine($"Connecting to server from local peer: {_signaler.LocalPeer.Name}");
 
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = 0;
@@ -64,12 +63,8 @@ namespace Client_UWP
             _signaler.PeerHangup += Signaler_PeerHangup;
 
             GuiLogic.Instance.OnPeerConnectionCreated += async () => 
-            {
-                Debug.WriteLine("MainPage: PeerConnection created!");
-
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
                     => Frame.Navigate(typeof(CallPage)));
-            };
 
             GuiLogic.Instance.OnAddLocalTrack += GuiLogic.Instance.Instance_OnAddLocalTrack;
 
@@ -78,7 +73,6 @@ namespace Client_UWP
 
         private void Signaler_PeerHangup(object sender, Peer e)
         {
-            
             GuiLogic.Instance.DisconnectFromPeer();
 
             Task.Run(async () 

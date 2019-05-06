@@ -37,28 +37,12 @@ namespace GuiCore
         public List<Peer> PeersList = new List<Peer>();
         public bool PeerConnectedToServer = false;
 
-        // SDP negotiation attributes
-        public class NegotiationAtributes
-        {
-            public static readonly string SdpMid = "sdpMid";
-            public static readonly string SdpMLineIndex = "sdpMLineIndex";
-            public static readonly string Candidate = "candidate";
-            public static readonly string Type = "type";
-            public static readonly string Sdp = "sdp";
-        }
-
-        public class AccountModel
-        {
-            public string AccountName { get; set; }
-            public string ServiceUri { get; set; }
-            public string IdentityUri { get; set; }
-        }
-
-        public HttpSignaler _httpSignaler = new HttpSignaler();
-        private readonly List<RTCIceServer> _iceServers = new List<RTCIceServer>();
+        public HttpSignaler HttpSignaler = new HttpSignaler();
+        private readonly List<RTCIceServer> IceServers = new List<RTCIceServer>();
 
         public Account account;
         public Call call;
+        public Media media;
 
         private GuiLogic()
         {
@@ -92,7 +76,7 @@ namespace GuiCore
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
             account = (Account)accountProvider
-                .GetAccount(serviceUri, _httpSignaler.LocalPeer.Name, _httpSignaler);
+                .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
         private readonly object _peerConnectionLock = new object();
@@ -124,7 +108,7 @@ namespace GuiCore
 
         public void ConfigureIceServers(List<IceServer> iceServers)
         {
-            _iceServers.Clear();
+            IceServers.Clear();
 
             foreach (IceServer iceServer in iceServers)
             {
@@ -132,7 +116,7 @@ namespace GuiCore
                 server.Urls = iceServer.Urls;
                 server.Username = iceServer.Username;
                 server.Credential = iceServer.Credential;
-                _iceServers.Add(server);
+                IceServers.Add(server);
             }
         }
 
@@ -154,44 +138,22 @@ namespace GuiCore
         {
             Debug.Assert(PeerConnection == null);
 
-            var factoryConfig = new WebRtcFactoryConfiguration();
-            _factory = new WebRtcFactory(factoryConfig);
-
-            var config = new RTCConfiguration()
-            {
-                Factory = _factory,
-                BundlePolicy = RTCBundlePolicy.Balanced,
-                IceTransportPolicy = RTCIceTransportPolicy.All,
-                IceServers = _iceServers
-            };
-
             Debug.WriteLine("Creating peer connection.");
-            PeerConnection = new RTCPeerConnection(config);
+            PeerConnection = new RTCPeerConnection(ConfigureRtc());
 
             OnPeerConnectionCreated?.Invoke();
 
-            if (PeerConnection == null)
-            {
+            if (PeerConnection == null) 
                 throw new NullReferenceException("Peer connection is not created.");
-            }
 
-            PeerConnection.OnIceGatheringStateChange += () =>
-            {
-                Debug.WriteLine("Ice connection state change, gathering-state = "
-                    + PeerConnection.IceGatheringState.ToString().ToLower());
-            };
-
-            PeerConnection.OnIceConnectionStateChange += () =>
-            {
-                Debug.WriteLine("Ice connection state change, state="
-                    + (PeerConnection != null ? PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
-            };
+            PeerConnection.OnIceGatheringStateChange += PeerConnection_OnIceGatheringStateChange;
+            PeerConnection.OnIceConnectionStateChange += PeerConnection_OnIceConnectionStateChange;
 
             PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
             PeerConnection.OnTrack += PeerConnection_OnTrack;
             PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
 
-            GettingUserMedia();
+            GetUserMedia();
 
             AddLocalMediaTracks();
 
@@ -200,7 +162,34 @@ namespace GuiCore
             return true;
         }
 
-        private void GettingUserMedia()
+        private RTCConfiguration ConfigureRtc()
+        {
+            var factoryConfig = new WebRtcFactoryConfiguration();
+            _factory = new WebRtcFactory(factoryConfig);
+
+            var config = new RTCConfiguration()
+            {
+                Factory = _factory,
+                BundlePolicy = RTCBundlePolicy.Balanced,
+                IceTransportPolicy = RTCIceTransportPolicy.All,
+                IceServers = IceServers
+            };
+            return config;
+        }
+
+        private void PeerConnection_OnIceGatheringStateChange()
+        {
+            Debug.WriteLine("Ice connection state change, gathering-state = "
+                    + PeerConnection.IceGatheringState.ToString().ToLower());
+        }
+
+        private void PeerConnection_OnIceConnectionStateChange()
+        {
+            Debug.WriteLine("Ice connection state change, state="
+                    + (PeerConnection != null ? PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
+        }
+
+        private void GetUserMedia()
         {
             Debug.WriteLine("Getting user media.");
 
@@ -246,25 +235,22 @@ namespace GuiCore
 
             OnAddLocalTrack?.Invoke(_selfVideoTrack);
             OnAddLocalTrack?.Invoke(_selfAudioTrack);
-            //BindSelfVideo();
         }
 
         private void BindSelfVideo()
         {
             if (_selfVideoTrack != null)
             {
-                //if (VideoLoopbackEnabled)
-                //{
-                    _selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
-                    ((MediaStreamTrack)_selfVideoTrack).OnFrameRateChanged += (float frameRate) =>
-                    {
-                        FramesPerSecondChanged?.Invoke("SELF", frameRate.ToString("0.0"));
-                    };
-                    ((MediaStreamTrack)_selfVideoTrack).OnResolutionChanged += (uint width, uint height) =>
-                    {
-                        ResolutionChanged?.Invoke("SELF", width, height);
-                    };
-                //}
+
+                _selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
+                ((MediaStreamTrack)_selfVideoTrack).OnFrameRateChanged += (float frameRate) =>
+                {
+                    FramesPerSecondChanged?.Invoke("SELF", frameRate.ToString("0.0"));
+                };
+                ((MediaStreamTrack)_selfVideoTrack).OnResolutionChanged += (uint width, uint height) =>
+                {
+                    ResolutionChanged?.Invoke("SELF", width, height);
+                };
             }
         }
 
@@ -321,40 +307,6 @@ namespace GuiCore
             Debug.WriteLine("MainPage: Add remote media track!");
         }
 
-        bool _videoLoopbackEnabled = true;
-        public bool VideoLoopbackEnabled
-        {
-            get
-            {
-                return _videoLoopbackEnabled;
-            }
-            set
-            {
-                if (_videoLoopbackEnabled == value) return;
-
-                _videoLoopbackEnabled = value;
-                if (_videoLoopbackEnabled)
-                {
-                    if (_selfVideoTrack != null)
-                    {
-                        Debug.WriteLine("Enabling video loopback.");
-
-                        _selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
-                        ((MediaStreamTrack)_selfVideoTrack).OnFrameRateChanged += (float frameRate) =>
-                        {
-                            FramesPerSecondChanged?.Invoke("SELF", frameRate.ToString("0.0"));
-                        };
-                        ((MediaStreamTrack)_selfVideoTrack).OnResolutionChanged += (uint width, uint height) => 
-                        {
-                            ResolutionChanged?.Invoke("SELF", width, height);
-                        };
-
-                        Debug.WriteLine("Video loopback enabled.");
-                    }
-                }
-            }
-        }
-
         public event Action<IMediaStreamTrack> OnAddLocalTrack;
 
         private IMediaStreamTrack _peerVideoTrack;
@@ -370,7 +322,7 @@ namespace GuiCore
         {
             Debug.WriteLine("Connects to server.");
 
-            await _httpSignaler.Connect(account.ServiceUri);
+            await HttpSignaler.Connect(account.ServiceUri);
         }
 
         /// <summary>
@@ -381,7 +333,7 @@ namespace GuiCore
         {
             Debug.WriteLine("Disconnects from server.");
 
-            await _httpSignaler.SignOut();
+            await HttpSignaler.SignOut();
         }
 
         private int _peerId = -1;
@@ -488,7 +440,7 @@ namespace GuiCore
         /// </summary>
         private void SendHangupMessage()
         {
-            _httpSignaler.SendToPeer(_peerId, "BYE");
+            HttpSignaler.SendToPeer(_peerId, "BYE");
         }
 
         /// <summary>
@@ -496,17 +448,37 @@ namespace GuiCore
         /// </summary>
         private void ClosePeerConnection()
         {
-            if (PeerConnection != null)
+            lock (MediaLock)
             {
-                _peerId = -1;
+                if (PeerConnection != null)
+                {
+                    _peerId = -1;
 
-                PeerConnection.OnIceCandidate -= PeerConnection_OnIceCandidate;
-                PeerConnection.OnTrack -= PeerConnection_OnTrack;
-                PeerConnection.OnRemoveTrack -= PeerConnection_OnRemoveTrack;
+                    PeerConnection.OnIceCandidate -= PeerConnection_OnIceCandidate;
+                    PeerConnection.OnTrack -= PeerConnection_OnTrack;
+                    PeerConnection.OnRemoveTrack -= PeerConnection_OnRemoveTrack;
 
-                PeerConnection = null;
+                    if (_peerVideoTrack != null) _peerVideoTrack.Element = null;
+                    if (_selfVideoTrack != null) _selfVideoTrack.Element = null;
 
-                GC.Collect(); // Ensure all references are truly dropped.
+                    (_peerVideoTrack as IDisposable)?.Dispose();
+                    (_peerAudioTrack as IDisposable)?.Dispose();
+                    (_selfVideoTrack as IDisposable)?.Dispose();
+                    (_selfAudioTrack as IDisposable)?.Dispose();
+
+                    _peerVideoTrack = null;
+                    _peerAudioTrack = null;
+                    _selfVideoTrack = null;
+                    _selfAudioTrack = null;
+
+                    OnPeerConnectionClosed?.Invoke();
+
+                    PeerConnection = null;
+
+                    OnReadyToConnect?.Invoke();
+
+                    GC.Collect(); // Ensure all references are truly dropped.
+                }
             }
         }
 
@@ -667,7 +639,7 @@ namespace GuiCore
                             {
                                 Debug.WriteLine("Failed to initialize our PeerConnection instance");
 
-                                await _httpSignaler.SignOut();
+                                await HttpSignaler.SignOut();
                                 return;
                             }
                             else if (_peerId != peerId)
@@ -772,7 +744,17 @@ namespace GuiCore
         {
             Debug.WriteLine($"Send message json: {json}");
 
-            _httpSignaler.SendToPeer(_peerId, json.Stringify());
+            HttpSignaler.SendToPeer(_peerId, json.Stringify());
+        }
+
+        // SDP negotiation attributes
+        public class NegotiationAtributes
+        {
+            public static readonly string SdpMid = "sdpMid";
+            public static readonly string SdpMLineIndex = "sdpMLineIndex";
+            public static readonly string Candidate = "candidate";
+            public static readonly string Type = "type";
+            public static readonly string Sdp = "sdp";
         }
     }
 }
