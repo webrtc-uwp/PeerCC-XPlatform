@@ -12,7 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebRtcAdapter.Call;
 using Windows.Data.Json;
-using Windows.Storage;
 
 namespace GuiCore
 {
@@ -53,61 +52,48 @@ namespace GuiCore
             public string AccountName { get; set; }
             public string ServiceUri { get; set; }
             public string IdentityUri { get; set; }
-
-            public AccountModel() { }
         }
 
-        public ApplicationDataContainer localSettings =
-            ApplicationData.Current.LocalSettings;
-
-        public HttpSignaler _httpSignaler;
+        public HttpSignaler _httpSignaler = new HttpSignaler();
+        private readonly List<RTCIceServer> _iceServers = new List<RTCIceServer>();
 
         public Account account;
         public Call call;
 
         private GuiLogic()
         {
-            _httpSignaler = new HttpSignaler();
+            //// Call
+            //ICallProvider callFactory =
+            //    ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
 
-            _iceServers = new List<RTCIceServer>();
+            //CallProvider callProvider = (CallProvider)callFactory;
 
-            AccountModel accountModel =
-                XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+            //call = (Call)callProvider.GetCall();
 
-            // Account 
+            //call.OnFrameRateChanged += (x, y) => { };
+            //call.OnResolutionChanged += (x, y) => { };
+
+            //// Media
+            //IMediaProvider mediaFactory =
+            //    ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
+
+            //MediaProvider mediaProvider = (MediaProvider)mediaFactory;
+
+            //Media media = (Media)mediaProvider.GetMedia();
+
+            //media.GetCodecsAsync(MediaKind.Audio);
+        }
+
+        public void SetAccount(string serviceUri)
+        {
             IAccountProvider accountFactory =
                 ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
 
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
             account = (Account)accountProvider
-                .GetAccount(accountModel?.ServiceUri, _httpSignaler.LocalPeer.Name, _httpSignaler);
-
-            _httpSignaler = (HttpSignaler)account.Signaler;
-
-            // Call
-            ICallProvider callFactory =
-                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
-
-            CallProvider callProvider = (CallProvider)callFactory;
-
-            call = (Call)callProvider.GetCall();
-
-            call.OnFrameRateChanged += (x, y) => { };
-            call.OnResolutionChanged += (x, y) => { };
-
-            // Media
-            IMediaProvider mediaFactory =
-                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
-
-            MediaProvider mediaProvider = (MediaProvider)mediaFactory;
-
-            Media media = (Media)mediaProvider.GetMedia();
-
-            media.GetCodecsAsync(MediaKind.Audio);
+                .GetAccount(serviceUri, _httpSignaler.LocalPeer.Name, _httpSignaler);
         }
-
-        private readonly List<RTCIceServer> _iceServers;
 
         private readonly object _peerConnectionLock = new object();
         private RTCPeerConnection _peerConnection_DoNotUse;
@@ -383,9 +369,6 @@ namespace GuiCore
         public async Task LogInToServer()
         {
             Debug.WriteLine("Connects to server.");
-
-            AccountModel account =
-                    XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
 
             await _httpSignaler.Connect(account.ServiceUri);
         }

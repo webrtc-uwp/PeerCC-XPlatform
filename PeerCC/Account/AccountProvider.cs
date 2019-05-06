@@ -1,4 +1,5 @@
 ﻿using ClientCore.Account;
+using ClientCore.Signaling;
 using PeerCC.Signaling;
 using System;
 using System.Threading.Tasks;
@@ -22,12 +23,12 @@ namespace PeerCC.Account
             throw new NotImplementedException();
         }
 
-        public IAccount GetAccount(string serviceUri, string identityUri, HttpSignaler httpSignaler)
+        public IAccount GetAccount(string serviceUri, string identityUri, ISignaler signaler)
         {
             Account account = new Account();
             account.SetServiceUri(serviceUri);
             account.SetSelfIdentityUri(identityUri);
-            account.SetSignaler(httpSignaler);
+            account.SetSignaler(signaler);
 
             return account;
         }

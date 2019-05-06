@@ -17,6 +17,9 @@ using GuiCore;
 using System.Linq;
 using Client_UWP.Pages.Call;
 using System.Threading.Tasks;
+using Client_UWP.Models;
+using GuiCore.Utilities;
+using Windows.Storage;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -31,11 +34,19 @@ namespace Client_UWP
 
         private MainViewModel _mainViewModel;
 
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
+
         public MainPage()
         {
             InitializeComponent();
 
-            _signaler = GuiLogic.Instance._httpSignaler;
+            AccountModel accountModel =
+                    XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+
+            GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
+
+            _signaler = (HttpSignaler)GuiLogic.Instance.account.Signaler;
 
             Loaded += OnLoaded;
 
