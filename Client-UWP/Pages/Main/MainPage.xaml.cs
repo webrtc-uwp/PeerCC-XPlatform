@@ -59,7 +59,6 @@ namespace Client_UWP
             _signaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
             _signaler.PeerConnected += Signaler_PeerConnected;
             _signaler.PeerDisconnected += Signaler_PeerDisconnected;
-            _signaler.MessageFromPeer += Signaler_MessageFromPeer;
 
             GuiLogic.Instance.OnPeerConnectionCreated += async () => 
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
@@ -258,11 +257,6 @@ namespace Client_UWP
 
                 Task.Run(async () => await GuiLogic.Instance.ConnectToPeer(remotePeer.Id));
             };
-        }
-
-        private void Signaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
-        {
-            GuiLogic.Instance.MessageFromPeerTaskRun(e.Message);
         }
 
         private void PeersListView_Tapped(object sender, TappedRoutedEventArgs e) =>

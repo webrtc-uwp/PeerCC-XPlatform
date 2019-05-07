@@ -49,6 +49,8 @@ namespace GuiCore
             HttpSignaler = new HttpSignaler();
             IceServers = new List<RTCIceServer>();
 
+            HttpSignaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
+
             //// Call
             //ICallProvider callFactory =
             //    ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
@@ -69,6 +71,11 @@ namespace GuiCore
             //Media media = (Media)mediaProvider.GetMedia();
 
             //media.GetCodecsAsync(MediaKind.Audio);
+        }
+
+        private void HttpSignaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
+        {
+            Instance.MessageFromPeerTaskRun(e.Message);
         }
 
         public void SetAccount(string serviceUri)
@@ -594,11 +601,6 @@ namespace GuiCore
 
         public void MessageFromPeerTaskRun(Message message)
         {
-            Debug.WriteLine("Message from peer!");
-            Debug.WriteLine("Peer id: " + message.PeerId);
-            Debug.WriteLine("Message id: " + message.Id);
-            Debug.WriteLine("Message content: " + message.Content);
-
             int peerId = int.Parse(message.PeerId);
             string content = message.Content;
 
