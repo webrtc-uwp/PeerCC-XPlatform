@@ -1,5 +1,9 @@
 ﻿using GuiCore;
+using PeerCC.Signaling;
+using System;
+using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -13,6 +17,8 @@ namespace Client_UWP.Pages.Call
     /// </summary>
     public sealed partial class CallPage : Page
     {
+        private HttpSignaler _signaler = GuiLogic.Instance.HttpSignaler;
+
         private CallPageViewModel ViewModel { get; set; }
 
         public CallPage()
@@ -22,6 +28,8 @@ namespace Client_UWP.Pages.Call
             ViewModel = new CallPageViewModel();
 
             Loaded += OnLoaded;
+
+            _signaler.PeerHangup += Signaler_PeerHangup;
 
             Hangup.Click += (sender, args) =>
             {
@@ -37,6 +45,16 @@ namespace Client_UWP.Pages.Call
 
             ViewModel.SelfVideo = SelfVideo;
             ViewModel.PeerVideo = PeerVideo;
+        }
+
+
+        private void Signaler_PeerHangup(object sender, Peer e)
+        {
+            GuiLogic.Instance.DisconnectFromPeer();
+
+            Task.Run(async ()
+                => await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
+                => Frame.Navigate(typeof(MainPage))));
         }
     }
 }

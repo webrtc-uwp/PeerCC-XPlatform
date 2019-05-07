@@ -1,6 +1,5 @@
 ﻿using ClientCore.Account;
 using ClientCore.Signaling;
-using PeerCC.Signaling;
 using System;
 using System.Threading.Tasks;
 

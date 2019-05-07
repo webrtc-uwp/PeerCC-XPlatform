@@ -37,8 +37,8 @@ namespace GuiCore
         public List<Peer> PeersList = new List<Peer>();
         public bool PeerConnectedToServer = false;
 
-        public HttpSignaler HttpSignaler = new HttpSignaler();
-        private readonly List<RTCIceServer> IceServers = new List<RTCIceServer>();
+        public readonly HttpSignaler HttpSignaler;
+        private readonly List<RTCIceServer> IceServers;
 
         public Account Account;
         public Call Call;
@@ -46,6 +46,9 @@ namespace GuiCore
 
         private GuiLogic()
         {
+            HttpSignaler = new HttpSignaler();
+            IceServers = new List<RTCIceServer>();
+
             //// Call
             //ICallProvider callFactory =
             //    ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();

@@ -30,7 +30,7 @@ namespace Client_UWP
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private readonly HttpSignaler _signaler;
+        private HttpSignaler _signaler = GuiLogic.Instance.HttpSignaler;
 
         private MainViewModel _mainViewModel;
 
@@ -46,7 +46,7 @@ namespace Client_UWP
 
             GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
 
-            _signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
+            //_signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
 
             Loaded += OnLoaded;
 
@@ -60,7 +60,6 @@ namespace Client_UWP
             _signaler.PeerConnected += Signaler_PeerConnected;
             _signaler.PeerDisconnected += Signaler_PeerDisconnected;
             _signaler.MessageFromPeer += Signaler_MessageFromPeer;
-            _signaler.PeerHangup += Signaler_PeerHangup;
 
             GuiLogic.Instance.OnPeerConnectionCreated += async () => 
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
@@ -69,15 +68,6 @@ namespace Client_UWP
             GuiLogic.Instance.OnAddLocalTrack += GuiLogic.Instance.Instance_OnAddLocalTrack;
 
             InitView();
-        }
-
-        private void Signaler_PeerHangup(object sender, Peer e)
-        {
-            GuiLogic.Instance.DisconnectFromPeer();
-
-            Task.Run(async () 
-                => await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
-                => Frame.Navigate(typeof(MainPage))));
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
