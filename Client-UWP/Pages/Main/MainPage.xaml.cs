@@ -124,7 +124,7 @@ namespace Client_UWP
         {
             Debug.WriteLine($"Peer connected {peer.Name} / {peer.Id}");
 
-            foreach (var item in peersListView.Items)
+            foreach (object item in peersListView.Items)
             {
                 Peer p = (Peer)item;
 
@@ -141,8 +141,17 @@ namespace Client_UWP
                 return;
             }
 
-            peersListView.Items.Add(peer);
-            GuiLogic.Instance.PeersList.Add(peer);
+            if (GuiLogic.Instance.PeersList.Count == 0)
+                GuiLogic.Instance.PeersList.Add(peer);
+
+            foreach (Peer p in GuiLogic.Instance.PeersList)
+            {
+                if (p.Id != peer.Id)
+                    GuiLogic.Instance.PeersList.Add(peer);
+            }
+
+            foreach (Peer p in GuiLogic.Instance.PeersList)
+                peersListView.Items.Add(peer);
         }
 
         private async void Signaler_PeerDisconnected(object sender, Peer peer)
