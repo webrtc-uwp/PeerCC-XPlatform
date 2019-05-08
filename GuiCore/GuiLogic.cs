@@ -34,61 +34,6 @@ namespace GuiCore
             }
         }
 
-        public List<Peer> PeersList = new List<Peer>();
-        public bool PeerConnectedToServer = false;
-
-        public readonly HttpSignaler HttpSignaler;
-        private readonly List<RTCIceServer> IceServers;
-
-        public Account Account;
-        public Call Call;
-        public Media Media;
-
-        private GuiLogic()
-        {
-            HttpSignaler = new HttpSignaler();
-            IceServers = new List<RTCIceServer>();
-
-            HttpSignaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
-
-            //// Call
-            //ICallProvider callFactory =
-            //    ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
-
-            //CallProvider callProvider = (CallProvider)callFactory;
-
-            //call = (Call)callProvider.GetCall();
-
-            //call.OnFrameRateChanged += (x, y) => { };
-            //call.OnResolutionChanged += (x, y) => { };
-
-            //// Media
-            //IMediaProvider mediaFactory =
-            //    ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
-
-            //MediaProvider mediaProvider = (MediaProvider)mediaFactory;
-
-            //Media media = (Media)mediaProvider.GetMedia();
-
-            //media.GetCodecsAsync(MediaKind.Audio);
-        }
-
-        private void HttpSignaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
-        {
-            Instance.MessageFromPeerTaskRun(e.Message);
-        }
-
-        public void SetAccount(string serviceUri)
-        {
-            IAccountProvider accountFactory =
-                ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
-
-            AccountProvider accountProvider = (AccountProvider)accountFactory;
-
-            Account = (Account)accountProvider
-                .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
-        }
-
         private readonly object _peerConnectionLock = new object();
         private RTCPeerConnection _peerConnection_DoNotUse;
         public RTCPeerConnection PeerConnection
@@ -114,6 +59,72 @@ namespace GuiCore
                     _peerConnection_DoNotUse = value;
                 }
             }
+        }
+
+        public List<Peer> PeersList;
+        public bool PeerConnectedToServer;
+
+        public readonly HttpSignaler HttpSignaler;
+        private readonly List<RTCIceServer> IceServers;
+
+        public Account Account;
+        public Call Call;
+        public Media Media;
+
+        private GuiLogic()
+        {
+            HttpSignaler = new HttpSignaler();
+            IceServers = new List<RTCIceServer>();
+            PeersList = new List<Peer>();
+            PeerConnectedToServer = false;
+
+            HttpSignaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
+        }
+
+        private void HttpSignaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
+        {
+            Instance.MessageFromPeerTaskRun(e.Message);
+        }
+
+        public void SetMedia()
+        {
+            // Media
+            IMediaProvider mediaFactory =
+                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
+
+            MediaProvider mediaProvider = (MediaProvider)mediaFactory;
+
+            Media = (Media)mediaProvider.GetMedia();
+
+            //Media.GetCodecsAsync(MediaKind.Audio);
+            //Media.GetMediaDevicesAsync(MediaKind.Audio);
+        }
+
+        public void SetCall()
+        {
+            // Call
+            ICallProvider callFactory =
+                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+
+            CallProvider callProvider = (CallProvider)callFactory;
+
+            Call = (Call)callProvider.GetCall();
+
+            Call.OnFrameRateChanged += (x, y) => { };
+            Call.OnResolutionChanged += (x, y) => { };
+
+            //Call.HangupAsync();
+        }
+
+        public void SetAccount(string serviceUri)
+        {
+            IAccountProvider accountFactory =
+                ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
+
+            AccountProvider accountProvider = (AccountProvider)accountFactory;
+
+            Account = (Account)accountProvider
+                .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
         public void ConfigureIceServers(List<IceServer> iceServers)
