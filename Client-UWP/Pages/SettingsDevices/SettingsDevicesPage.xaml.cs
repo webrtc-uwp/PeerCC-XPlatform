@@ -3,6 +3,7 @@ using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using GuiCore;
 using System.Collections.Generic;
+using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -14,6 +15,9 @@ namespace Client_UWP.Pages.SettingsDevices
     /// </summary>
     public sealed partial class SettingsDevicesPage : Page
     {
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
+
         private SettingsDevicesPageViewModel ViewModel { get; set; }
 
         public SettingsDevicesPage()
@@ -36,7 +40,20 @@ namespace Client_UWP.Pages.SettingsDevices
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
             cbCamera.ItemsSource = Devices.Instance.CamerasList;
-            cbCamera.SelectedIndex = 0;
+
+            cbCamera.SelectionChanged += CbCamera_SelectionChanged;
+
+            var items = cbCamera.Items;
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                items[i].ToString();
+
+                if (items[i].ToString() == localSettings.Values["SelectedCameraName"]?.ToString())
+                {
+                    cbCamera.SelectedIndex = i;
+                }
+            }
 
             List<string> acList = new List<string>();
 
@@ -53,6 +70,12 @@ namespace Client_UWP.Pages.SettingsDevices
 
             cbVideoCodec.ItemsSource = vcList;
             cbVideoCodec.SelectedIndex = 0;
+        }
+
+        private void CbCamera_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            localSettings.Values["SelectedCameraName"] = e.ToString();
+
         }
     }
 }

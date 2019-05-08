@@ -125,6 +125,5 @@ namespace Client_UWP.Pages.SettingsAccount
             localSettings.Values["SelectedAccount"] =
                 XmlSerialization<AccountModel>.Serialize((AccountModel)AccountsListView.SelectedItem);
         }
-            
     }
 }

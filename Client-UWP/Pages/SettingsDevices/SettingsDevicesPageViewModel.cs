@@ -4,7 +4,6 @@ using Client_UWP.Utilities;
 using GuiCore.Utilities;
 using System.Collections.Generic;
 using Windows.Storage;
-using Windows.UI.Core;
 
 namespace Client_UWP.Pages.SettingsDevices
 {
