@@ -227,7 +227,7 @@ namespace GuiCore
             IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
 
             // TODO: select camera
-            Devices.MediaDeviceModel _selectedVideoDevice = Devices.Instance.DeviceList[0];
+            Devices.Device _selectedVideoDevice = Devices.Instance.DeviceList[0];
 
             IMediaConstraints mediaConstraints = new MediaConstraints(mandatoryConstraints, optionalConstraints);
 

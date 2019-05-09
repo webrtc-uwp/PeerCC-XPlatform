@@ -20,6 +20,8 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private SettingsDevicesPageViewModel ViewModel { get; set; }
 
+        private List<string> CamerasList = new List<string>();
+
         public SettingsDevicesPage()
         {
             InitializeComponent();
@@ -39,21 +41,18 @@ namespace Client_UWP.Pages.SettingsDevices
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
-            cbCamera.ItemsSource = Devices.Instance.CamerasList;
+            foreach (var videoCaptureDevice in Devices.Instance.DeviceList)
+                CamerasList.Add(videoCaptureDevice.Name);
+
+            cbCamera.ItemsSource = CamerasList;
 
             cbCamera.SelectionChanged += CbCamera_SelectionChanged;
 
-            var items = cbCamera.Items;
+            ItemCollection items = cbCamera.Items;
 
             for (int i = 0; i < items.Count; i++)
-            {
-                items[i].ToString();
-
                 if (items[i].ToString() == localSettings.Values["SelectedCameraName"]?.ToString())
-                {
                     cbCamera.SelectedIndex = i;
-                }
-            }
 
             List<string> acList = new List<string>();
 
@@ -74,8 +73,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void CbCamera_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            localSettings.Values["SelectedCameraName"] = e.ToString();
-
+            localSettings.Values["SelectedCameraName"] = (string)cbCamera.SelectedValue;
         }
     }
 }

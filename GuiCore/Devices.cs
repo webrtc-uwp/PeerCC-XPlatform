@@ -1,7 +1,6 @@
 ﻿using Org.WebRtc;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -31,16 +30,22 @@ namespace GuiCore
 
         private Devices() { }
 
+        public IList<Device> DeviceList = new List<Device>();
+
         public void Initialize()
         {
-            IList<MediaDeviceModel> videoDevices;
-
-            Task.Run(async () =>
+            Task.Run(async () => 
             {
-                videoDevices = await Instance.GetVideoCaptureDevices();
+                var devices = await VideoCapturer.GetDevices();
 
-                foreach (MediaDeviceModel videoCaptureDevice in videoDevices)
-                    Instance.CamerasList.Add(videoCaptureDevice.Name);
+                foreach (var deviceInfo in devices)
+                {
+                    DeviceList.Add(new Device
+                    {
+                        Id = deviceInfo.Info.Id,
+                        Name = deviceInfo.Info.Name
+                    });
+                }
             });
         }
 
@@ -131,30 +136,10 @@ namespace GuiCore
             }).AsAsyncOperation<IList<CaptureCapability>>();
         }
 
-        public class MediaDeviceModel
+        public class Device
         {
             public string Id { get; set; }
             public string Name { get; set; }
-        }
-
-        public ObservableCollection<string> CamerasList = new ObservableCollection<string>();
-
-        public IList<MediaDeviceModel> DeviceList = new List<MediaDeviceModel>();
-
-        public async Task<IList<MediaDeviceModel>> GetVideoCaptureDevices()
-        {
-            var devices = await VideoCapturer.GetDevices();
-
-            foreach (var deviceInfo in devices)
-            {
-                DeviceList.Add(new MediaDeviceModel
-                {
-                    Id = deviceInfo.Info.Id,
-                    Name = deviceInfo.Info.Name
-                });
-            }
-
-            return DeviceList;
         }
     }
 }
