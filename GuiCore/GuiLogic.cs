@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebRtcAdapter.Call;
 using Windows.Data.Json;
+using Windows.Storage;
 
 namespace GuiCore
 {
@@ -60,6 +61,9 @@ namespace GuiCore
                 }
             }
         }
+
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
 
         public List<Peer> PeersList;
         public bool PeerConnectedToServer;
@@ -226,8 +230,15 @@ namespace GuiCore
 
             IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
 
-            // TODO: select camera
             Devices.Device _selectedVideoDevice = Devices.Instance.DeviceList[0];
+
+            for (int i = 0; i < Devices.Instance.DeviceList.Count; i++)
+            {
+                localSettings.Values["SelectedCameraName"]?.ToString();
+
+                if (Devices.Instance.DeviceList[i].Name == localSettings.Values["SelectedCameraName"]?.ToString())
+                    _selectedVideoDevice = Devices.Instance.DeviceList[i];
+            }
 
             IMediaConstraints mediaConstraints = new MediaConstraints(mandatoryConstraints, optionalConstraints);
 
