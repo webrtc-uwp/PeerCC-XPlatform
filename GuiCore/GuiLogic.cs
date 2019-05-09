@@ -230,15 +230,11 @@ namespace GuiCore
 
             IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
 
-            Devices.Device _selectedVideoDevice = Devices.Instance.DeviceList[0];
+            Devices.Device _selectedVideoDevice = Devices.Instance.VideoDevicesList[0];
 
-            for (int i = 0; i < Devices.Instance.DeviceList.Count; i++)
-            {
-                localSettings.Values["SelectedCameraName"]?.ToString();
-
-                if (Devices.Instance.DeviceList[i].Name == localSettings.Values["SelectedCameraName"]?.ToString())
-                    _selectedVideoDevice = Devices.Instance.DeviceList[i];
-            }
+            for (int i = 0; i < Devices.Instance.VideoDevicesList.Count; i++)
+                if (Devices.Instance.VideoDevicesList[i].Name == localSettings.Values["SelectedCameraName"]?.ToString())
+                    _selectedVideoDevice = Devices.Instance.VideoDevicesList[i];
 
             IMediaConstraints mediaConstraints = new MediaConstraints(mandatoryConstraints, optionalConstraints);
 

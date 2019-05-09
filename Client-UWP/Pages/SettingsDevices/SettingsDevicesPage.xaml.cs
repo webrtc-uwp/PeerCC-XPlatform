@@ -21,6 +21,8 @@ namespace Client_UWP.Pages.SettingsDevices
         private SettingsDevicesPageViewModel ViewModel { get; set; }
 
         private List<string> CamerasList = new List<string>();
+        private List<string> MicrophonesList = new List<string>();
+        private List<string> SpeakersList = new List<string>();
 
         public SettingsDevicesPage()
         {
@@ -41,18 +43,44 @@ namespace Client_UWP.Pages.SettingsDevices
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
-            foreach (var videoCaptureDevice in Devices.Instance.DeviceList)
-                CamerasList.Add(videoCaptureDevice.Name);
+            foreach (var videoDevice in Devices.Instance.VideoDevicesList)
+                CamerasList.Add(videoDevice.Name);
 
             cbCamera.ItemsSource = CamerasList;
 
             cbCamera.SelectionChanged += CbCamera_SelectionChanged;
 
-            ItemCollection items = cbCamera.Items;
+            ItemCollection cameras = cbCamera.Items;
 
-            for (int i = 0; i < items.Count; i++)
-                if (items[i].ToString() == localSettings.Values["SelectedCameraName"]?.ToString())
+            for (int i = 0; i < cameras.Count; i++)
+                if (cameras[i].ToString() == localSettings.Values["SelectedCameraName"]?.ToString())
                     cbCamera.SelectedIndex = i;
+
+            foreach (var microphone in Devices.Instance.AudioCapturersList)
+                MicrophonesList.Add(microphone.Name);
+
+            cbMicrophone.ItemsSource = MicrophonesList;
+
+            cbMicrophone.SelectionChanged += CbMicrophone_SelectionChanged;
+
+            ItemCollection microphones = cbMicrophone.Items;
+
+            for (int i = 0; i < microphones.Count; i++)
+                if (microphones[i].ToString() == localSettings.Values["SelectedMicrophoneName"]?.ToString())
+                    cbMicrophone.SelectedIndex = i;
+
+            foreach (var speaker in Devices.Instance.AudioRendersList)
+                SpeakersList.Add(speaker.Name);
+
+            cbSpeakers.ItemsSource = SpeakersList;
+
+            cbSpeakers.SelectionChanged += CbSpeakers_SelectionChanged;
+
+            ItemCollection speakers = cbSpeakers.Items;
+
+            for (int i = 0; i < speakers.Count; i++)
+                if (speakers[i].ToString() == localSettings.Values["SelectedSpeakerName"]?.ToString())
+                    cbSpeakers.SelectedIndex = i;
 
             List<string> acList = new List<string>();
 
@@ -69,6 +97,16 @@ namespace Client_UWP.Pages.SettingsDevices
 
             cbVideoCodec.ItemsSource = vcList;
             cbVideoCodec.SelectedIndex = 0;
+        }
+
+        private void CbSpeakers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            localSettings.Values["SelectedSpeakerName"] = (string)cbSpeakers.SelectedValue;
+        }
+
+        private void CbMicrophone_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            localSettings.Values["SelectedMicrophoneName"] = (string)cbMicrophone.SelectedValue;
         }
 
         private void CbCamera_SelectionChanged(object sender, SelectionChangedEventArgs e)

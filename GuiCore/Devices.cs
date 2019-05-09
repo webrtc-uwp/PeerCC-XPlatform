@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Media.Capture;
+using Windows.Media.Devices;
 using Windows.Media.MediaProperties;
 
 namespace GuiCore
@@ -30,20 +32,42 @@ namespace GuiCore
 
         private Devices() { }
 
-        public IList<Device> DeviceList = new List<Device>();
+        public List<Device> VideoDevicesList = new List<Device>();
+        public List<Device> AudioCapturersList = new List<Device>();
+        public List<Device> AudioRendersList = new List<Device>();
 
         public void Initialize()
         {
             Task.Run(async () => 
             {
-                var devices = await VideoCapturer.GetDevices();
+                IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
+                DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioCaptureSelector());
+                DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioRenderSelector());
 
-                foreach (var deviceInfo in devices)
+                foreach (IVideoDeviceInfo videoDevice in videoDevices)
                 {
-                    DeviceList.Add(new Device
+                    VideoDevicesList.Add(new Device
                     {
-                        Id = deviceInfo.Info.Id,
-                        Name = deviceInfo.Info.Name
+                        Id = videoDevice.Info.Id,
+                        Name = videoDevice.Info.Name
+                    });
+                }
+
+                foreach (var audioCapturer in audioCapturers)
+                {
+                    AudioCapturersList.Add(new Device
+                    {
+                        Id = audioCapturer.Id,
+                        Name = audioCapturer.Name
+                    });
+                }
+
+                foreach (var audioRender in audioRenders)
+                {
+                    AudioRendersList.Add(new Device
+                    {
+                        Id = audioRender.Id,
+                        Name = audioRender.Name
                     });
                 }
             });
