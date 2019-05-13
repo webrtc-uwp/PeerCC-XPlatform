@@ -93,7 +93,10 @@ namespace Client_UWP.Pages.SettingsAccount
 
                 // Save AccoutsList
                 localSettings.Values["AccountsList"] =
-                XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
+                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
+
+                // Remove selected account
+                localSettings.Values["SelectedAccount"] = null;
             };
 
             EditAccount.Click += async (sender, args) => 
@@ -124,6 +127,20 @@ namespace Client_UWP.Pages.SettingsAccount
 
             localSettings.Values["SelectedAccount"] =
                 XmlSerialization<AccountModel>.Serialize((AccountModel)AccountsListView.SelectedItem);
+        }
+
+        AccountModel newAccount;
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            newAccount = (AccountModel)e.Parameter;
+
+            if (newAccount != null)
+            {
+                localSettings.Values["SelectedAccount"] =
+                    XmlSerialization<AccountModel>.Serialize(newAccount);
+
+                AccountsListView.SelectedItem = AccountsListView.Items.Count - 1;
+            }
         }
     }
 }

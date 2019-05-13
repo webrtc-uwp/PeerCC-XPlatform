@@ -37,11 +37,13 @@ namespace Client_UWP
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
+        private AccountModel accountModel;
+
         public MainPage()
         {
             InitializeComponent();
 
-            AccountModel accountModel =
+            accountModel =
                 XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
 
             GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
@@ -203,7 +205,14 @@ namespace Client_UWP
                 peersListView.Items.Add(peer);
             }
 
-            tbServiceUri.Text = $"Service Uri: { GuiLogic.Instance.Account?.ServiceUri }";
+            if (accountModel == null)
+            {
+                tbServiceUri.Text = "Please create/select account Service Uri.";
+            }
+            else
+            {
+                tbServiceUri.Text = $"Service Uri: { GuiLogic.Instance.Account?.ServiceUri }";
+            }
 
             peersListView.SelectedIndex = -1;
             peersListView.SelectedItem = null;

@@ -82,6 +82,9 @@ namespace Client_UWP.Pages.SettingsAccount
                     localSettings.Values["AccountsList"] =
                         XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
 
+                    // Remove selected account
+                    localSettings.Values["SelectedAccount"] = null;
+
                     Frame.Navigate(typeof(SettingsAccountPage));
                 };
 
@@ -108,19 +111,21 @@ namespace Client_UWP.Pages.SettingsAccount
 
             btnAdd.Click += (sender, args) =>
             {
-                // Add new Account to AccountsList
-                ViewModel.AccountsList.Add(new AccountModel
+                AccountModel accountModel = new AccountModel
                 {
                     AccountName = tbAccountName.Text,
                     ServiceUri = tbServiceUri.Text,
                     IdentityUri = tbIdentityUri.Text
-                });
+                };
+
+                // Add new Account to AccountsList
+                ViewModel.AccountsList.Add(accountModel);
 
                 // Save AccountsList
                 localSettings.Values["AccountsList"] =
                     XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
 
-                Frame.Navigate(typeof(SettingsAccountPage));
+                Frame.Navigate(typeof(SettingsAccountPage), accountModel);
             };
         }
     }
