@@ -129,10 +129,9 @@ namespace Client_UWP.Pages.SettingsAccount
                 XmlSerialization<AccountModel>.Serialize((AccountModel)AccountsListView.SelectedItem);
         }
 
-        AccountModel newAccount;
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            newAccount = (AccountModel)e.Parameter;
+            AccountModel newAccount = (AccountModel)e.Parameter;
 
             if (newAccount != null)
             {

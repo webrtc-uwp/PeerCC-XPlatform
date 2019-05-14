@@ -39,8 +39,6 @@ namespace Client_UWP
 
         private AccountModel accountModel;
 
-        private object _locker = new object();
-
         public MainPage()
         {
             InitializeComponent();
