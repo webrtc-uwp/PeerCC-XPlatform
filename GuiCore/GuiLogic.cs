@@ -190,6 +190,15 @@ namespace GuiCore
             var factoryConfig = new WebRtcFactoryConfiguration();
             _factory = new WebRtcFactory(factoryConfig);
 
+            string url = "stun:";
+            url += "stun.l.google.com:19302";
+            RTCIceServer server = new RTCIceServer { Urls = new List<string> { url } };
+            //server.Urls = iceServer.Urls;
+            //server.Username = iceServer.Username;
+            //server.Credential = iceServer.Credential;
+
+            IceServers.Add(server);
+
             var config = new RTCConfiguration()
             {
                 Factory = _factory,
