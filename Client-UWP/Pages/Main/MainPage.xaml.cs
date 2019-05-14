@@ -144,27 +144,7 @@ namespace Client_UWP
                 return;
             }
 
-            if (GuiLogic.Instance.PeersList.Count == 0)
-            {
-                lock (_locker)
-                {
-                    GuiLogic.Instance.PeersList.Add(peer);
-                }
-            }
-
-            foreach (Peer p in GuiLogic.Instance.PeersList)
-            {
-                if (p.Id != peer.Id)
-                {
-                    lock (_locker)
-                    {
-                        GuiLogic.Instance.PeersList.Add(peer);
-                    }
-                }
-            }
-
-            foreach (Peer p in GuiLogic.Instance.PeersList)
-                peersListView.Items.Add(peer);
+            peersListView.Items.Add(peer);
         }
 
         private async void Signaler_PeerDisconnected(object sender, Peer peer)
@@ -187,15 +167,6 @@ namespace Client_UWP
                     peersListView.Items.Remove(peersListView.Items[i]);
                 }
             }
-
-            for (int i = 0; i < GuiLogic.Instance.PeersList.Count(); i++)
-            {
-                Peer p = GuiLogic.Instance.PeersList[i];
-                if (p.Name == peer.Name)
-                {
-                    GuiLogic.Instance.PeersList.Remove(p);
-                }
-            }
         }
 
         private void InitView()
@@ -212,7 +183,8 @@ namespace Client_UWP
             }
 
             peersListView.Items.Clear();
-            foreach (Peer peer in GuiLogic.Instance.PeersList)
+
+            foreach (Peer peer in _signaler._peers)
             {
                 peersListView.Items.Add(peer);
             }
@@ -256,8 +228,6 @@ namespace Client_UWP
                 GuiLogic.Instance.PeerConnectedToServer = false;
 
                 peersListView.Items.Clear();
-
-                GuiLogic.Instance.PeersList.Clear();
 
                 ConnectPeer.IsEnabled = true;
                 DisconnectPeer.IsEnabled = false;

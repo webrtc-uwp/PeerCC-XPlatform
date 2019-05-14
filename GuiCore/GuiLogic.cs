@@ -65,7 +65,6 @@ namespace GuiCore
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
-        public List<Peer> PeersList;
         public bool PeerConnectedToServer;
 
         public readonly HttpSignaler HttpSignaler;
@@ -79,7 +78,6 @@ namespace GuiCore
         {
             HttpSignaler = new HttpSignaler();
             IceServers = new List<RTCIceServer>();
-            PeersList = new List<Peer>();
             PeerConnectedToServer = false;
 
             HttpSignaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
