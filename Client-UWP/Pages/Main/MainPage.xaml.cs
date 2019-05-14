@@ -39,6 +39,8 @@ namespace Client_UWP
 
         private AccountModel accountModel;
 
+        private object _locker = new object();
+
         public MainPage()
         {
             InitializeComponent();
@@ -143,12 +145,22 @@ namespace Client_UWP
             }
 
             if (GuiLogic.Instance.PeersList.Count == 0)
-                GuiLogic.Instance.PeersList.Add(peer);
+            {
+                lock (_locker)
+                {
+                    GuiLogic.Instance.PeersList.Add(peer);
+                }
+            }
 
             foreach (Peer p in GuiLogic.Instance.PeersList)
             {
                 if (p.Id != peer.Id)
-                    GuiLogic.Instance.PeersList.Add(peer);
+                {
+                    lock (_locker)
+                    {
+                        GuiLogic.Instance.PeersList.Add(peer);
+                    }
+                }
             }
 
             foreach (Peer p in GuiLogic.Instance.PeersList)
