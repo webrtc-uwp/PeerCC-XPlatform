@@ -129,23 +129,6 @@ namespace GuiCore
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
-        public class IceServerModel
-        {
-            public enum ServerType { STUN, TURN }
-
-            public ServerType Type { get; set; }
-            public string Host { get; set; }
-            public string Credential { get; set; }
-            public string Username { get; set; }
-
-            public IceServerModel(string host, ServerType type)
-            {
-                Host = host;
-                Type = type;
-            }
-        }
-
-        //List<RTCIceServer> _iceServers = new List<RTCIceServer>();
         public void AddDefaultIceServers()
         {
             List<IceServer> iceServers = new List<IceServer>();
@@ -156,45 +139,42 @@ namespace GuiCore
             iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun3.l.google.com:19302" } });
             iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun4.l.google.com:19302" } });
 
+            List<string> urlsList = new List<string>();
+
             foreach (IceServer ice in iceServers)
             {
-                RTCIceServer server = new RTCIceServer { Urls = ice.Urls };
+                foreach (string url in ice.Urls)
+                {
+                    string checkedUrl = string.Empty;
+
+                    if (url.StartsWith("stun"))
+                    {
+                        checkedUrl = url;
+                        if (!url.StartsWith("stun:"))
+                        {
+                            checkedUrl = $"stun:{url}";
+                        }
+                    }
+                    if (url.StartsWith("turn"))
+                    {
+                        checkedUrl = url;
+                        if (!url.StartsWith("turn:"))
+                        {
+                            checkedUrl = $"turn:{url}";
+                        }
+                    }
+                    urlsList.Add(checkedUrl);
+                }
+
+                RTCIceServer server = new RTCIceServer { Urls = urlsList };
+
                 if (ice.Credential != null)
                     server.Credential = ice.Credential;
                 if (ice.Username != null)
                     server.Username = ice.Username;
+
                 IceServers.Add(server);
             }
-
-            //List<IceServerModel> configIceServer = new List<IceServerModel>();
-
-            //configIceServer.Add(new IceServerModel("stun.l.google.com:19302", IceServerModel.ServerType.STUN));
-            //configIceServer.Add(new IceServerModel("stun1.l.google.com:19302", IceServerModel.ServerType.STUN));
-            //configIceServer.Add(new IceServerModel("stun2.l.google.com:19302", IceServerModel.ServerType.STUN));
-            //configIceServer.Add(new IceServerModel("stun3.l.google.com:19302", IceServerModel.ServerType.STUN));
-            //configIceServer.Add(new IceServerModel("stun4.l.google.com:19302", IceServerModel.ServerType.STUN));
-
-            //foreach (IceServerModel ice in configIceServer)
-            //{
-            //    // Url format: stun:stun.l.google.com:19302
-            //    string url = "stun:";
-            //    if (ice.Type == IceServerModel.ServerType.TURN)
-            //    {
-            //        url = "turn:";
-            //    }
-            //    RTCIceServer server = null;
-            //    url += ice.Host;
-            //    server = new RTCIceServer { Urls = new List<string> { url } };
-            //    if (ice.Credential != null)
-            //    {
-            //        server.Credential = ice.Credential;
-            //    }
-            //    if (ice.Username != null)
-            //    {
-            //        server.Username = ice.Username;
-            //    }
-            //    _iceServers.Add(server);
-            //}
         }
 
         public void ConfigureIceServers(List<IceServer> iceServers)
