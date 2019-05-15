@@ -129,6 +129,56 @@ namespace GuiCore
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
+        public class IceServerModel
+        {
+            public enum ServerType { STUN, TURN }
+
+            public ServerType Type { get; set; }
+            public string Host { get; set; }
+            public string Credential { get; set; }
+            public string Username { get; set; }
+
+            public IceServerModel(string host, ServerType type)
+            {
+                Host = host;
+                Type = type;
+            }
+        }
+
+        List<RTCIceServer> _iceServers = new List<RTCIceServer>();
+        public void AddDefaultIceServers()
+        {
+            List<IceServerModel> configIceServer = new List<IceServerModel>();
+
+            configIceServer.Add(new IceServerModel("stun.l.google.com:19302", IceServerModel.ServerType.STUN));
+            configIceServer.Add(new IceServerModel("stun1.l.google.com:19302", IceServerModel.ServerType.STUN));
+            configIceServer.Add(new IceServerModel("stun2.l.google.com:19302", IceServerModel.ServerType.STUN));
+            configIceServer.Add(new IceServerModel("stun3.l.google.com:19302", IceServerModel.ServerType.STUN));
+            configIceServer.Add(new IceServerModel("stun4.l.google.com:19302", IceServerModel.ServerType.STUN));
+
+            foreach (IceServerModel ice in configIceServer)
+            {
+                // Url format: stun:stun.l.google.com:19302
+                string url = "stun:";
+                if (ice.Type == IceServerModel.ServerType.TURN)
+                {
+                    url = "turn:";
+                }
+                RTCIceServer server = null;
+                url += ice.Host;
+                server = new RTCIceServer { Urls = new List<string> { url } };
+                if (ice.Credential != null)
+                {
+                    server.Credential = ice.Credential;
+                }
+                if (ice.Username != null)
+                {
+                    server.Username = ice.Username;
+                }
+                _iceServers.Add(server);
+            }
+        }
+
         public void ConfigureIceServers(List<IceServer> iceServers)
         {
             IceServers.Clear();
@@ -190,21 +240,14 @@ namespace GuiCore
             var factoryConfig = new WebRtcFactoryConfiguration();
             _factory = new WebRtcFactory(factoryConfig);
 
-            string url = "stun:";
-            url += "stun.l.google.com:19302";
-            RTCIceServer server = new RTCIceServer { Urls = new List<string> { url } };
-            //server.Urls = iceServer.Urls;
-            //server.Username = iceServer.Username;
-            //server.Credential = iceServer.Credential;
-
-            IceServers.Add(server);
+            Instance.AddDefaultIceServers();
 
             var config = new RTCConfiguration()
             {
                 Factory = _factory,
                 BundlePolicy = RTCBundlePolicy.Balanced,
                 IceTransportPolicy = RTCIceTransportPolicy.All,
-                IceServers = IceServers
+                IceServers = _iceServers
             };
             return config;
         }
