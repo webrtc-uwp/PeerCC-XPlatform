@@ -53,9 +53,20 @@
                                     <ColumnDefinition Width="90"/>
                                     <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding Url}"
+                                <!--<TextBlock Text="{Binding Urls[0]}"
                                        Grid.ColumnSpan="2"
-                                       Foreground="Blue"/>
+                                       Foreground="Blue"/>-->
+                                <ListView ItemsSource="{Binding Urls}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding}"
+                                                           Margin="5,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+
                                 <TextBlock Text="Type: "
                                        Grid.Row="1"
                                        Grid.Column="0"/>

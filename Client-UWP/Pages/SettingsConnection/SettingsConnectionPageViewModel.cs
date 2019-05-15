@@ -17,6 +17,8 @@ namespace Client_UWP.Pages.SettingsConnection
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
+        public List<string> ListUrls = new List<string>();
+
         public SettingsConnectionPageViewModel()
         {
             try
@@ -26,10 +28,10 @@ namespace Client_UWP.Pages.SettingsConnection
                     if (!(XmlSerialization<ObservableCollection<IceServerModel>>
                 .Deserialize((string)localSettings.Values["IceServersList"])).Any())
                     {
-                        ObservableCollection<IceServerModel> iceServersList = AddDefaultIceServers(IceServersList);
+                        //ObservableCollection<IceServerModel> iceServersList = AddDefaultIceServers(IceServersList);
 
-                        localSettings.Values["IceServersList"] =
-                            XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(iceServersList);
+                        //localSettings.Values["IceServersList"] =
+                        //    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(iceServersList);
 
                         ObservableCollection<IceServerModel> list =
                             XmlSerialization<ObservableCollection<IceServerModel>>
@@ -39,16 +41,14 @@ namespace Client_UWP.Pages.SettingsConnection
 
                         foreach (IceServerModel ice in list)
                         {
-                            List<string> urls = new List<string>();
-                            urls.Add(ice.Url);
                             IceServer iceServer = new IceServer();
-                            iceServer.Urls = urls;
+                            iceServer.Urls = ListUrls;
                             iceServer.Username = ice.Username;
                             iceServer.Credential = ice.Credential;
                             iceServerList.Add(iceServer);
                         }
 
-                        GuiLogic.Instance.ConfigureIceServers(iceServerList);
+                        //GuiLogic.Instance.ConfigureIceServers(iceServerList);
                     }
                     else
                     {
@@ -71,12 +71,13 @@ namespace Client_UWP.Pages.SettingsConnection
 
         public static ObservableCollection<IceServerModel> AddDefaultIceServers(ObservableCollection<IceServerModel> IceServersList)
         {
-            List<IceServerModel> list = DefaultSettings.IceServersList;
+            //List<IceServerModel> list = DefaultSettings.IceServersList;
 
-            foreach (IceServerModel ice in list)
-                IceServersList.Add(ice);
+            //foreach (IceServerModel ice in list)
+            //    IceServersList.Add(ice);
 
-            return IceServersList;
+            //return IceServersList;
+            return null;
         }
     }
 }

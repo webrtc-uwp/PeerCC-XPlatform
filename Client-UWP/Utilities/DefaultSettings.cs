@@ -1,23 +1,19 @@
 ﻿using Client_UWP.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Client_UWP.Utilities
 {
     public static class DefaultSettings
     {
-        // Default ICE servers
-        public static List<IceServerModel> IceServersList = new List<IceServerModel>
-        {
-            new IceServerModel("stun.l.google.com:19302", "", ""),
-            new IceServerModel("stun1.l.google.com:19302", "", ""),
-            new IceServerModel("stun2.l.google.com:19302", "", ""),
-            new IceServerModel("stun3.l.google.com:19302", "", ""),
-            new IceServerModel("stun4.l.google.com:19302", "", "")
-        };
+        //// Default ICE servers
+        //public static List<IceServerModel> IceServersList = new List<IceServerModel>
+        //{
+        //    new IceServerModel("stun.l.google.com:19302", "", ""),
+        //    new IceServerModel("stun1.l.google.com:19302", "", ""),
+        //    new IceServerModel("stun2.l.google.com:19302", "", ""),
+        //    new IceServerModel("stun3.l.google.com:19302", "", ""),
+        //    new IceServerModel("stun4.l.google.com:19302", "", "")
+        //};
 
         // Codecs test data
         public static List<AudioCodec> AudioCodecsList = new List<AudioCodec>

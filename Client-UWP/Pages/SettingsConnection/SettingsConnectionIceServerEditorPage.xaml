@@ -29,13 +29,19 @@
             </CommandBar.SecondaryCommands>
         </CommandBar>
 
+        <ListView x:Name="listIceServers"
+                  Margin="0,20,0,10"
+                  Width="300">
+            <TextBlock Text="{Binding}"/>
+        </ListView>
         <TextBlock Text="Server URL"
                    Width="300"
                    Margin="0,20,0,10"
                    Foreground="Black"/>
         <TextBox x:Name="tbServerUrl" 
                  Width="300"
-                 Foreground="Black"/>
+                 Foreground="Black"
+                 KeyDown="TextBox_KeyDown"/>
         <TextBlock Text="Username"
                    Width="300"
                    Margin="0,20,0,10"

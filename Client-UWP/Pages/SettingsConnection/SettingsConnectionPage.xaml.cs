@@ -95,7 +95,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 IceServerModel iceServer = IceServersListView.SelectedItem as IceServerModel;
                 if (iceServer == null) return;
 
-                Debug.WriteLine($"Remove Ice Server {iceServer.Url}");
+                //Debug.WriteLine($"Remove Ice Server {iceServer.Url}");
 
                 // Remove IceServer from IceServersList
                 ViewModel.IceServersList.Remove(iceServer);

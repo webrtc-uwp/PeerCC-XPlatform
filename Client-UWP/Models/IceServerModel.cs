@@ -1,17 +1,18 @@
-﻿namespace Client_UWP.Models
+﻿using System.Collections.Generic;
+
+namespace Client_UWP.Models
 {
     public class IceServerModel
     {
-        public string Url { get; set; }
-        public string Type { get; set; }
+        public List<string> Urls { get; set; }
         public string Username { get; set; }
         public string Credential { get; set; }
 
         public IceServerModel() {}
 
-        public IceServerModel(string url, string username, string credential)
+        public IceServerModel(List<string> urls, string username, string credential)
         {
-            Url = url;
+            Urls = urls;
             Username = username;
             Credential = credential;
         }

@@ -66,9 +66,9 @@ namespace Client_UWP.Pages.SettingsConnection
                 localSettings.Values["IceServersList"] =
                     XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
 
-                Debug.WriteLine("Edit ice server: " + iceServer.Url);
+                Debug.WriteLine("Edit ice server: " + ViewModel.ListUrls[0]);
 
-                tbServerUrl.Text = iceServer.Url;
+                tbServerUrl.Text = ViewModel.ListUrls[0];
                 tbUsername.Text = iceServer.Username != null ? iceServer.Username : string.Empty;
                 pbCredential.Password = iceServer.Credential != null ? iceServer.Credential : string.Empty;
                 btnAdd.Visibility = Visibility.Collapsed;
@@ -95,8 +95,7 @@ namespace Client_UWP.Pages.SettingsConnection
                     // Add new IceServer to IceServersList
                     ViewModel.IceServersList.Add(new IceServerModel
                     {
-                        Url = tbServerUrl.Text,
-                        Type = tbServerUrl.Text.ToLower().Contains("stun") ? "STUN" : "TURN",
+                        Urls = ViewModel.ListUrls,
                         Username = tbUsername.Text,
                         Credential = pbCredential.Password
                     });
@@ -114,8 +113,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 // Add new IceServer to IceServersList
                 ViewModel.IceServersList.Add(new IceServerModel
                 {
-                    Url = tbServerUrl.Text,
-                    Type = tbServerUrl.Text.ToLower().Contains("stun") ? "STUN" : "TURN",
+                    Urls = ViewModel.ListUrls,
                     Username = tbUsername.Text,
                     Credential = pbCredential.Password
                 });
@@ -126,6 +124,21 @@ namespace Client_UWP.Pages.SettingsConnection
 
                 Frame.Navigate(typeof(SettingsConnectionPage));
             };
+        }
+
+        
+
+        private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                e.Handled = true;
+                listIceServers.Items.Add(tbServerUrl.Text);
+
+                ViewModel.ListUrls.Add(tbServerUrl.Text);
+
+                tbServerUrl.Text = "";
+            }
         }
     }
 }
