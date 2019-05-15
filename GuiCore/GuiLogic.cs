@@ -145,38 +145,56 @@ namespace GuiCore
             }
         }
 
-        List<RTCIceServer> _iceServers = new List<RTCIceServer>();
+        //List<RTCIceServer> _iceServers = new List<RTCIceServer>();
         public void AddDefaultIceServers()
         {
-            List<IceServerModel> configIceServer = new List<IceServerModel>();
+            List<IceServer> iceServers = new List<IceServer>();
 
-            configIceServer.Add(new IceServerModel("stun.l.google.com:19302", IceServerModel.ServerType.STUN));
-            configIceServer.Add(new IceServerModel("stun1.l.google.com:19302", IceServerModel.ServerType.STUN));
-            configIceServer.Add(new IceServerModel("stun2.l.google.com:19302", IceServerModel.ServerType.STUN));
-            configIceServer.Add(new IceServerModel("stun3.l.google.com:19302", IceServerModel.ServerType.STUN));
-            configIceServer.Add(new IceServerModel("stun4.l.google.com:19302", IceServerModel.ServerType.STUN));
+            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun.l.google.com:19302" } });
+            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun1.l.google.com:19302" } });
+            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun2.l.google.com:19302" } });
+            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun3.l.google.com:19302" } });
+            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun4.l.google.com:19302" } });
 
-            foreach (IceServerModel ice in configIceServer)
+            foreach (IceServer ice in iceServers)
             {
-                // Url format: stun:stun.l.google.com:19302
-                string url = "stun:";
-                if (ice.Type == IceServerModel.ServerType.TURN)
-                {
-                    url = "turn:";
-                }
-                RTCIceServer server = null;
-                url += ice.Host;
-                server = new RTCIceServer { Urls = new List<string> { url } };
+                RTCIceServer server = new RTCIceServer { Urls = ice.Urls };
                 if (ice.Credential != null)
-                {
                     server.Credential = ice.Credential;
-                }
                 if (ice.Username != null)
-                {
                     server.Username = ice.Username;
-                }
-                _iceServers.Add(server);
+                IceServers.Add(server);
             }
+
+            //List<IceServerModel> configIceServer = new List<IceServerModel>();
+
+            //configIceServer.Add(new IceServerModel("stun.l.google.com:19302", IceServerModel.ServerType.STUN));
+            //configIceServer.Add(new IceServerModel("stun1.l.google.com:19302", IceServerModel.ServerType.STUN));
+            //configIceServer.Add(new IceServerModel("stun2.l.google.com:19302", IceServerModel.ServerType.STUN));
+            //configIceServer.Add(new IceServerModel("stun3.l.google.com:19302", IceServerModel.ServerType.STUN));
+            //configIceServer.Add(new IceServerModel("stun4.l.google.com:19302", IceServerModel.ServerType.STUN));
+
+            //foreach (IceServerModel ice in configIceServer)
+            //{
+            //    // Url format: stun:stun.l.google.com:19302
+            //    string url = "stun:";
+            //    if (ice.Type == IceServerModel.ServerType.TURN)
+            //    {
+            //        url = "turn:";
+            //    }
+            //    RTCIceServer server = null;
+            //    url += ice.Host;
+            //    server = new RTCIceServer { Urls = new List<string> { url } };
+            //    if (ice.Credential != null)
+            //    {
+            //        server.Credential = ice.Credential;
+            //    }
+            //    if (ice.Username != null)
+            //    {
+            //        server.Username = ice.Username;
+            //    }
+            //    _iceServers.Add(server);
+            //}
         }
 
         public void ConfigureIceServers(List<IceServer> iceServers)
@@ -247,7 +265,7 @@ namespace GuiCore
                 Factory = _factory,
                 BundlePolicy = RTCBundlePolicy.Balanced,
                 IceTransportPolicy = RTCIceTransportPolicy.All,
-                IceServers = _iceServers
+                IceServers = IceServers
             };
             return config;
         }
