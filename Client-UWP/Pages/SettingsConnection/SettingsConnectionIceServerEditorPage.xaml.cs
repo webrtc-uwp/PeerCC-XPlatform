@@ -49,7 +49,9 @@ namespace Client_UWP.Pages.SettingsConnection
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
         }
 
-        public SettingsConnectionPageViewModel ViewModel { get; set; }
+        private SettingsConnectionPageViewModel ViewModel { get; set; }
+
+        private List<string> ListUrls = new List<string>();
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -67,7 +69,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 foreach (string url in iceServer.Urls)
                 {
                     listIceServers.Items.Add(url);
-                    ViewModel.ListUrls.Add(url);
+                    ListUrls.Add(url);
                 }
 
                 tbUsername.Text = iceServer.Username != null ? iceServer.Username : string.Empty;
@@ -96,7 +98,7 @@ namespace Client_UWP.Pages.SettingsConnection
                     // Add new IceServer to IceServersList
                     ViewModel.IceServersList.Add(new IceServerModel
                     {
-                        Urls = ViewModel.ListUrls,
+                        Urls = ListUrls,
                         Username = tbUsername.Text,
                         Credential = pbCredential.Password
                     });
@@ -114,7 +116,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 // Add new IceServer to IceServersList
                 ViewModel.IceServersList.Add(new IceServerModel
                 {
-                    Urls = ViewModel.ListUrls,
+                    Urls = ListUrls,
                     Username = tbUsername.Text,
                     Credential = pbCredential.Password
                 });
@@ -136,7 +138,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 e.Handled = true;
                 listIceServers.Items.Add(tbServerUrl.Text);
 
-                ViewModel.ListUrls.Add(tbServerUrl.Text);
+                ListUrls.Add(tbServerUrl.Text);
 
                 tbServerUrl.Text = "";
             }

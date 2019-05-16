@@ -17,67 +17,25 @@ namespace Client_UWP.Pages.SettingsConnection
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
-        public List<string> ListUrls = new List<string>();
+        public ObservableCollection<IceServerModel> IceServersList { get; set; } = new ObservableCollection<IceServerModel>();
+
+        
 
         public SettingsConnectionPageViewModel()
         {
             try
             {
-                if (localSettings.Values["IceServersList"] != null)
-                {
-                    if (!(XmlSerialization<ObservableCollection<IceServerModel>>
-                .Deserialize((string)localSettings.Values["IceServersList"])).Any())
-                    {
-                        //ObservableCollection<IceServerModel> iceServersList = AddDefaultIceServers(IceServersList);
+                ObservableCollection<IceServerModel> list =
+                    XmlSerialization<ObservableCollection<IceServerModel>>
+                    .Deserialize((string)localSettings.Values["IceServersList"]);
 
-                        //localSettings.Values["IceServersList"] =
-                        //    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(iceServersList);
-
-                        ObservableCollection<IceServerModel> list =
-                            XmlSerialization<ObservableCollection<IceServerModel>>
-                            .Deserialize((string)localSettings.Values["IceServersList"]);
-
-                        List<IceServer> iceServerList = new List<IceServer>();
-
-                        foreach (IceServerModel ice in list)
-                        {
-                            IceServer iceServer = new IceServer();
-                            iceServer.Urls = ListUrls;
-                            iceServer.Username = ice.Username;
-                            iceServer.Credential = ice.Credential;
-                            iceServerList.Add(iceServer);
-                        }
-
-                        //GuiLogic.Instance.ConfigureIceServers(iceServerList);
-                    }
-                    else
-                    {
-                        ObservableCollection<IceServerModel> list =
-                            XmlSerialization<ObservableCollection<IceServerModel>>
-                            .Deserialize((string)localSettings.Values["IceServersList"]);
-
-                        foreach (IceServerModel ice in list)
-                            IceServersList.Add(ice);
-                    }
-                }
+                foreach (IceServerModel ice in list)
+                    IceServersList.Add(ice);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("[Error] SettingsConnectionPageViewModel message: " + ex.Message);
             }
-        }
-
-        public ObservableCollection<IceServerModel> IceServersList { get; set; } = new ObservableCollection<IceServerModel>();
-
-        public static ObservableCollection<IceServerModel> AddDefaultIceServers(ObservableCollection<IceServerModel> IceServersList)
-        {
-            //List<IceServerModel> list = DefaultSettings.IceServersList;
-
-            //foreach (IceServerModel ice in list)
-            //    IceServersList.Add(ice);
-
-            //return IceServersList;
-            return null;
         }
     }
 }
