@@ -7,6 +7,7 @@ using PeerCC.Account;
 using PeerCC.Signaling;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -129,7 +130,7 @@ namespace GuiCore
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
-        public void AddDefaultIceServers()
+        public List<IceServer> AddDefaultIceServers()
         {
             List<IceServer> iceServers = new List<IceServer>();
 
@@ -139,9 +140,46 @@ namespace GuiCore
             iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun3.l.google.com:19302" } });
             iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun4.l.google.com:19302" } });
 
+            return iceServers;
+        }
+
+        public class IceServerModel
+        {
+            public List<string> Urls { get; set; }
+            public string Username { get; set; }
+            public string Credential { get; set; }
+
+            public IceServerModel() { }
+
+            public IceServerModel(List<string> urls, string username, string credential)
+            {
+                Urls = urls;
+                Username = username;
+                Credential = credential;
+            }
+        }
+
+        public void AddIceServers()
+        {
+            List<IceServer> iceServersList = new List<IceServer>();
+
+            ObservableCollection<IceServerModel> list =
+                XmlSerialization<ObservableCollection<IceServerModel>>
+                .Deserialize((string)localSettings.Values["IceServersList"]);
+
+            foreach (var ice in list)
+            {
+                IceServer iceServer = new IceServer();
+                iceServer.Urls = ice.Urls;
+                iceServer.Username = ice.Username;
+                iceServer.Credential = ice.Credential;
+
+                iceServersList.Add(iceServer);
+            }
+
             List<string> urlsList = new List<string>();
 
-            foreach (IceServer ice in iceServers)
+            foreach (IceServer ice in iceServersList)
             {
                 foreach (string url in ice.Urls)
                 {
@@ -168,16 +206,16 @@ namespace GuiCore
 
                 RTCIceServer server = new RTCIceServer { Urls = urlsList };
 
-                if (ice.Credential != null)
-                    server.Credential = ice.Credential;
                 if (ice.Username != null)
                     server.Username = ice.Username;
-
+                if (ice.Credential != null)
+                    server.Credential = ice.Credential;
+                
                 IceServers.Add(server);
             }
         }
 
-        public void ConfigureIceServers(List<IceServer> iceServers)
+        public void ConfigureIceServers1(List<IceServer> iceServers)
         {
             IceServers.Clear();
 
@@ -238,7 +276,7 @@ namespace GuiCore
             var factoryConfig = new WebRtcFactoryConfiguration();
             _factory = new WebRtcFactory(factoryConfig);
 
-            Instance.AddDefaultIceServers();
+            Instance.AddIceServers();
 
             var config = new RTCConfiguration()
             {

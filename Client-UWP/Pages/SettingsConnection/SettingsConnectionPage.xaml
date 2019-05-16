@@ -54,14 +54,19 @@
                                 </Grid.ColumnDefinitions>
                                 <ListView ItemsSource="{Binding Urls}"
                                           SelectionMode="None"
-                                          IsHitTestVisible="False"/>
+                                          IsHitTestVisible="False"
+                                          Grid.Row="0"
+                                          Grid.Column="0"
+                                          Grid.ColumnSpan="2"/>
                                 <TextBlock Text="User: "
-                                       Grid.Row="2"
-                                       Grid.Column="0"/>
+                                           Padding="13,0,0,0"
+                                           Grid.Row="1"
+                                           Grid.Column="0"/>
                                 <TextBlock Text="{Binding Username}"
-                                       Grid.Row="2"
-                                       Grid.Column="1"
-                                       Foreground="Blue"/>
+                                           HorizontalAlignment="Left"
+                                           Grid.Row="1"
+                                           Grid.Column="1"
+                                           Foreground="Blue"/>
                             </Grid>
                         </ListViewItem>
                     </DataTemplate>

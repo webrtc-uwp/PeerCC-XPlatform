@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 using Client_UWP.Models;
 using GuiCore.Utilities;
 using Windows.Storage;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -42,6 +44,26 @@ namespace Client_UWP
         public MainPage()
         {
             InitializeComponent();
+
+            if (localSettings.Values["IceServersList"] == null
+                || !(XmlSerialization<ObservableCollection<IceServerModel>>
+                .Deserialize((string)localSettings.Values["IceServersList"])).Any())
+            {
+                ObservableCollection<IceServerModel> iceServersList = new ObservableCollection<IceServerModel>();
+
+                foreach (var iceServer in GuiLogic.Instance.AddDefaultIceServers())
+                {
+                    IceServerModel iceServerModel = new IceServerModel();
+                    iceServerModel.Urls = iceServer.Urls;
+                    iceServerModel.Username = iceServer.Username;
+                    iceServerModel.Credential = iceServer.Credential;
+
+                    iceServersList.Add(iceServerModel);
+                }
+
+                localSettings.Values["IceServersList"] =
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(iceServersList);
+            }
 
             accountModel =
                 XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
