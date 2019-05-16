@@ -47,33 +47,14 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="90"/>
                                     <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
-                                <!--<TextBlock Text="{Binding Urls[0]}"
-                                       Grid.ColumnSpan="2"
-                                       Foreground="Blue"/>-->
-                                <ListView ItemsSource="{Binding Urls}">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding}"
-                                                           Margin="5,0,0,0"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-
-                                <TextBlock Text="Type: "
-                                       Grid.Row="1"
-                                       Grid.Column="0"/>
-                                <TextBlock Text="{Binding Type}"
-                                       Grid.Row="1"
-                                       Grid.Column="1"
-                                       Foreground="Blue"/>
+                                <ListView ItemsSource="{Binding Urls}"
+                                          SelectionMode="None"
+                                          IsHitTestVisible="False"/>
                                 <TextBlock Text="User: "
                                        Grid.Row="2"
                                        Grid.Column="0"/>

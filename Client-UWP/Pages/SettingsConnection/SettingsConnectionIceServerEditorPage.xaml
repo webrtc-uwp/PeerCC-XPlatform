@@ -30,9 +30,15 @@
         </CommandBar>
 
         <ListView x:Name="listIceServers"
-                  Margin="0,20,0,10"
+                  SelectionMode="Single"
                   Width="300">
-            <TextBlock Text="{Binding}"/>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
         <TextBlock Text="Server URL"
                    Width="300"
@@ -54,8 +60,8 @@
                    Margin="0,20,0,10"
                    Foreground="Black"/>
         <PasswordBox x:Name="pbCredential"
-                 Width="300"
-                 Foreground="Black"/>
+                     Width="300"
+                     Foreground="Black"/>
 
         <Button x:Name="btnAdd"
                 HorizontalAlignment="Center"
