@@ -53,8 +53,6 @@ namespace Client_UWP.Pages.SettingsConnection
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e);
-
             if (e.Parameter != null)
             {
                 IceServerModel iceServer = (IceServerModel)e.Parameter;
@@ -66,9 +64,12 @@ namespace Client_UWP.Pages.SettingsConnection
                 localSettings.Values["IceServersList"] =
                     XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
 
-                Debug.WriteLine("Edit ice server: " + ViewModel.ListUrls[0]);
+                foreach (string url in iceServer.Urls)
+                {
+                    listIceServers.Items.Add(url);
+                    ViewModel.ListUrls.Add(url);
+                }
 
-                tbServerUrl.Text = ViewModel.ListUrls[0];
                 tbUsername.Text = iceServer.Username != null ? iceServer.Username : string.Empty;
                 pbCredential.Password = iceServer.Credential != null ? iceServer.Credential : string.Empty;
                 btnAdd.Visibility = Visibility.Collapsed;
