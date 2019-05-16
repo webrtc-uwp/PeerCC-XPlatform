@@ -143,40 +143,8 @@ namespace GuiCore
             return iceServers;
         }
 
-        public class IceServerModel
+        public void AddIceServers(List<IceServer> iceServersList)
         {
-            public List<string> Urls { get; set; }
-            public string Username { get; set; }
-            public string Credential { get; set; }
-
-            public IceServerModel() { }
-
-            public IceServerModel(List<string> urls, string username, string credential)
-            {
-                Urls = urls;
-                Username = username;
-                Credential = credential;
-            }
-        }
-
-        public void AddIceServers()
-        {
-            List<IceServer> iceServersList = new List<IceServer>();
-
-            ObservableCollection<IceServerModel> list =
-                XmlSerialization<ObservableCollection<IceServerModel>>
-                .Deserialize((string)localSettings.Values["IceServersList"]);
-
-            foreach (var ice in list)
-            {
-                IceServer iceServer = new IceServer();
-                iceServer.Urls = ice.Urls;
-                iceServer.Username = ice.Username;
-                iceServer.Credential = ice.Credential;
-
-                iceServersList.Add(iceServer);
-            }
-
             List<string> urlsList = new List<string>();
 
             foreach (IceServer ice in iceServersList)
@@ -275,8 +243,6 @@ namespace GuiCore
         {
             var factoryConfig = new WebRtcFactoryConfiguration();
             _factory = new WebRtcFactory(factoryConfig);
-
-            Instance.AddIceServers();
 
             var config = new RTCConfiguration()
             {
