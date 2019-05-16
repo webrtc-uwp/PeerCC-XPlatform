@@ -34,11 +34,11 @@ namespace Client_UWP.Pages.SettingsConnection
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
+        private ObservableCollection<IceServerModel> IceServersL { get; set; } = new ObservableCollection<IceServerModel>();
+
         public SettingsConnectionIceServerEditorPage()
         {
             InitializeComponent();
-
-            ViewModel = new SettingsConnectionPageViewModel();
 
             GoToSettingsConnectionPage.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 
@@ -49,22 +49,27 @@ namespace Client_UWP.Pages.SettingsConnection
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
         }
 
-        private SettingsConnectionPageViewModel ViewModel { get; set; }
-
         private List<string> ListUrls = new List<string>();
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            ObservableCollection<IceServerModel> list =
+                    XmlSerialization<ObservableCollection<IceServerModel>>
+                    .Deserialize((string)localSettings.Values["IceServersList"]);
+
+            foreach (IceServerModel ice in list)
+                IceServersL.Add(ice);
+
             if (e.Parameter != null)
             {
                 IceServerModel iceServer = (IceServerModel)e.Parameter;
 
                 // Add new IceServer to IceServersList
-                ViewModel.IceServersList.Add(iceServer);
+                IceServersL.Add(iceServer);
 
                 // Save IceServersList
                 localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
 
                 foreach (string url in iceServer.Urls)
                 {
@@ -81,11 +86,11 @@ namespace Client_UWP.Pages.SettingsConnection
                 btnDelete.Click += (sender, args) =>
                 {
                     // Remove IceServer from IceServersList
-                    ViewModel.IceServersList.Remove(iceServer);
+                    IceServersL.Remove(iceServer);
 
                     // Save IceServersList
                     localSettings.Values["IceServersList"] =
-                        XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
+                        XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
                 };
@@ -93,10 +98,10 @@ namespace Client_UWP.Pages.SettingsConnection
                 btnSave.Click += (sender, args) =>
                 {
                     // Remove IceServer from IceServersList
-                    ViewModel.IceServersList.Remove(iceServer);
+                    IceServersL.Remove(iceServer);
 
                     // Add new IceServer to IceServersList
-                    ViewModel.IceServersList.Add(new IceServerModel
+                    IceServersL.Add(new IceServerModel
                     {
                         Urls = ListUrls,
                         Username = tbUsername.Text,
@@ -105,7 +110,7 @@ namespace Client_UWP.Pages.SettingsConnection
 
                     // Save IceServersList
                     localSettings.Values["IceServersList"] =
-                        XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
+                        XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
                 };
@@ -114,7 +119,7 @@ namespace Client_UWP.Pages.SettingsConnection
             btnAdd.Click += (sender, args) => 
             {
                 // Add new IceServer to IceServersList
-                ViewModel.IceServersList.Add(new IceServerModel
+                IceServersL.Add(new IceServerModel
                 {
                     Urls = ListUrls,
                     Username = tbUsername.Text,
@@ -123,13 +128,11 @@ namespace Client_UWP.Pages.SettingsConnection
 
                 // Save IceServersList
                 localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
 
                 Frame.Navigate(typeof(SettingsConnectionPage));
             };
         }
-
-        
 
         private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {

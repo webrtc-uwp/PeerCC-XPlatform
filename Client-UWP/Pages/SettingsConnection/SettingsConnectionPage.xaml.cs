@@ -35,19 +35,21 @@ namespace Client_UWP.Pages.SettingsConnection
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
+        private ObservableCollection<IceServerModel> IceServersL { get; set; } = new ObservableCollection<IceServerModel>();
+
         public SettingsConnectionPage()
         {
             InitializeComponent();
 
-            ViewModel = new SettingsConnectionPageViewModel();
+            ObservableCollection<IceServerModel> list =
+                    XmlSerialization<ObservableCollection<IceServerModel>>
+                    .Deserialize((string)localSettings.Values["IceServersList"]);
+
+            foreach (IceServerModel ice in list)
+                IceServersL.Add(ice);
 
             InitView();
         }
-
-        private void IceServersListView_Tapped(object sender, TappedRoutedEventArgs e) =>
-            IceServersListView.SelectedItem = (IceServerModel)((FrameworkElement)e.OriginalSource).DataContext;
-
-        public SettingsConnectionPageViewModel ViewModel { get; set; }
 
         private void InitView()
         {
@@ -73,11 +75,11 @@ namespace Client_UWP.Pages.SettingsConnection
                 if (iceServer == null) return;
 
                 // Remove IceServer from IceServersList
-                ViewModel.IceServersList.Remove(iceServer);
+                IceServersL.Remove(iceServer);
 
                 // Save IceServersList
                 localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
 
                 Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), iceServer);
             };
@@ -95,15 +97,16 @@ namespace Client_UWP.Pages.SettingsConnection
                 IceServerModel iceServer = IceServersListView.SelectedItem as IceServerModel;
                 if (iceServer == null) return;
 
-                //Debug.WriteLine($"Remove Ice Server {iceServer.Url}");
-
                 // Remove IceServer from IceServersList
-                ViewModel.IceServersList.Remove(iceServer);
+                IceServersL.Remove(iceServer);
 
                 // Save IceServersList
                 localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(ViewModel.IceServersList);
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
             };
         }
+
+        private void IceServersListView_Tapped(object sender, TappedRoutedEventArgs e) =>
+            IceServersListView.SelectedItem = (IceServerModel)((FrameworkElement)e.OriginalSource).DataContext;
     }
 }

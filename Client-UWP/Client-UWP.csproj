@@ -126,7 +126,6 @@
     <Compile Include="Pages\SettingsConnection\SettingsConnectionPage.xaml.cs">
       <DependentUpon>SettingsConnectionPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\SettingsConnection\SettingsConnectionPageViewModel.cs" />
     <Compile Include="Pages\SettingsDebug\SettingsDebugPage.xaml.cs">
       <DependentUpon>SettingsDebugPage.xaml</DependentUpon>
     </Compile>
