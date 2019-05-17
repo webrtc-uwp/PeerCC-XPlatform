@@ -7,7 +7,6 @@ using PeerCC.Account;
 using PeerCC.Signaling;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -69,55 +68,43 @@ namespace GuiCore
         public bool PeerConnectedToServer;
 
         public readonly HttpSignaler HttpSignaler;
-        private readonly List<RTCIceServer> IceServers;
+        private readonly List<RTCIceServer> _iceServers;
+
+        WebRtcFactory _factory;
+
+        // Public events to notify about connection status
+        public event Action OnPeerConnectionCreated;
+        public event Action OnPeerConnectionClosed;
+        public event Action OnReadyToConnect;
+
+        public Windows.UI.Xaml.Controls.MediaElement SelfVideo { get; set; }
+        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
 
         public Account Account;
         public Call Call;
         public Media Media;
 
+        /// <summary>
+        /// Video codec used in WebRTC session.
+        /// </summary>
+        public CodecInfoModel VideoCodec { get; set; }
+
+        /// <summary>
+        /// Audio codec used in WebRTC session.
+        /// </summary>
+        public CodecInfoModel AudioCodec { get; set; }
+
         private GuiLogic()
         {
             HttpSignaler = new HttpSignaler();
-            IceServers = new List<RTCIceServer>();
+            _iceServers = new List<RTCIceServer>();
             PeerConnectedToServer = false;
 
             HttpSignaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
         }
 
         private void HttpSignaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
-        {
-            Instance.MessageFromPeerTaskRun(e.Message);
-        }
-
-        public void SetMedia()
-        {
-            // Media
-            IMediaProvider mediaFactory =
-                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
-
-            MediaProvider mediaProvider = (MediaProvider)mediaFactory;
-
-            Media = (Media)mediaProvider.GetMedia();
-
-            //Media.GetCodecsAsync(MediaKind.Audio);
-            //Media.GetMediaDevicesAsync(MediaKind.Audio);
-        }
-
-        public void SetCall()
-        {
-            // Call
-            ICallProvider callFactory =
-                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
-
-            CallProvider callProvider = (CallProvider)callFactory;
-
-            Call = (Call)callProvider.GetCall();
-
-            Call.OnFrameRateChanged += (x, y) => { };
-            Call.OnResolutionChanged += (x, y) => { };
-
-            //Call.HangupAsync();
-        }
+            => Instance.MessageFromPeerTaskRun(e.Message);
 
         public void SetAccount(string serviceUri)
         {
@@ -128,19 +115,6 @@ namespace GuiCore
 
             Account = (Account)accountProvider
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
-        }
-
-        public List<IceServer> AddDefaultIceServers()
-        {
-            List<IceServer> iceServers = new List<IceServer>();
-
-            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun.l.google.com:19302" } });
-            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun1.l.google.com:19302" } });
-            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun2.l.google.com:19302" } });
-            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun3.l.google.com:19302" } });
-            iceServers.Add(new IceServer { Urls = new List<string> { "stun:stun4.l.google.com:19302" } });
-
-            return iceServers;
         }
 
         public void AddIceServers(List<IceServer> iceServersList)
@@ -179,39 +153,30 @@ namespace GuiCore
                 if (ice.Credential != null)
                     server.Credential = ice.Credential;
                 
-                IceServers.Add(server);
+                _iceServers.Add(server);
             }
         }
 
-        public void ConfigureIceServers1(List<IceServer> iceServers)
+        private RTCConfiguration ConfigureRtc()
         {
-            IceServers.Clear();
+            var factoryConfig = new WebRtcFactoryConfiguration();
+            _factory = new WebRtcFactory(factoryConfig);
 
-            foreach (IceServer iceServer in iceServers)
+            var config = new RTCConfiguration()
             {
-                RTCIceServer server = new RTCIceServer();
-                server.Urls = iceServer.Urls;
-                server.Username = iceServer.Username;
-                server.Credential = iceServer.Credential;
-                IceServers.Add(server);
-            }
+                Factory = _factory,
+                BundlePolicy = RTCBundlePolicy.Balanced,
+                IceTransportPolicy = RTCIceTransportPolicy.All,
+                IceServers = _iceServers
+            };
+            return config;
         }
-
-        WebRtcFactory _factory;
-
-        // Public events to notify about connection status
-        public event Action OnPeerConnectionCreated;
-        public event Action OnPeerConnectionClosed;
-        public event Action OnReadyToConnect; 
-
-        public Windows.UI.Xaml.Controls.MediaElement SelfVideo { get; set; }
-        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
 
         /// <summary>
         /// Creates a peer connection.
         /// </summary>
         /// <returns>True if connection to a peer is successfully created.</returns>
-        public bool CreatePeerConnection()
+        private bool CreatePeerConnection()
         {
             Debug.Assert(PeerConnection == null);
 
@@ -237,21 +202,6 @@ namespace GuiCore
             BindSelfVideo();
 
             return true;
-        }
-
-        private RTCConfiguration ConfigureRtc()
-        {
-            var factoryConfig = new WebRtcFactoryConfiguration();
-            _factory = new WebRtcFactory(factoryConfig);
-
-            var config = new RTCConfiguration()
-            {
-                Factory = _factory,
-                BundlePolicy = RTCBundlePolicy.Balanced,
-                IceTransportPolicy = RTCIceTransportPolicy.All,
-                IceServers = IceServers
-            };
-            return config;
         }
 
         private void PeerConnection_OnIceGatheringStateChange()
@@ -440,8 +390,8 @@ namespace GuiCore
                 offerOptions.OfferToReceiveVideo = true;
                 IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
-                var audioCodecList = GetAudioCodecs();
-                var videoCodecList = GetVideoCodecs();
+                var audioCodecList = DefaultSettings.GetAudioCodecs;
+                var videoCodecList = DefaultSettings.GetVideoCodecs;
 
                 AudioCodec = audioCodecList.First();
                 VideoCodec = videoCodecList.First();
@@ -460,49 +410,6 @@ namespace GuiCore
 
                 SendSdp(modifiedOffer);
             }
-        }
-
-        public static IList<CodecInfoModel> GetAudioCodecs()
-        {
-            var ret = new List<CodecInfoModel>
-            {
-                new CodecInfoModel { PreferredPayloadType = 111, ClockRate = 48000, Name = "opus" },
-                new CodecInfoModel { PreferredPayloadType = 103, ClockRate = 16000, Name = "ISAC" },
-                new CodecInfoModel { PreferredPayloadType = 104, ClockRate = 32000, Name = "ISAC" },
-                new CodecInfoModel { PreferredPayloadType = 9, ClockRate = 8000, Name = "G722" },
-                new CodecInfoModel { PreferredPayloadType = 102, ClockRate = 8000, Name = "ILBC" },
-                new CodecInfoModel { PreferredPayloadType = 0, ClockRate = 8000, Name = "PCMU" },
-                new CodecInfoModel { PreferredPayloadType = 8, ClockRate = 8000, Name = "PCMA" }
-            };
-            return ret;
-        }
-
-        public static IList<CodecInfoModel> GetVideoCodecs()
-        {
-            var ret = new List<CodecInfoModel>
-            {
-                new CodecInfoModel { PreferredPayloadType = 96, ClockRate = 90000, Name = "VP8" },
-                new CodecInfoModel { PreferredPayloadType = 98, ClockRate = 90000, Name = "VP9" },
-                new CodecInfoModel { PreferredPayloadType = 100, ClockRate = 90000, Name = "H264" }
-            };
-            return ret;
-        }
-
-        /// <summary>
-        /// Video codec used in WebRTC session.
-        /// </summary>
-        public CodecInfoModel VideoCodec { get; set; }
-
-        /// <summary>
-        /// Audio codec used in WebRTC session.
-        /// </summary>
-        public CodecInfoModel AudioCodec { get; set; }
-
-        public class CodecInfoModel
-        {
-            public byte PreferredPayloadType { get; set; }
-            public string Name { get; set; }
-            public int ClockRate { get; set; }
         }
 
         /// <summary>
@@ -664,8 +571,6 @@ namespace GuiCore
                 { NegotiationAtributes.Sdp, JsonValue.CreateStringValue(description.Sdp) }
             };
 
-            //return json;
-
             SendMessage(json);
         }
 
@@ -822,14 +727,34 @@ namespace GuiCore
             HttpSignaler.SendToPeer(_peerId, json.Stringify());
         }
 
-        // SDP negotiation attributes
-        public class NegotiationAtributes
+        public void SetMedia()
         {
-            public static readonly string SdpMid = "sdpMid";
-            public static readonly string SdpMLineIndex = "sdpMLineIndex";
-            public static readonly string Candidate = "candidate";
-            public static readonly string Type = "type";
-            public static readonly string Sdp = "sdp";
+            // Media
+            IMediaProvider mediaFactory =
+                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
+
+            MediaProvider mediaProvider = (MediaProvider)mediaFactory;
+
+            Media = (Media)mediaProvider.GetMedia();
+
+            //Media.GetCodecsAsync(MediaKind.Audio);
+            //Media.GetMediaDevicesAsync(MediaKind.Audio);
+        }
+
+        public void SetCall()
+        {
+            // Call
+            ICallProvider callFactory =
+                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+
+            CallProvider callProvider = (CallProvider)callFactory;
+
+            Call = (Call)callProvider.GetCall();
+
+            Call.OnFrameRateChanged += (x, y) => { };
+            Call.OnResolutionChanged += (x, y) => { };
+
+            //Call.HangupAsync();
         }
     }
 }

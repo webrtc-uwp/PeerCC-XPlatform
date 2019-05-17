@@ -52,7 +52,7 @@ namespace Client_UWP
             {
                 ObservableCollection<IceServerModel> iceServersList = new ObservableCollection<IceServerModel>();
 
-                foreach (IceServer iceServer in GuiLogic.Instance.AddDefaultIceServers())
+                foreach (IceServer iceServer in DefaultSettings.AddDefaultIceServers)
                 {
                     IceServerModel iceServerModel = new IceServerModel();
                     iceServerModel.Urls = iceServer.Urls;
