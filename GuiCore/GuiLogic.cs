@@ -393,8 +393,27 @@ namespace GuiCore
                 var audioCodecList = DefaultSettings.GetAudioCodecs;
                 var videoCodecList = DefaultSettings.GetVideoCodecs;
 
-                AudioCodec = audioCodecList.First();
-                VideoCodec = videoCodecList.First();
+                for (int i = 0; i < audioCodecList.Count; i++)
+                {
+                    if (localSettings.Values["SelectedAudioCodecName"] != null)
+                    {
+                        if (audioCodecList[i].Name == localSettings.Values["SelectedAudioCodecName"].ToString())
+                            AudioCodec = audioCodecList[i];
+                    }
+                    else
+                        AudioCodec = audioCodecList.First();
+                }
+
+                for (int i = 0; i < videoCodecList.Count; i++)
+                {
+                    if (localSettings.Values["SelectedVideoCodecName"] != null)
+                    {
+                        if (videoCodecList[i].Name == localSettings.Values["SelectedVideoCodecName"].ToString())
+                            VideoCodec = videoCodecList[i];
+                    }
+                    else
+                        VideoCodec = videoCodecList.First();
+                }
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;

@@ -1,5 +1,4 @@
-﻿using Client_UWP.Models;
-using Client_UWP.Pages.SettingsAccount;
+﻿using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using GuiCore;
@@ -61,7 +60,7 @@ namespace Client_UWP.Pages.SettingsDevices
             ItemCollection videoCodecs = cbVideoCodecs.Items;
 
             for (int i = 0; i < videoCodecs.Count; i++)
-                if (videoCodecs[i].ToString() == localSettings.Values["SelectedVideoCodec"]?.ToString())
+                if (videoCodecs[i].ToString() == localSettings.Values["SelectedVideoCodecName"]?.ToString())
                     cbVideoCodecs.SelectedIndex = i;
         }
 
@@ -77,7 +76,7 @@ namespace Client_UWP.Pages.SettingsDevices
             ItemCollection audioCodecs = cbAudioCodecs.Items;
 
             for (int i = 0; i < audioCodecs.Count; i++)
-                if (audioCodecs[i].ToString() == localSettings.Values["SelectedAudioCodec"]?.ToString())
+                if (audioCodecs[i].ToString() == localSettings.Values["SelectedAudioCodecName"]?.ToString())
                     cbAudioCodecs.SelectedIndex = i;
         }
 
@@ -130,10 +129,10 @@ namespace Client_UWP.Pages.SettingsDevices
         }
 
         private void CbVideoCodecs_SelectionChanged(object sender, SelectionChangedEventArgs e) 
-            => localSettings.Values["SelectedVideoCodec"] = (string)cbVideoCodecs.SelectedValue;
+            => localSettings.Values["SelectedVideoCodecName"] = (string)cbVideoCodecs.SelectedValue;
 
         private void CbAudioCodec_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => localSettings.Values["SelectedAudioCodec"] = (string)cbAudioCodecs.SelectedValue;
+            => localSettings.Values["SelectedAudioCodecName"] = (string)cbAudioCodecs.SelectedValue;
 
         private void CbSpeakers_SelectionChanged(object sender, SelectionChangedEventArgs e)
             => localSettings.Values["SelectedSpeakerName"] = (string)cbSpeakers.SelectedValue;
