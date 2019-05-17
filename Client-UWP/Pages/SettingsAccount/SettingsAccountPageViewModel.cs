@@ -1,5 +1,4 @@
 ﻿using Client_UWP.Models;
-using Client_UWP.Utilities;
 using GuiCore.Utilities;
 using System;
 using System.Collections.ObjectModel;

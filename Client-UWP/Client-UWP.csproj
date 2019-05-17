@@ -103,13 +103,11 @@
     </Compile>
     <Compile Include="Pages\Call\CallPageViewModel.cs" />
     <Compile Include="Pages\Main\MainViewModel.cs" />
-    <Compile Include="Models\AudioCodec.cs" />
     <Compile Include="Models\CaptureFrameRate.cs" />
     <Compile Include="Models\CaptureResolution.cs" />
     <Compile Include="Models\IceServerModel.cs" />
     <Compile Include="Models\MediaDeviceModel.cs" />
     <Compile Include="Models\Server.cs" />
-    <Compile Include="Models\VideoCodec.cs" />
     <Compile Include="Pages\Main\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -132,10 +130,8 @@
     <Compile Include="Pages\SettingsDevices\SettingsDevicesPage.xaml.cs">
       <DependentUpon>SettingsDevicesPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\SettingsDevices\SettingsDevicesPageViewModel.cs" />
     <Compile Include="Pages\ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\DefaultSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -213,6 +209,9 @@
       <Project>{f7366bc6-a5ab-4e1a-9412-6255af84199c}</Project>
       <Name>WebRtcAdapter</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utilities\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

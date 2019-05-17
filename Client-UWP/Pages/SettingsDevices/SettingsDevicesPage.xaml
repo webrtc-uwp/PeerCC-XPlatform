@@ -61,7 +61,7 @@
                    Width="300"
                    Margin="0,20,0,10"
                    Foreground="Black"/>
-        <ComboBox x:Name="cbAudioCodec"
+        <ComboBox x:Name="cbAudioCodecs"
                   HorizontalAlignment="Center"
                   Width="300"
                   Foreground="Black"/>
@@ -70,7 +70,7 @@
                    Width="300"
                    Margin="0,20,0,10"
                    Foreground="Black"/>
-        <ComboBox x:Name="cbVideoCodec"
+        <ComboBox x:Name="cbVideoCodecs"
                   HorizontalAlignment="Center"
                   Width="300"
                   Foreground="Black"/>
