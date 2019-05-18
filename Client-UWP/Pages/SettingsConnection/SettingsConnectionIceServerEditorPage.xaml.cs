@@ -52,9 +52,7 @@ namespace Client_UWP.Pages.SettingsConnection
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            ObservableCollection<IceServerModel> list =
-                    XmlSerialization<ObservableCollection<IceServerModel>>
-                    .Deserialize((string)localSettings.Values["IceServersList"]);
+            ObservableCollection<IceServerModel> list = DeserializeIceServersList();
 
             foreach (IceServerModel ice in list)
                 IceServersL.Add(ice);
@@ -66,9 +64,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 // Add new IceServer to IceServersList
                 IceServersL.Add(iceServer);
 
-                // Save IceServersList
-                localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
+                SerializeIceServersList();
 
                 foreach (string url in iceServer.Urls)
                 {
@@ -87,9 +83,7 @@ namespace Client_UWP.Pages.SettingsConnection
                     // Remove IceServer from IceServersList
                     IceServersL.Remove(iceServer);
 
-                    // Save IceServersList
-                    localSettings.Values["IceServersList"] =
-                        XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
+                    SerializeIceServersList();
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
                 };
@@ -107,9 +101,7 @@ namespace Client_UWP.Pages.SettingsConnection
                         Credential = pbCredential.Password
                     });
 
-                    // Save IceServersList
-                    localSettings.Values["IceServersList"] =
-                        XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
+                    SerializeIceServersList();
 
                     Frame.Navigate(typeof(SettingsConnectionPage));
                 };
@@ -125,9 +117,7 @@ namespace Client_UWP.Pages.SettingsConnection
                     Credential = pbCredential.Password
                 });
 
-                // Save IceServersList
-                localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
+                SerializeIceServersList();
 
                 Frame.Navigate(typeof(SettingsConnectionPage));
             };
@@ -145,5 +135,14 @@ namespace Client_UWP.Pages.SettingsConnection
                 tbServerUrl.Text = "";
             }
         }
+
+        private void SerializeIceServersList()
+        {
+            localSettings.Values["IceServersList"] =
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
+        }
+
+        private ObservableCollection<IceServerModel> DeserializeIceServersList() =>
+            XmlSerialization<ObservableCollection<IceServerModel>>.Deserialize((string)localSettings.Values["IceServersList"]);
     }
 }

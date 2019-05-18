@@ -31,7 +31,7 @@ namespace Client_UWP.Pages.SettingsConnection
     /// </summary>
     public sealed partial class SettingsConnectionPage : Page
     {
-        public ApplicationDataContainer localSettings =
+        public static ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
         private ObservableCollection<IceServerModel> IceServersL { get; set; } = new ObservableCollection<IceServerModel>();
@@ -40,18 +40,16 @@ namespace Client_UWP.Pages.SettingsConnection
         {
             InitializeComponent();
 
-            ObservableCollection<IceServerModel> list =
-                    XmlSerialization<ObservableCollection<IceServerModel>>
-                    .Deserialize((string)localSettings.Values["IceServersList"]);
-
-            foreach (IceServerModel ice in list)
-                IceServersL.Add(ice);
-
             InitView();
         }
 
         private void InitView()
         {
+            ObservableCollection<IceServerModel> list = DeserializeIceServersList();
+
+            foreach (IceServerModel ice in list)
+                IceServersL.Add(ice);
+
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
 
             AccountSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
@@ -76,9 +74,7 @@ namespace Client_UWP.Pages.SettingsConnection
                 // Remove IceServer from IceServersList
                 IceServersL.Remove(iceServer);
 
-                // Save IceServersList
-                localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
+                SerializeIceServersList();
 
                 Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), iceServer);
             };
@@ -99,11 +95,18 @@ namespace Client_UWP.Pages.SettingsConnection
                 // Remove IceServer from IceServersList
                 IceServersL.Remove(iceServer);
 
-                // Save IceServersList
-                localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
+                SerializeIceServersList();
             };
         }
+
+        private void SerializeIceServersList()
+        {
+            localSettings.Values["IceServersList"] =
+                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
+        }
+
+        private ObservableCollection<IceServerModel> DeserializeIceServersList() =>
+            XmlSerialization<ObservableCollection<IceServerModel>>.Deserialize((string)localSettings.Values["IceServersList"]);
 
         private void IceServersListView_Tapped(object sender, TappedRoutedEventArgs e) =>
             IceServersListView.SelectedItem = (IceServerModel)((FrameworkElement)e.OriginalSource).DataContext;
