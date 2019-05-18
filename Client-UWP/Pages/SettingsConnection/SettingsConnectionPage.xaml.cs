@@ -2,25 +2,12 @@
 using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
-using GuiCore.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -31,10 +18,9 @@ namespace Client_UWP.Pages.SettingsConnection
     /// </summary>
     public sealed partial class SettingsConnectionPage : Page
     {
-        public static ApplicationDataContainer localSettings =
-            ApplicationData.Current.LocalSettings;
+        private ObservableCollection<IceServerModel> _iceServersList { get; set; } = new ObservableCollection<IceServerModel>();
 
-        private ObservableCollection<IceServerModel> IceServersL { get; set; } = new ObservableCollection<IceServerModel>();
+        private LocalSettings _localSettings = new LocalSettings();
 
         public SettingsConnectionPage()
         {
@@ -45,10 +31,10 @@ namespace Client_UWP.Pages.SettingsConnection
 
         private void InitView()
         {
-            ObservableCollection<IceServerModel> list = DeserializeIceServersList();
+            ObservableCollection<IceServerModel> list = _localSettings.DeserializeIceServersList();
 
             foreach (IceServerModel ice in list)
-                IceServersL.Add(ice);
+                _iceServersList.Add(ice);
 
             GoToMainPage.Click += (sender, args) => Frame.Navigate(typeof(MainPage));
 
@@ -72,9 +58,9 @@ namespace Client_UWP.Pages.SettingsConnection
                 if (iceServer == null) return;
 
                 // Remove IceServer from IceServersList
-                IceServersL.Remove(iceServer);
+                _iceServersList.Remove(iceServer);
 
-                SerializeIceServersList();
+                _localSettings.SerializeIceServersList(_iceServersList);
 
                 Frame.Navigate(typeof(SettingsConnectionIceServerEditorPage), iceServer);
             };
@@ -93,20 +79,11 @@ namespace Client_UWP.Pages.SettingsConnection
                 if (iceServer == null) return;
 
                 // Remove IceServer from IceServersList
-                IceServersL.Remove(iceServer);
+                _iceServersList.Remove(iceServer);
 
-                SerializeIceServersList();
+                _localSettings.SerializeIceServersList(_iceServersList);
             };
         }
-
-        private void SerializeIceServersList()
-        {
-            localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(IceServersL);
-        }
-
-        private ObservableCollection<IceServerModel> DeserializeIceServersList() =>
-            XmlSerialization<ObservableCollection<IceServerModel>>.Deserialize((string)localSettings.Values["IceServersList"]);
 
         private void IceServersListView_Tapped(object sender, TappedRoutedEventArgs e) =>
             IceServersListView.SelectedItem = (IceServerModel)((FrameworkElement)e.OriginalSource).DataContext;

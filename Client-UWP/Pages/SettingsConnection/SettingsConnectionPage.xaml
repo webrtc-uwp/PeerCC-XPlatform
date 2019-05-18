@@ -33,7 +33,7 @@
                     Height="400"
                     Margin="0,60,0,10">
             <ListView x:Name="IceServersListView" 
-                  ItemsSource="{x:Bind IceServersL}"
+                  ItemsSource="{x:Bind _iceServersList}"
                   Width="300"
                   Margin="0,20,0,0"
                   Background="White"

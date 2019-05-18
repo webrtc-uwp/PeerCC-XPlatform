@@ -102,6 +102,7 @@
       <DependentUpon>CallPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\Call\CallPageViewModel.cs" />
+    <Compile Include="Pages\LocalSettings.cs" />
     <Compile Include="Pages\Main\MainViewModel.cs" />
     <Compile Include="Models\CaptureFrameRate.cs" />
     <Compile Include="Models\CaptureResolution.cs" />
