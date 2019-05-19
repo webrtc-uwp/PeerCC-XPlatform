@@ -118,7 +118,6 @@
     <Compile Include="Pages\SettingsAccount\SettingsAccountPage.xaml.cs">
       <DependentUpon>SettingsAccountPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\SettingsAccount\SettingsAccountPageViewModel.cs" />
     <Compile Include="Pages\SettingsConnection\SettingsConnectionIceServerEditorPage.xaml.cs">
       <DependentUpon>SettingsConnectionIceServerEditorPage.xaml</DependentUpon>
     </Compile>

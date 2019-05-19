@@ -3,22 +3,10 @@ using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
 using GuiCore.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -30,14 +18,14 @@ namespace Client_UWP.Pages.SettingsAccount
     /// </summary>
     public sealed partial class SettingsAccountEditorPage : Page
     {
+        private ObservableCollection<AccountModel> _accountsList { get; set; } = new ObservableCollection<AccountModel>();
+
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
         public SettingsAccountEditorPage()
         {
             InitializeComponent();
-
-            ViewModel = new SettingsAccountPageViewModel();
 
             GoToSettingsAccountPage.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
 
@@ -48,22 +36,24 @@ namespace Client_UWP.Pages.SettingsAccount
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
         }
 
-        public SettingsAccountPageViewModel ViewModel { get; set; }
-
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            AccountModel account = (AccountModel)e.Parameter;
+            ObservableCollection<AccountModel> list =
+                XmlSerialization<ObservableCollection<AccountModel>>.Deserialize((string)localSettings.Values["AccountsList"]);
+
+            foreach (AccountModel acc in list)
+                _accountsList.Add(acc);
 
             if (e.Parameter != null)
             {
+                AccountModel account = (AccountModel)e.Parameter;
+
                 // Add new Account to AccountsList
-                ViewModel.AccountsList.Add(account);
+                _accountsList.Add(account);
 
                 // Save AccountsList
                 localSettings.Values["AccountsList"] =
-                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
-
-                Debug.WriteLine("Edit Account: " + account.AccountName);
+                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
 
                 tbAccountName.Text = account.AccountName;
                 tbServiceUri.Text = account.ServiceUri;
@@ -75,11 +65,11 @@ namespace Client_UWP.Pages.SettingsAccount
                 btnDelete.Click += (sender, args) =>
                 {
                     // Remove Account from AccountsList
-                    ViewModel.AccountsList.Remove(account);
+                    _accountsList.Remove(account);
 
                     // Save AccountsList
                     localSettings.Values["AccountsList"] =
-                        XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
+                        XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
 
                     // Remove selected account
                     localSettings.Values["SelectedAccount"] = null;
@@ -90,10 +80,10 @@ namespace Client_UWP.Pages.SettingsAccount
                 btnSave.Click += (sender, args) =>
                 {
                     // Remove Account from AccountsList
-                    ViewModel.AccountsList.Remove(account);
+                    _accountsList.Remove(account);
 
                     // Add Account to AccountsList
-                    ViewModel.AccountsList.Add(new AccountModel
+                    _accountsList.Add(new AccountModel
                     {
                         AccountName = tbAccountName.Text,
                         ServiceUri = tbServiceUri.Text,
@@ -102,7 +92,7 @@ namespace Client_UWP.Pages.SettingsAccount
 
                     // Save AccountsList
                     localSettings.Values["AccountsList"] =
-                        XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
+                        XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
 
                     Frame.Navigate(typeof(SettingsAccountPage));
                 };
@@ -118,11 +108,11 @@ namespace Client_UWP.Pages.SettingsAccount
                 };
 
                 // Add new Account to AccountsList
-                ViewModel.AccountsList.Add(accountModel);
+                _accountsList.Add(accountModel);
 
                 // Save AccountsList
                 localSettings.Values["AccountsList"] =
-                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
+                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
 
                 Frame.Navigate(typeof(SettingsAccountPage), accountModel);
             };

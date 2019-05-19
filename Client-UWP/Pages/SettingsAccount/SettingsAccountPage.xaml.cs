@@ -4,22 +4,12 @@ using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
 using GuiCore.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -31,6 +21,8 @@ namespace Client_UWP.Pages.SettingsAccount
     /// </summary>
     public sealed partial class SettingsAccountPage : Page
     {
+        private ObservableCollection<AccountModel> _accountsList { get; set; } = new ObservableCollection<AccountModel>();
+
         public ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
@@ -38,26 +30,28 @@ namespace Client_UWP.Pages.SettingsAccount
         {
             InitializeComponent();
 
-            ViewModel = new SettingsAccountPageViewModel();
-
             InitView();
         }
 
-        public SettingsAccountPageViewModel ViewModel { get; set; }
-
         private void InitView()
         {
-            AccountsListView.Loaded += (sender, args) => 
+            AccountsListView.Loaded += (sender, args) =>
             {
-                AccountModel account = XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+                ObservableCollection<AccountModel> list =
+                    XmlSerialization<ObservableCollection<AccountModel>>.Deserialize((string)localSettings.Values["AccountsList"]);
+
+                foreach (AccountModel acc in list)
+                    _accountsList.Add(acc);
+
+                AccountModel selectedAccount = XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
 
                 for (int i = 0; i < AccountsListView.Items.Count; i++)
                 {
                     AccountModel item = (AccountModel)AccountsListView.Items[i];
 
-                    if (account != null)
-                        if (account.AccountName == item.AccountName)
-                            if (account.ServiceUri == item.ServiceUri)
+                    if (selectedAccount != null)
+                        if (selectedAccount.AccountName == item.AccountName)
+                            if (selectedAccount.ServiceUri == item.ServiceUri)
                                 AccountsListView.SelectedIndex = i;
                 }
             };
@@ -74,31 +68,7 @@ namespace Client_UWP.Pages.SettingsAccount
 
             AddAccount.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountEditorPage));
 
-            RemoveAccount.Click += async (sender, args) => 
-            {
-                if (AccountsListView.SelectedIndex == -1)
-                {
-                    await new MessageDialog("Please select Account you want to remove.").ShowAsync();
-                    return;
-                }
-
-                AccountModel account = AccountsListView.SelectedItem as AccountModel;
-                if (account == null) return;
-
-                Debug.WriteLine($"Remove Account {account.AccountName}");
-
-                // Remove Account form AccountsList
-                ViewModel.AccountsList.Remove(account);
-
-                // Save AccoutsList
-                localSettings.Values["AccountsList"] =
-                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
-
-                // Remove selected account
-                localSettings.Values["SelectedAccount"] = null;
-            };
-
-            EditAccount.Click += async (sender, args) => 
+            EditAccount.Click += async (sender, args) =>
             {
                 if (AccountsListView.SelectedIndex == -1)
                 {
@@ -110,13 +80,35 @@ namespace Client_UWP.Pages.SettingsAccount
                 if (account == null) return;
 
                 // Remove Account from AccountsList
-                ViewModel.AccountsList.Remove(account);
+                _accountsList.Remove(account);
 
                 // Save AccountsList
                 localSettings.Values["AccountsList"] =
-                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(ViewModel.AccountsList);
+                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
 
                 Frame.Navigate(typeof(SettingsAccountEditorPage), account);
+            };
+
+            RemoveAccount.Click += async (sender, args) => 
+            {
+                if (AccountsListView.SelectedIndex == -1)
+                {
+                    await new MessageDialog("Please select Account you want to remove.").ShowAsync();
+                    return;
+                }
+
+                AccountModel account = AccountsListView.SelectedItem as AccountModel;
+                if (account == null) return;
+
+                // Remove Account form AccountsList
+                _accountsList.Remove(account);
+
+                // Save AccoutsList
+                localSettings.Values["AccountsList"] =
+                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
+
+                // Remove selected account
+                localSettings.Values["SelectedAccount"] = null;
             };
         }
 
