@@ -42,6 +42,21 @@ namespace Client_UWP
 
         public MainPage()
         {
+            if (_localSettings.DeserializeAccountsList() == null
+                || !(_localSettings.DeserializeAccountsList()).Any())
+            {
+                ObservableCollection<AccountModel> accountsList = new ObservableCollection<AccountModel>();
+
+                AccountModel accountModel = new AccountModel();
+                accountModel.AccountName = "Default Account";
+                accountModel.ServiceUri = "http://40.83.179.150:8888";
+
+                accountsList.Add(accountModel);
+
+                _localSettings.SerializeSelectedAccount(accountModel);
+                _localSettings.SerializeAccountsList(accountsList);
+            }
+
             InitializeComponent();
 
             if (_localSettings.DeserializeIceServersList() == null

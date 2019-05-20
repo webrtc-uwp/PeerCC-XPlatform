@@ -121,7 +121,7 @@ namespace GuiCore
             public string FrameRateDescription { get; set; }
         }
 
-        public IAsyncOperation<IList<CaptureCapability>> GetVideoCapabilities(string deviceId)
+        public IAsyncOperation<IList<CaptureCapability>> GetVideoCaptureCapabilities(string deviceId)
         {
             var mediaCapture = new MediaCapture();
             var mediaSettings = new MediaCaptureInitializationSettings();

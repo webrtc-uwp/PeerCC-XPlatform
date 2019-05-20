@@ -3,7 +3,6 @@ using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using GuiCore;
 using System.Collections.Generic;
-using Windows.Storage;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
