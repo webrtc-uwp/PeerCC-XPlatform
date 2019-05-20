@@ -2,9 +2,7 @@
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;
-using GuiCore.Utilities;
 using System.Collections.ObjectModel;
-using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -20,8 +18,10 @@ namespace Client_UWP.Pages.SettingsAccount
     {
         private ObservableCollection<AccountModel> _accountsList { get; set; } = new ObservableCollection<AccountModel>();
 
-        public ApplicationDataContainer localSettings =
-            ApplicationData.Current.LocalSettings;
+        private LocalSettings localSettings = new LocalSettings();
+
+        //public ApplicationDataContainer localSettings =
+        //    ApplicationData.Current.LocalSettings;
 
         public SettingsAccountEditorPage()
         {
@@ -38,8 +38,7 @@ namespace Client_UWP.Pages.SettingsAccount
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            ObservableCollection<AccountModel> list =
-                XmlSerialization<ObservableCollection<AccountModel>>.Deserialize((string)localSettings.Values["AccountsList"]);
+            ObservableCollection<AccountModel> list = localSettings.DeserializeAccountsList();
 
             foreach (AccountModel acc in list)
                 _accountsList.Add(acc);
@@ -52,8 +51,7 @@ namespace Client_UWP.Pages.SettingsAccount
                 _accountsList.Add(account);
 
                 // Save AccountsList
-                localSettings.Values["AccountsList"] =
-                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
+                localSettings.SerializeAccountsList(_accountsList);
 
                 tbAccountName.Text = account.AccountName;
                 tbServiceUri.Text = account.ServiceUri;
@@ -68,11 +66,10 @@ namespace Client_UWP.Pages.SettingsAccount
                     _accountsList.Remove(account);
 
                     // Save AccountsList
-                    localSettings.Values["AccountsList"] =
-                        XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
+                    localSettings.SerializeAccountsList(_accountsList);
 
                     // Remove selected account
-                    localSettings.Values["SelectedAccount"] = null;
+                    localSettings.SerializeAccountsList(null);
 
                     Frame.Navigate(typeof(SettingsAccountPage));
                 };
@@ -91,8 +88,7 @@ namespace Client_UWP.Pages.SettingsAccount
                     });
 
                     // Save AccountsList
-                    localSettings.Values["AccountsList"] =
-                        XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
+                    localSettings.SerializeAccountsList(_accountsList);
 
                     Frame.Navigate(typeof(SettingsAccountPage));
                 };
@@ -111,8 +107,7 @@ namespace Client_UWP.Pages.SettingsAccount
                 _accountsList.Add(accountModel);
 
                 // Save AccountsList
-                localSettings.Values["AccountsList"] =
-                    XmlSerialization<ObservableCollection<AccountModel>>.Serialize(_accountsList);
+                localSettings.SerializeAccountsList(_accountsList);
 
                 Frame.Navigate(typeof(SettingsAccountPage), accountModel);
             };
