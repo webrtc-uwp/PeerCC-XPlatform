@@ -18,11 +18,10 @@ using System.Linq;
 using Client_UWP.Pages.Call;
 using System.Threading.Tasks;
 using Client_UWP.Models;
-using GuiCore.Utilities;
-using Windows.Storage;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using ClientCore.Call;
+using Client_UWP.Pages;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -37,8 +36,7 @@ namespace Client_UWP
 
         private MainViewModel _mainViewModel;
 
-        public ApplicationDataContainer localSettings =
-            ApplicationData.Current.LocalSettings;
+        private LocalSettings localSettings = new LocalSettings();
 
         private AccountModel accountModel;
 
@@ -46,9 +44,8 @@ namespace Client_UWP
         {
             InitializeComponent();
 
-            if (localSettings.Values["IceServersList"] == null
-                || !(XmlSerialization<ObservableCollection<IceServerModel>>
-                .Deserialize((string)localSettings.Values["IceServersList"])).Any())
+            if (localSettings.DeserializeIceServersList() == null
+                || !(localSettings.DeserializeIceServersList()).Any())
             {
                 ObservableCollection<IceServerModel> iceServersList = new ObservableCollection<IceServerModel>();
 
@@ -62,16 +59,13 @@ namespace Client_UWP
                     iceServersList.Add(iceServerModel);
                 }
 
-                localSettings.Values["IceServersList"] =
-                    XmlSerialization<ObservableCollection<IceServerModel>>.Serialize(iceServersList);
+                localSettings.SerializeIceServersList(iceServersList);
             }
             else
             {
                 List<IceServer> iceServersList = new List<IceServer>();
 
-                ObservableCollection<IceServerModel> list =
-                    XmlSerialization<ObservableCollection<IceServerModel>>
-                    .Deserialize((string)localSettings.Values["IceServersList"]);
+                ObservableCollection<IceServerModel> list = localSettings.DeserializeIceServersList();
 
                 foreach (var ice in list)
                 {
@@ -85,8 +79,7 @@ namespace Client_UWP
                 GuiLogic.Instance.AddIceServers(iceServersList);
             }
 
-            accountModel =
-                XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+            accountModel = localSettings.DeserializeSelectedAccount();
 
             GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
 

@@ -20,9 +20,6 @@ namespace Client_UWP.Pages.SettingsAccount
 
         private LocalSettings localSettings = new LocalSettings();
 
-        //public ApplicationDataContainer localSettings =
-        //    ApplicationData.Current.LocalSettings;
-
         public SettingsAccountEditorPage()
         {
             InitializeComponent();
