@@ -42,6 +42,41 @@ namespace Client_UWP
 
         public MainPage()
         {
+            AddDefaultAccount();
+
+            InitializeComponent();
+
+            AddDefaultIceServersList();
+
+            accountModel = _localSettings.DeserializeSelectedAccount();
+
+            GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
+
+            //_signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
+
+            Loaded += OnLoaded;
+
+            Debug.WriteLine($"Connecting to server from local peer: {_signaler.LocalPeer.Name}");
+
+            peersListView.SelectedIndex = -1;
+            peersListView.SelectedItem = 0;
+
+            _signaler.SignedIn += Signaler_SignedIn;
+            _signaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
+            _signaler.PeerConnected += Signaler_PeerConnected;
+            _signaler.PeerDisconnected += Signaler_PeerDisconnected;
+
+            GuiLogic.Instance.OnPeerConnectionCreated += async () =>
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
+                    => Frame.Navigate(typeof(CallPage)));
+
+            GuiLogic.Instance.OnAddLocalTrack += GuiLogic.Instance.Instance_OnAddLocalTrack;
+
+            InitView();
+        }
+
+        private void AddDefaultAccount()
+        {
             if (_localSettings.DeserializeAccountsList() == null
                 || !(_localSettings.DeserializeAccountsList()).Any())
             {
@@ -56,9 +91,10 @@ namespace Client_UWP
                 _localSettings.SerializeSelectedAccount(accountModel);
                 _localSettings.SerializeAccountsList(accountsList);
             }
+        }
 
-            InitializeComponent();
-
+        private void AddDefaultIceServersList()
+        {
             if (_localSettings.DeserializeIceServersList() == null
                 || !(_localSettings.DeserializeIceServersList()).Any())
             {
@@ -93,32 +129,6 @@ namespace Client_UWP
                 }
                 GuiLogic.Instance.AddIceServers(iceServersList);
             }
-
-            accountModel = _localSettings.DeserializeSelectedAccount();
-
-            GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
-
-            //_signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
-
-            Loaded += OnLoaded;
-
-            Debug.WriteLine($"Connecting to server from local peer: {_signaler.LocalPeer.Name}");
-
-            peersListView.SelectedIndex = -1;
-            peersListView.SelectedItem = 0;
-
-            _signaler.SignedIn += Signaler_SignedIn;
-            _signaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
-            _signaler.PeerConnected += Signaler_PeerConnected;
-            _signaler.PeerDisconnected += Signaler_PeerDisconnected;
-
-            GuiLogic.Instance.OnPeerConnectionCreated += async () => 
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
-                    => Frame.Navigate(typeof(CallPage)));
-
-            GuiLogic.Instance.OnAddLocalTrack += GuiLogic.Instance.Instance_OnAddLocalTrack;
-
-            InitView();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
