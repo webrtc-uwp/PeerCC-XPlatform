@@ -15,13 +15,13 @@ namespace Client_UWP.Pages.SettingsDevices
     /// </summary>
     public sealed partial class SettingsDevicesPage : Page
     {
-        public ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+        private LocalSettings _localSettings = new LocalSettings();
 
-        private static List<string> _camerasList = new List<string>();
-        private static List<string> _microphonesList = new List<string>();
-        private static List<string> _speakersList = new List<string>();
-        private static List<string> _audioCodesList = new List<string>();
-        private static List<string> _videoCodecsList = new List<string>();
+        private static List<string> _camerasList;
+        private static List<string> _microphonesList;
+        private static List<string> _speakersList;
+        private static List<string> _audioCodesList;
+        private static List<string> _videoCodecsList;
 
         public SettingsDevicesPage()
         {
@@ -39,6 +39,12 @@ namespace Client_UWP.Pages.SettingsDevices
             ConnectionSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
+
+            _camerasList = new List<string>();
+            _microphonesList = new List<string>();
+            _speakersList = new List<string>();
+            _audioCodesList = new List<string>();
+            _videoCodecsList = new List<string>();
 
             SetCamerasList();
             SetMicrophonesList();
@@ -58,10 +64,10 @@ namespace Client_UWP.Pages.SettingsDevices
 
             ItemCollection videoCodecs = cbVideoCodecs.Items;
 
-            if (localSettings.Values["SelectedVideoCodecName"] != null)
+            if (_localSettings.GetSelectedVideoCodecName != null)
             {
                 for (int i = 0; i < videoCodecs.Count; i++)
-                    if (videoCodecs[i].ToString() == localSettings.Values["SelectedVideoCodecName"].ToString())
+                    if (videoCodecs[i].ToString() == _localSettings.GetSelectedVideoCodecName.ToString())
                         cbVideoCodecs.SelectedIndex = i;
             }
             else
@@ -79,10 +85,10 @@ namespace Client_UWP.Pages.SettingsDevices
 
             ItemCollection audioCodecs = cbAudioCodecs.Items;
 
-            if (localSettings.Values["SelectedAudioCodecName"] != null)
+            if (_localSettings.GetSelectedAudioCodecName != null)
             {
                 for (int i = 0; i < audioCodecs.Count; i++)
-                    if (audioCodecs[i].ToString() == localSettings.Values["SelectedAudioCodecName"].ToString())
+                    if (audioCodecs[i].ToString() == _localSettings.GetSelectedAudioCodecName.ToString())
                         cbAudioCodecs.SelectedIndex = i;
             }
             else
@@ -100,10 +106,10 @@ namespace Client_UWP.Pages.SettingsDevices
 
             ItemCollection speakers = cbSpeakers.Items;
 
-            if (localSettings.Values["SelectedSpeakerName"] != null)
+            if (_localSettings.GetSelectedSpeakerName != null)
             {
                 for (int i = 0; i < speakers.Count; i++)
-                    if (speakers[i].ToString() == localSettings.Values["SelectedSpeakerName"].ToString())
+                    if (speakers[i].ToString() == _localSettings.GetSelectedSpeakerName.ToString())
                         cbSpeakers.SelectedIndex = i;
             }
             else
@@ -121,10 +127,10 @@ namespace Client_UWP.Pages.SettingsDevices
 
             ItemCollection microphones = cbMicrophone.Items;
 
-            if (localSettings.Values["SelectedMicrophoneName"] != null)
+            if (_localSettings.GetSelectedMicrophoneName != null)
             {
                 for (int i = 0; i < microphones.Count; i++)
-                    if (microphones[i].ToString() == localSettings.Values["SelectedMicrophoneName"].ToString())
+                    if (microphones[i].ToString() == _localSettings.GetSelectedMicrophoneName.ToString())
                         cbMicrophone.SelectedIndex = i;
             }
             else
@@ -142,29 +148,29 @@ namespace Client_UWP.Pages.SettingsDevices
 
             ItemCollection cameras = cbCamera.Items;
 
-            if (localSettings.Values["SelectedCameraName"] != null)
+            if (_localSettings.GetSelectedCameraName != null)
             {
                 for (int i = 0; i < cameras.Count; i++)
-                    if (cameras[i].ToString() == localSettings.Values["SelectedCameraName"].ToString())
+                    if (cameras[i].ToString() == _localSettings.GetSelectedCameraName.ToString())
                         cbCamera.SelectedIndex = i;
             }
             else
                 cbCamera.SelectedIndex = 0;
         }
 
-        private void CbVideoCodecs_SelectionChanged(object sender, SelectionChangedEventArgs e) 
-            => localSettings.Values["SelectedVideoCodecName"] = (string)cbVideoCodecs.SelectedValue;
+        private void CbVideoCodecs_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            _localSettings.SetSelectedVideoCodecName((string)cbVideoCodecs.SelectedValue);
 
-        private void CbAudioCodec_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => localSettings.Values["SelectedAudioCodecName"] = (string)cbAudioCodecs.SelectedValue;
+        private void CbAudioCodec_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            _localSettings.SetSelectedAudioCodecName((string)cbAudioCodecs.SelectedValue);
 
-        private void CbSpeakers_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => localSettings.Values["SelectedSpeakerName"] = (string)cbSpeakers.SelectedValue;
+        private void CbSpeakers_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            _localSettings.SetSelectedSpeakerName((string)cbSpeakers.SelectedValue);
 
-        private void CbMicrophone_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => localSettings.Values["SelectedMicrophoneName"] = (string)cbMicrophone.SelectedValue;
+        private void CbMicrophone_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            _localSettings.SetSelectedMicrophoneName((string)cbMicrophone.SelectedValue);
 
-        private void CbCamera_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => localSettings.Values["SelectedCameraName"] = (string)cbCamera.SelectedValue;
+        private void CbCamera_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            _localSettings.SetSelectedCameraName((string)cbCamera.SelectedValue);
     }
 }

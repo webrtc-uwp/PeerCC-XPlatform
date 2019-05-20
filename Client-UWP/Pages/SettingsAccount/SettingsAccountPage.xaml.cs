@@ -21,7 +21,7 @@ namespace Client_UWP.Pages.SettingsAccount
     {
         private ObservableCollection<AccountModel> _accountsList { get; set; } = new ObservableCollection<AccountModel>();
 
-        private LocalSettings localSettings = new LocalSettings();
+        private LocalSettings _localSettings = new LocalSettings();
 
         public SettingsAccountPage()
         {
@@ -34,12 +34,12 @@ namespace Client_UWP.Pages.SettingsAccount
         {
             AccountsListView.Loaded += (sender, args) =>
             {
-                ObservableCollection<AccountModel> list = localSettings.DeserializeAccountsList();
+                ObservableCollection<AccountModel> list = _localSettings.DeserializeAccountsList();
 
                 foreach (AccountModel acc in list)
                     _accountsList.Add(acc);
 
-                AccountModel selectedAccount = localSettings.DeserializeSelectedAccount();
+                AccountModel selectedAccount = _localSettings.DeserializeSelectedAccount();
 
                 for (int i = 0; i < AccountsListView.Items.Count; i++)
                 {
@@ -79,7 +79,7 @@ namespace Client_UWP.Pages.SettingsAccount
                 _accountsList.Remove(account);
 
                 // Save AccountsList
-                localSettings.SerializeAccountsList(_accountsList);
+                _localSettings.SerializeAccountsList(_accountsList);
 
                 Frame.Navigate(typeof(SettingsAccountEditorPage), account);
             };
@@ -99,10 +99,10 @@ namespace Client_UWP.Pages.SettingsAccount
                 _accountsList.Remove(account);
 
                 // Save AccoutsList
-                localSettings.SerializeAccountsList(_accountsList);
+                _localSettings.SerializeAccountsList(_accountsList);
 
                 // Remove selected account
-                localSettings.SerializeSelectedAccount(null);
+                _localSettings.SerializeSelectedAccount(null);
             };
         }
 
@@ -110,7 +110,7 @@ namespace Client_UWP.Pages.SettingsAccount
         {
             AccountsListView.SelectedItem = (AccountModel)((FrameworkElement)e.OriginalSource).DataContext;
 
-            localSettings.SerializeSelectedAccount((AccountModel)AccountsListView.SelectedItem);
+            _localSettings.SerializeSelectedAccount((AccountModel)AccountsListView.SelectedItem);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -119,7 +119,7 @@ namespace Client_UWP.Pages.SettingsAccount
 
             if (newAccount != null)
             {
-                localSettings.SerializeSelectedAccount(newAccount);
+                _localSettings.SerializeSelectedAccount(newAccount);
 
                 AccountsListView.SelectedItem = AccountsListView.Items.Count - 1;
             }

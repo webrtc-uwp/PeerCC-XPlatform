@@ -20,7 +20,6 @@ namespace GuiCore
             {
                 new CodecInfoModel { PreferredPayloadType = 111, ClockRate = 48000, Name = "opus" },
                 new CodecInfoModel { PreferredPayloadType = 103, ClockRate = 16000, Name = "ISAC" },
-                new CodecInfoModel { PreferredPayloadType = 104, ClockRate = 32000, Name = "ISAC" },
                 new CodecInfoModel { PreferredPayloadType = 9, ClockRate = 8000, Name = "G722" },
                 new CodecInfoModel { PreferredPayloadType = 102, ClockRate = 8000, Name = "ILBC" },
                 new CodecInfoModel { PreferredPayloadType = 0, ClockRate = 8000, Name = "PCMU" },

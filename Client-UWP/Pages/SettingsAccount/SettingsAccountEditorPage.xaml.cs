@@ -18,7 +18,7 @@ namespace Client_UWP.Pages.SettingsAccount
     {
         private ObservableCollection<AccountModel> _accountsList { get; set; } = new ObservableCollection<AccountModel>();
 
-        private LocalSettings localSettings = new LocalSettings();
+        private LocalSettings _localSettings = new LocalSettings();
 
         public SettingsAccountEditorPage()
         {
@@ -35,7 +35,7 @@ namespace Client_UWP.Pages.SettingsAccount
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            ObservableCollection<AccountModel> list = localSettings.DeserializeAccountsList();
+            ObservableCollection<AccountModel> list = _localSettings.DeserializeAccountsList();
 
             foreach (AccountModel acc in list)
                 _accountsList.Add(acc);
@@ -48,7 +48,7 @@ namespace Client_UWP.Pages.SettingsAccount
                 _accountsList.Add(account);
 
                 // Save AccountsList
-                localSettings.SerializeAccountsList(_accountsList);
+                _localSettings.SerializeAccountsList(_accountsList);
 
                 tbAccountName.Text = account.AccountName;
                 tbServiceUri.Text = account.ServiceUri;
@@ -63,10 +63,10 @@ namespace Client_UWP.Pages.SettingsAccount
                     _accountsList.Remove(account);
 
                     // Save AccountsList
-                    localSettings.SerializeAccountsList(_accountsList);
+                    _localSettings.SerializeAccountsList(_accountsList);
 
                     // Remove selected account
-                    localSettings.SerializeAccountsList(null);
+                    _localSettings.SerializeAccountsList(null);
 
                     Frame.Navigate(typeof(SettingsAccountPage));
                 };
@@ -85,7 +85,7 @@ namespace Client_UWP.Pages.SettingsAccount
                     });
 
                     // Save AccountsList
-                    localSettings.SerializeAccountsList(_accountsList);
+                    _localSettings.SerializeAccountsList(_accountsList);
 
                     Frame.Navigate(typeof(SettingsAccountPage));
                 };
@@ -104,7 +104,7 @@ namespace Client_UWP.Pages.SettingsAccount
                 _accountsList.Add(accountModel);
 
                 // Save AccountsList
-                localSettings.SerializeAccountsList(_accountsList);
+                _localSettings.SerializeAccountsList(_accountsList);
 
                 Frame.Navigate(typeof(SettingsAccountPage), accountModel);
             };

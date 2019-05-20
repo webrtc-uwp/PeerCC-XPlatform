@@ -36,7 +36,7 @@ namespace Client_UWP
 
         private MainViewModel _mainViewModel;
 
-        private LocalSettings localSettings = new LocalSettings();
+        private LocalSettings _localSettings = new LocalSettings();
 
         private AccountModel accountModel;
 
@@ -44,8 +44,8 @@ namespace Client_UWP
         {
             InitializeComponent();
 
-            if (localSettings.DeserializeIceServersList() == null
-                || !(localSettings.DeserializeIceServersList()).Any())
+            if (_localSettings.DeserializeIceServersList() == null
+                || !(_localSettings.DeserializeIceServersList()).Any())
             {
                 ObservableCollection<IceServerModel> iceServersList = new ObservableCollection<IceServerModel>();
 
@@ -59,13 +59,13 @@ namespace Client_UWP
                     iceServersList.Add(iceServerModel);
                 }
 
-                localSettings.SerializeIceServersList(iceServersList);
+                _localSettings.SerializeIceServersList(iceServersList);
             }
             else
             {
                 List<IceServer> iceServersList = new List<IceServer>();
 
-                ObservableCollection<IceServerModel> list = localSettings.DeserializeIceServersList();
+                ObservableCollection<IceServerModel> list = _localSettings.DeserializeIceServersList();
 
                 foreach (var ice in list)
                 {
@@ -79,7 +79,7 @@ namespace Client_UWP
                 GuiLogic.Instance.AddIceServers(iceServersList);
             }
 
-            accountModel = localSettings.DeserializeSelectedAccount();
+            accountModel = _localSettings.DeserializeSelectedAccount();
 
             GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
 

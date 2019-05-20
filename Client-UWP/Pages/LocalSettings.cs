@@ -34,5 +34,20 @@ namespace Client_UWP.Pages
 
         public AccountModel DeserializeSelectedAccount() =>
             XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+
+        public object GetSelectedVideoCodecName => localSettings.Values["SelectedVideoCodecName"];
+        public void SetSelectedVideoCodecName(string selectedVideoCodecName) => localSettings.Values["SelectedVideoCodecName"] = selectedVideoCodecName;
+
+        public object GetSelectedAudioCodecName => localSettings.Values["SelectedAudioCodecName"];
+        public void SetSelectedAudioCodecName(string selectedAudioCodecName) => localSettings.Values["SelectedAudioCodecName"] = selectedAudioCodecName;
+
+        public object GetSelectedSpeakerName => localSettings.Values["SelectedSpeakerName"];
+        public void SetSelectedSpeakerName(string selectedSpeakerName) => localSettings.Values["SelectedSpeakerName"] = selectedSpeakerName;
+
+        public object GetSelectedMicrophoneName => localSettings.Values["SelectedMicrophoneName"];
+        public void SetSelectedMicrophoneName(string selectedMicrophoneName) => localSettings.Values["SelectedMicrophoneName"] = selectedMicrophoneName;
+
+        public object GetSelectedCameraName => localSettings.Values["SelectedCameraName"];
+        public object SetSelectedCameraName(string selectedCameraName) => localSettings.Values["SelectedCameraName"] = selectedCameraName;
     }
 }
