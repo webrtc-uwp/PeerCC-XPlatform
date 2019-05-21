@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.Media.Capture;
 using Windows.Media.Devices;
 using Windows.Media.MediaProperties;
+using Windows.Storage;
 
 namespace GuiCore
 {
@@ -30,11 +31,16 @@ namespace GuiCore
             }
         }
 
+        public ApplicationDataContainer localSettings =
+            ApplicationData.Current.LocalSettings;
+
         private Devices() { }
 
         public List<Device> VideoDevicesList = new List<Device>();
         public List<Device> AudioCapturersList = new List<Device>();
         public List<Device> AudioRendersList = new List<Device>();
+
+        public List<CaptureCapability> CaptureCapabilityList = new List<CaptureCapability>();
 
         public void Initialize()
         {
@@ -70,6 +76,20 @@ namespace GuiCore
                         Name = audioRender.Name
                     });
                 }
+            });
+
+            string cameraId = string.Empty;
+            foreach (var videoDevice in Instance.VideoDevicesList)
+                if (videoDevice.Name == (string)localSettings.Values["SelectedCameraName"])
+                    cameraId = videoDevice.Id;
+
+            var videoCaptureCapabilities = Instance.GetVideoCaptureCapabilities(cameraId);
+            videoCaptureCapabilities.AsTask().ContinueWith(caps =>
+            {
+                IList<CaptureCapability> fpsList = caps.Result;
+
+                foreach (var fps in fpsList)
+                    CaptureCapabilityList.Add(fps);
             });
         }
 

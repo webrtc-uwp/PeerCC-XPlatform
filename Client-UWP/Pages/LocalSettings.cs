@@ -43,5 +43,8 @@ namespace Client_UWP.Pages
 
         public object GetSelectedCameraName => localSettings.Values["SelectedCameraName"];
         public object SetSelectedCameraName(string selectedCameraName) => localSettings.Values["SelectedCameraName"] = selectedCameraName;
+
+        public object GetSelectedFrameRateString => localSettings.Values["SelectedFrameRate"];
+        public object SetSelectedFrameRateString(string selectedFrameRate) => localSettings.Values["SelectedFrameRate"] = selectedFrameRate;
     }
 }

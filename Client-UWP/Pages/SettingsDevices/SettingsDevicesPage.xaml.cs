@@ -21,6 +21,7 @@ namespace Client_UWP.Pages.SettingsDevices
         private static List<string> _speakersList;
         private static List<string> _audioCodesList;
         private static List<string> _videoCodecsList;
+        private static List<string> _frameRatesList;
 
         public SettingsDevicesPage()
         {
@@ -44,12 +45,14 @@ namespace Client_UWP.Pages.SettingsDevices
             _speakersList = new List<string>();
             _audioCodesList = new List<string>();
             _videoCodecsList = new List<string>();
+            _frameRatesList = new List<string>();
 
             SetCamerasList();
             SetMicrophonesList();
             SetSpeakersList();
             SetAudioCodecsList();
             SetVideoCodecsList();
+            SetFrameRateList();
         }
 
         private void SetVideoCodecsList()
@@ -156,6 +159,35 @@ namespace Client_UWP.Pages.SettingsDevices
             else
                 cbCamera.SelectedIndex = 0;
         }
+
+        private void SetFrameRateList()
+        {
+            foreach (var captureCapability in Devices.Instance.CaptureCapabilityList)
+            {
+                string frameRateListItem = captureCapability.FrameRate.ToString() + " fps";
+
+                if (!_frameRatesList.Contains(frameRateListItem))
+                    _frameRatesList.Add(frameRateListItem);
+            }
+
+            cbCaptureFrameRate.ItemsSource = _frameRatesList;
+
+            cbCaptureFrameRate.SelectionChanged += CbCaptureFrameRate_SelectionChanged;
+
+            ItemCollection frameRates = cbCaptureFrameRate.Items;
+
+            if (_localSettings.GetSelectedFrameRateString != null)
+            {
+                for (int i = 0; i < frameRates.Count; i++)
+                    if (frameRates[i].ToString() == (string)_localSettings.GetSelectedFrameRateString)
+                        cbCaptureFrameRate.SelectedIndex = i;
+            }
+            else
+                cbCaptureFrameRate.SelectedIndex = 0;
+        }
+
+        private void CbCaptureFrameRate_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            _localSettings.SetSelectedFrameRateString((string)cbCaptureFrameRate.SelectedValue);
 
         private void CbVideoCodecs_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
             _localSettings.SetSelectedVideoCodecName((string)cbVideoCodecs.SelectedValue);
