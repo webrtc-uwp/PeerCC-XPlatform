@@ -22,6 +22,7 @@ namespace Client_UWP.Pages.SettingsDevices
         private static List<string> _audioCodesList;
         private static List<string> _videoCodecsList;
         private static List<string> _frameRatesList;
+        private static List<string> _resolutionsList;
 
         public SettingsDevicesPage()
         {
@@ -46,6 +47,7 @@ namespace Client_UWP.Pages.SettingsDevices
             _audioCodesList = new List<string>();
             _videoCodecsList = new List<string>();
             _frameRatesList = new List<string>();
+            _resolutionsList = new List<string>();
 
             SetCamerasList();
             SetMicrophonesList();
@@ -53,6 +55,7 @@ namespace Client_UWP.Pages.SettingsDevices
             SetAudioCodecsList();
             SetVideoCodecsList();
             SetFrameRateList();
+            SetResolutions();
         }
 
         private void SetVideoCodecsList()
@@ -69,7 +72,7 @@ namespace Client_UWP.Pages.SettingsDevices
             if (_localSettings.GetSelectedVideoCodecName != null)
             {
                 for (int i = 0; i < videoCodecs.Count; i++)
-                    if (videoCodecs[i].ToString() == _localSettings.GetSelectedVideoCodecName.ToString())
+                    if (videoCodecs[i].ToString() == (string)_localSettings.GetSelectedVideoCodecName)
                         cbVideoCodecs.SelectedIndex = i;
             }
             else
@@ -90,7 +93,7 @@ namespace Client_UWP.Pages.SettingsDevices
             if (_localSettings.GetSelectedAudioCodecName != null)
             {
                 for (int i = 0; i < audioCodecs.Count; i++)
-                    if (audioCodecs[i].ToString() == _localSettings.GetSelectedAudioCodecName.ToString())
+                    if (audioCodecs[i].ToString() == (string)_localSettings.GetSelectedAudioCodecName)
                         cbAudioCodecs.SelectedIndex = i;
             }
             else
@@ -111,7 +114,7 @@ namespace Client_UWP.Pages.SettingsDevices
             if (_localSettings.GetSelectedSpeakerName != null)
             {
                 for (int i = 0; i < speakers.Count; i++)
-                    if (speakers[i].ToString() == _localSettings.GetSelectedSpeakerName.ToString())
+                    if (speakers[i].ToString() == (string)_localSettings.GetSelectedSpeakerName)
                         cbSpeakers.SelectedIndex = i;
             }
             else
@@ -132,7 +135,7 @@ namespace Client_UWP.Pages.SettingsDevices
             if (_localSettings.GetSelectedMicrophoneName != null)
             {
                 for (int i = 0; i < microphones.Count; i++)
-                    if (microphones[i].ToString() == _localSettings.GetSelectedMicrophoneName.ToString())
+                    if (microphones[i].ToString() == (string)_localSettings.GetSelectedMicrophoneName)
                         cbMicrophone.SelectedIndex = i;
             }
             else
@@ -153,21 +156,47 @@ namespace Client_UWP.Pages.SettingsDevices
             if (_localSettings.GetSelectedCameraName != null)
             {
                 for (int i = 0; i < cameras.Count; i++)
-                    if (cameras[i].ToString() == _localSettings.GetSelectedCameraName.ToString())
+                    if (cameras[i].ToString() == (string)_localSettings.GetSelectedCameraName)
                         cbCamera.SelectedIndex = i;
             }
             else
                 cbCamera.SelectedIndex = 0;
         }
 
+        private void SetResolutions()
+        {
+            foreach (var captureCapability in Devices.Instance.CaptureCapabilityList)
+            {
+                string resolutionsListItem = captureCapability.ResolutionDescription;
+
+                if (!_resolutionsList.Contains(resolutionsListItem))
+                    _resolutionsList.Add(resolutionsListItem);
+            }
+
+            cbCaptureResolution.ItemsSource = _resolutionsList;
+
+            cbCaptureResolution.SelectionChanged += CbCaptureResolution_SelectionChanged;
+
+            ItemCollection resolutions = cbCaptureResolution.Items;
+
+            if (_localSettings.GetSelectedResolutionString != null)
+            {
+                for (int i = 0; i < resolutions.Count; i++)
+                    if ((string)resolutions[i] == (string)_localSettings.GetSelectedResolutionString)
+                        cbCaptureResolution.SelectedIndex = i;
+            }
+            else
+                cbCaptureResolution.SelectedIndex = 0;
+        }
+
         private void SetFrameRateList()
         {
             foreach (var captureCapability in Devices.Instance.CaptureCapabilityList)
             {
-                string frameRateListItem = captureCapability.FrameRate.ToString() + " fps";
+                string frameRatesListItem = captureCapability.FrameRate.ToString() + " fps";
 
-                if (!_frameRatesList.Contains(frameRateListItem))
-                    _frameRatesList.Add(frameRateListItem);
+                if (!_frameRatesList.Contains(frameRatesListItem))
+                    _frameRatesList.Add(frameRatesListItem);
             }
 
             cbCaptureFrameRate.ItemsSource = _frameRatesList;
@@ -185,6 +214,9 @@ namespace Client_UWP.Pages.SettingsDevices
             else
                 cbCaptureFrameRate.SelectedIndex = 0;
         }
+
+        private void CbCaptureResolution_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            _localSettings.SetSelectedResolutionString((string)cbCaptureResolution.SelectedValue);
 
         private void CbCaptureFrameRate_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
             _localSettings.SetSelectedFrameRateString((string)cbCaptureFrameRate.SelectedValue);
