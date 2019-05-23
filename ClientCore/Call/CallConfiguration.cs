@@ -15,10 +15,15 @@ namespace ClientCore.Call
         /// </summary>
         public string PreferredVideoCodecId;
         /// <summary>
-        /// Get or set the preferred audio device id or empty string for
+        /// Get or set the preferred input audio device id or empty string for
         /// default.
         /// </summary>
-        public string PreferredAudioDeviceId;
+        public string PreferredInputAudioDeviceId;
+        /// <summary>
+        /// Get or set the preferred output audio device id or empty string for
+        /// default.
+        /// </summary>
+        public string PreferredAudioOutputDeviceId;
         /// <summary>
         /// Get or set the preferred video device id or empty string for
         /// default.
@@ -47,6 +52,6 @@ namespace ClientCore.Call
         /// <summary>
         /// Get or set the remote video element.
         /// </summary>
-        public IMediaElement RemoveVideoElement;
+        public IMediaElement RemoteVideoElement;
     }
 }

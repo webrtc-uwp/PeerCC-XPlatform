@@ -117,6 +117,89 @@ namespace GuiCore
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
+        public void SetCall()
+        {
+            // Call
+            ICallProvider callFactory =
+                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+
+            CallProvider callProvider = (CallProvider)callFactory;
+
+            CallConfiguration callConfiguration = new CallConfiguration();
+            callConfiguration.IceServers = iceServers;
+            callConfiguration.PreferredInputAudioDeviceId = GetPreferredInputAudioDeviceId();
+            callConfiguration.PreferredAudioOutputDeviceId = GetPreferredOutputAudioDeviceId();
+            callConfiguration.PreferredVideoDeviceId = null;
+            callConfiguration.PreferredFrameRate = null;
+
+            callConfiguration.LocalVideoElement = null;
+            callConfiguration.PreferredAudioCodecId = GetPreferredAudioCodecId();
+            callConfiguration.PreferredVideoFormatId = null;
+
+            callConfiguration.PreferredVideoCodecId = null;
+
+            callConfiguration.LocalVideoElement = null;
+            callConfiguration.RemoteVideoElement = null;
+
+            callProvider.PlaceCallAsync(callConfiguration);
+
+            Call = (Call)callProvider.GetCall();
+
+            Call.OnFrameRateChanged += (x, y) => { };
+            Call.OnResolutionChanged += (x, y) => { };
+
+            //Call.HangupAsync();
+        }
+        private List<IceServer> iceServers = new List<IceServer>();
+        public void GetIceServers(List<IceServer> iceServersList)
+        {
+            iceServers = iceServersList;
+        }
+
+        private string GetPreferredOutputAudioDeviceId()
+        {
+            string selectedSpeakerName = (string)localSettings.Values["SelectedSpeakerName"];
+            string preferredOutputAudioDeviceId = string.Empty;
+
+            for (int i = 0; i < Devices.Instance.AudioRendersList.Count; i++)
+            {
+                if (selectedSpeakerName == Devices.Instance.AudioRendersList[i].Name)
+                    preferredOutputAudioDeviceId = Devices.Instance.AudioRendersList[i].Id;
+            }
+
+            return preferredOutputAudioDeviceId;
+        }
+
+        private string GetPreferredInputAudioDeviceId()
+        {
+            string selectedMicrophoneName = (string)localSettings.Values["SelectedMicrophoneName"];
+            string preferredInputAudioDeviceId = string.Empty;
+
+            for (int i = 0; i < Devices.Instance.AudioCapturersList.Count; i++)
+            {
+                if (selectedMicrophoneName == Devices.Instance.AudioCapturersList[i].Name)
+                    preferredInputAudioDeviceId = Devices.Instance.AudioCapturersList[i].Id;
+            }
+
+            return preferredInputAudioDeviceId;
+        }
+
+        private string GetPreferredAudioCodecId()
+        {
+            string selectedAudioCodecName = (string)localSettings.Values["SelectedAudioCodecName"];
+            string preferredAudioCodecId = string.Empty;
+
+            //for (int i = 0; i < DefaultSettings.GetAudioCodecs.Count; i++)
+            //{
+
+
+            //    if (selectedAudioCodecName == DefaultSettings.GetAudioCodecs[i].Name)
+            //        preferredAudioCodecId = DefaultSettings.GetAudioCodecs[i].Id;
+            //}
+
+            return preferredAudioCodecId;
+        }
+
         public void AddIceServers(List<IceServer> iceServersList)
         {
             List<string> urlsList = new List<string>();
@@ -758,22 +841,6 @@ namespace GuiCore
 
             //Media.GetCodecsAsync(MediaKind.Audio);
             //Media.GetMediaDevicesAsync(MediaKind.Audio);
-        }
-
-        public void SetCall()
-        {
-            // Call
-            ICallProvider callFactory =
-                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
-
-            CallProvider callProvider = (CallProvider)callFactory;
-
-            Call = (Call)callProvider.GetCall();
-
-            Call.OnFrameRateChanged += (x, y) => { };
-            Call.OnResolutionChanged += (x, y) => { };
-
-            //Call.HangupAsync();
         }
     }
 }
