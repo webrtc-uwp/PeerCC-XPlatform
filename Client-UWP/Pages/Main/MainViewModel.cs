@@ -2,6 +2,7 @@
 using GuiCore;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 
@@ -40,7 +41,15 @@ namespace Client_UWP
                 Debug.WriteLine($"Application version: {AppVersion}");
 
                 Initialization.Instance.InstallFactories();
-                Devices.Instance.Initialize();
+
+                Task.Run(async() => 
+                {
+                    await Devices.Instance.Initialize();
+
+                    GuiLogic.Instance.SetCall();
+                });
+
+                
 
                 RunOnUiThread(() => OnInitialized?.Invoke());
             }

@@ -42,41 +42,38 @@ namespace GuiCore
 
         public List<CaptureCapability> CaptureCapabilityList = new List<CaptureCapability>();
 
-        public void Initialize()
+        public async Task Initialize()
         {
-            Task.Run(async () => 
+            IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
+            DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioCaptureSelector());
+            DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioRenderSelector());
+
+            foreach (IVideoDeviceInfo videoDevice in videoDevices)
             {
-                IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
-                DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioCaptureSelector());
-                DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioRenderSelector());
-
-                foreach (IVideoDeviceInfo videoDevice in videoDevices)
+                VideoDevicesList.Add(new Device
                 {
-                    VideoDevicesList.Add(new Device
-                    {
-                        Id = videoDevice.Info.Id,
-                        Name = videoDevice.Info.Name
-                    });
-                }
+                    Id = videoDevice.Info.Id,
+                    Name = videoDevice.Info.Name
+                });
+            }
 
-                foreach (var audioCapturer in audioCapturers)
+            foreach (var audioCapturer in audioCapturers)
+            {
+                AudioCapturersList.Add(new Device
                 {
-                    AudioCapturersList.Add(new Device
-                    {
-                        Id = audioCapturer.Id,
-                        Name = audioCapturer.Name
-                    });
-                }
+                    Id = audioCapturer.Id,
+                    Name = audioCapturer.Name
+                });
+            }
 
-                foreach (var audioRender in audioRenders)
+            foreach (var audioRender in audioRenders)
+            {
+                AudioRendersList.Add(new Device
                 {
-                    AudioRendersList.Add(new Device
-                    {
-                        Id = audioRender.Id,
-                        Name = audioRender.Name
-                    });
-                }
-            });
+                    Id = audioRender.Id,
+                    Name = audioRender.Name
+                });
+            }
 
             string cameraId = string.Empty;
             foreach (var videoDevice in Instance.VideoDevicesList)

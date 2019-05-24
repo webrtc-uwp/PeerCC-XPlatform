@@ -129,7 +129,7 @@ namespace GuiCore
             callConfiguration.IceServers = iceServers;
             callConfiguration.PreferredInputAudioDeviceId = GetPreferredInputAudioDeviceId();
             callConfiguration.PreferredAudioOutputDeviceId = GetPreferredOutputAudioDeviceId();
-            callConfiguration.PreferredVideoDeviceId = null;
+            callConfiguration.PreferredVideoDeviceId = GetPreferredVideoDeviceId();
             callConfiguration.PreferredFrameRate = null;
 
             callConfiguration.LocalVideoElement = null;
@@ -154,6 +154,20 @@ namespace GuiCore
         public void GetIceServers(List<IceServer> iceServersList)
         {
             iceServers = iceServersList;
+        }
+
+        private string GetPreferredVideoDeviceId()
+        {
+            string selectedCameraName = (string)localSettings.Values["SelectedCameraName"];
+            string preferredVideoDeviceId = string.Empty;
+
+            for (int i = 0; i < Devices.Instance.VideoDevicesList.Count; i++)
+            {
+                if (selectedCameraName == Devices.Instance.VideoDevicesList[i].Name)
+                    preferredVideoDeviceId = Devices.Instance.VideoDevicesList[i].Id;
+            }
+
+            return preferredVideoDeviceId;
         }
 
         private string GetPreferredOutputAudioDeviceId()
