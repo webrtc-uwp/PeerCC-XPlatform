@@ -131,16 +131,11 @@ namespace GuiCore
             callConfiguration.PreferredAudioOutputDeviceId = GetPreferredOutputAudioDeviceId();
             callConfiguration.PreferredVideoDeviceId = GetPreferredVideoDeviceId();
 
-            string frameRateStr = (string)localSettings.Values["SelectedFrameRate"];
-            string preferredFrameRate = frameRateStr.Substring(0, frameRateStr.Length - 3);
-
-            callConfiguration.PreferredFrameRate = int.Parse(preferredFrameRate); 
-
-            callConfiguration.LocalVideoElement = null;
-            callConfiguration.PreferredAudioCodecId = GetPreferredAudioCodecId();
+            callConfiguration.PreferredFrameRate = GetPreferredFrameRate();
             callConfiguration.PreferredVideoFormatId = null;
 
-            callConfiguration.PreferredVideoCodecId = null;
+            callConfiguration.PreferredAudioCodecId = GetPreferredAudioCodecId();
+            callConfiguration.PreferredVideoCodecId = GetPreferredVideoCodecId();
 
             callConfiguration.LocalVideoElement = null;
             callConfiguration.RemoteVideoElement = null;
@@ -158,6 +153,14 @@ namespace GuiCore
         public void GetIceServers(List<IceServer> iceServersList)
         {
             iceServers = iceServersList;
+        }
+
+        private int? GetPreferredFrameRate()
+        {
+            string selectedFrameRate = (string)localSettings.Values["SelectedFrameRate"];
+            string preferredFrameRate = selectedFrameRate.Substring(0, selectedFrameRate.Length - 3);
+
+            return int.Parse(preferredFrameRate);
         }
 
         private string GetPreferredVideoDeviceId()
@@ -200,6 +203,18 @@ namespace GuiCore
             }
 
             return preferredInputAudioDeviceId;
+        }
+
+        private string GetPreferredVideoCodecId()
+        {
+            string selectedVideoCodecName = (string)localSettings.Values["SelectedVideoCodecName"];
+            string preferredVideoCodecId = string.Empty;
+
+            // TODO: get video codecs list
+            // from RTCRtpCapabilities getCapabilities(WebRtcFactory factory, string kind);
+            // set preferredVideoCodecId
+
+            return preferredVideoCodecId;
         }
 
         private string GetPreferredAudioCodecId()
