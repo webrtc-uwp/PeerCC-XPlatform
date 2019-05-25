@@ -130,7 +130,11 @@ namespace GuiCore
             callConfiguration.PreferredInputAudioDeviceId = GetPreferredInputAudioDeviceId();
             callConfiguration.PreferredAudioOutputDeviceId = GetPreferredOutputAudioDeviceId();
             callConfiguration.PreferredVideoDeviceId = GetPreferredVideoDeviceId();
-            callConfiguration.PreferredFrameRate = null;
+
+            string frameRateStr = (string)localSettings.Values["SelectedFrameRate"];
+            string preferredFrameRate = frameRateStr.Substring(0, frameRateStr.Length - 3);
+
+            callConfiguration.PreferredFrameRate = int.Parse(preferredFrameRate); 
 
             callConfiguration.LocalVideoElement = null;
             callConfiguration.PreferredAudioCodecId = GetPreferredAudioCodecId();
