@@ -81,7 +81,7 @@ namespace GuiCore
                     cameraId = videoDevice.Id;
 
             var videoCaptureCapabilities = Instance.GetVideoCaptureCapabilities(cameraId);
-            videoCaptureCapabilities.AsTask().ContinueWith(caps =>
+            await videoCaptureCapabilities.AsTask().ContinueWith(caps =>
             {
                 IList<CaptureCapability> fpsList = caps.Result;
 

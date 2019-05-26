@@ -70,7 +70,7 @@ namespace GuiCore
         public readonly HttpSignaler HttpSignaler;
         private readonly List<RTCIceServer> _iceServers;
 
-        WebRtcFactory _factory;
+        private WebRtcFactory _factory;
 
         // Public events to notify about connection status
         public event Action OnPeerConnectionCreated;
@@ -209,7 +209,7 @@ namespace GuiCore
         {
             string selectedVideoCodecName = (string)localSettings.Values["SelectedVideoCodecName"];
             string preferredVideoCodecId = string.Empty;
-
+            
             // TODO: get video codecs list
             // from RTCRtpCapabilities getCapabilities(WebRtcFactory factory, string kind);
             // set preferredVideoCodecId
@@ -285,7 +285,21 @@ namespace GuiCore
                 IceTransportPolicy = RTCIceTransportPolicy.All,
                 IceServers = _iceServers
             };
+
+            GetCodecs();
+
             return config;
+        }
+
+        public List<string> videoCodecsList = new List<string>();
+        public void GetCodecs()
+        {
+            RTCRtpCapabilities videoCapabilities = RTCRtpReceiver.GetCapabilities(_factory, "video");
+            IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
+            foreach (var item in videoCodecs)
+            {
+                videoCodecsList.Add(item.Name);
+            }
         }
 
         /// <summary>
