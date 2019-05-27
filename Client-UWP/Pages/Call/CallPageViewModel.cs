@@ -1,5 +1,4 @@
-﻿using Client_UWP.MVVM;
-using GuiCore;
+﻿using GuiCore;
 using Windows.UI.Xaml.Controls;
 
 namespace Client_UWP.Pages.Call

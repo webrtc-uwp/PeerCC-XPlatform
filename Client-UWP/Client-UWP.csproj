@@ -96,8 +96,8 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModel.cs" />
-    <Compile Include="MVVM\BindableBase.cs" />
-    <Compile Include="MVVM\DispatcherBindableBase.cs" />
+    <Compile Include="Pages\BindableBase.cs" />
+    <Compile Include="Pages\DispatcherBindableBase.cs" />
     <Compile Include="Pages\Call\CallPage.xaml.cs">
       <DependentUpon>CallPage.xaml</DependentUpon>
     </Compile>
@@ -130,7 +130,6 @@
     <Compile Include="Pages\SettingsDevices\SettingsDevicesPage.xaml.cs">
       <DependentUpon>SettingsDevicesPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\ViewModelBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

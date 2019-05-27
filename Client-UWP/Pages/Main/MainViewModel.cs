@@ -1,4 +1,4 @@
-﻿using Client_UWP.MVVM;
+﻿using Client_UWP.Pages;
 using GuiCore;
 using System;
 using System.Diagnostics;

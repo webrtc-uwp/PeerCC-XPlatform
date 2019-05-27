@@ -2,7 +2,7 @@
 using Windows.Foundation;
 using Windows.UI.Core;
 
-namespace Client_UWP.MVVM
+namespace Client_UWP.Pages
 {
     /// <summary>
     /// Provides ability to run the UI updates in UI thread.
@@ -20,13 +20,6 @@ namespace Client_UWP.MVVM
         {
             _uiDispatcher = uiDispatcher;
         }
-
-        /// <summary>
-        /// Overrides the BindableBase's OnPropertyChanged method.
-        /// </summary>
-        /// <param name="propertyName">The name of the changed property.</param>
-        protected override void OnPropertyChanged(string propertyName) => 
-            RunOnUiThread(() => base.OnPropertyChanged(propertyName));
 
         /// <summary>
         /// Schedules the provided callback on the UI thread from a worker thread, and 

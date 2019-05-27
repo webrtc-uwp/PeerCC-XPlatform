@@ -294,10 +294,10 @@ namespace GuiCore
         public List<string> videoCodecsList = new List<string>();
         public void GetCodecs()
         {
-            RTCRtpCapabilities audioCapabilities = RTCRtpSender.GetCapabilities(_factory, "audio");
-            IReadOnlyList<RTCRtpCodecCapability> audioCodecs = audioCapabilities.Codecs;
-            foreach (var item in audioCodecs)
-                Debug.WriteLine("!!!audio codecs: " + item.Name);
+            //RTCRtpCapabilities audioCapabilities = RTCRtpSender.GetCapabilities(_factory, "audio");
+            //IReadOnlyList<RTCRtpCodecCapability> audioCodecs = audioCapabilities.Codecs;
+            //foreach (var item in audioCodecs)
+            //    Debug.WriteLine("!!!audio codecs: " + item.Name);
 
             RTCRtpCapabilities videoCapabilities = RTCRtpSender.GetCapabilities(_factory, "video");
             IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
