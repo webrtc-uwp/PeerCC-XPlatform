@@ -60,25 +60,23 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetVideoCodecsList()
         {
-            _videoCodecsList = GuiLogic.Instance.videoCodecsList;
-
-            //foreach (var videoCodec in DefaultSettings.GetVideoCodecs)
-            //    _videoCodecsList.Add(videoCodec.Name);
+            foreach (var videoCodec in DefaultSettings.GetVideoCodecs)
+                _videoCodecsList.Add(videoCodec.Name);
 
             cbVideoCodecs.ItemsSource = _videoCodecsList;
 
-            //cbVideoCodecs.SelectionChanged += CbVideoCodecs_SelectionChanged;
+            cbVideoCodecs.SelectionChanged += CbVideoCodecs_SelectionChanged;
 
-            //ItemCollection videoCodecs = cbVideoCodecs.Items;
+            ItemCollection videoCodecs = cbVideoCodecs.Items;
 
-            //if (_localSettings.GetSelectedVideoCodecName != null)
-            //{
-            //    for (int i = 0; i < videoCodecs.Count; i++)
-            //        if (videoCodecs[i].ToString() == (string)_localSettings.GetSelectedVideoCodecName)
-            //            cbVideoCodecs.SelectedIndex = i;
-            //}
-            //else
-            //    cbVideoCodecs.SelectedIndex = 0;
+            if (_localSettings.GetSelectedVideoCodecName != null)
+            {
+                for (int i = 0; i < videoCodecs.Count; i++)
+                    if (videoCodecs[i].ToString() == (string)_localSettings.GetSelectedVideoCodecName)
+                        cbVideoCodecs.SelectedIndex = i;
+            }
+            else
+                cbVideoCodecs.SelectedIndex = 0;
         }
 
         private void SetAudioCodecsList()

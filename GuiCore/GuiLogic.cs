@@ -286,7 +286,7 @@ namespace GuiCore
                 IceServers = _iceServers
             };
 
-            GetCodecs();
+            //GetCodecs();
 
             return config;
         }
