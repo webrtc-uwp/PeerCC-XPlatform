@@ -286,7 +286,7 @@ namespace GuiCore
                 IceServers = _iceServers
             };
 
-            //GetCodecs();
+            GetCodecs();
 
             return config;
         }
@@ -294,12 +294,15 @@ namespace GuiCore
         public List<string> videoCodecsList = new List<string>();
         public void GetCodecs()
         {
-            RTCRtpCapabilities videoCapabilities = RTCRtpReceiver.GetCapabilities(_factory, "video");
+            RTCRtpCapabilities audioCapabilities = RTCRtpSender.GetCapabilities(_factory, "audio");
+            IReadOnlyList<RTCRtpCodecCapability> audioCodecs = audioCapabilities.Codecs;
+            foreach (var item in audioCodecs)
+                Debug.WriteLine("!!!audio codecs: " + item.Name);
+
+            RTCRtpCapabilities videoCapabilities = RTCRtpSender.GetCapabilities(_factory, "video");
             IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
             foreach (var item in videoCodecs)
-            {
-                videoCodecsList.Add(item.Name);
-            }
+                Debug.WriteLine("!!!video Codecs: " + item.Name);
         }
 
         /// <summary>
@@ -312,7 +315,7 @@ namespace GuiCore
 
             Debug.WriteLine("Creating peer connection.");
             PeerConnection = new RTCPeerConnection(ConfigureRtc());
-
+            
             OnPeerConnectionCreated?.Invoke();
 
             if (PeerConnection == null) 
