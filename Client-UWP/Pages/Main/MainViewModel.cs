@@ -1,12 +1,11 @@
-﻿using Client_UWP.Pages;
-using GuiCore;
+﻿using GuiCore;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 
-namespace Client_UWP
+namespace Client_UWP.Pages.Main
 {
     public delegate void InitializedDelegate();
     internal class MainViewModel : DispatcherBindableBase

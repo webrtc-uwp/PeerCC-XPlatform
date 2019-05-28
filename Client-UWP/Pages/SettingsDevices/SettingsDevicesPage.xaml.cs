@@ -1,4 +1,5 @@
-﻿using Client_UWP.Pages.SettingsAccount;
+﻿using Client_UWP.Pages.Main;
+using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using GuiCore;

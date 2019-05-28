@@ -1,4 +1,5 @@
 ﻿using Client_UWP.Models;
+using Client_UWP.Pages.Main;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using Client_UWP.Pages.SettingsDevices;

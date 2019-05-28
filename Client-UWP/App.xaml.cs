@@ -1,21 +1,12 @@
-﻿using GuiCore;
+﻿using Client_UWP.Pages.Main;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace Client_UWP
@@ -25,7 +16,7 @@ namespace Client_UWP
     /// </summary>
     sealed partial class App : Application
     {
-        MainViewModel mainViewModel;
+        Pages.Main.MainViewModel mainViewModel;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -77,7 +68,7 @@ namespace Client_UWP
                 //    rootFrame.Navigate(typeof(MainPage), e.Arguments);
                 //}
 
-                mainViewModel = new MainViewModel(CoreApplication.MainView.CoreWindow.Dispatcher);
+                mainViewModel = new Pages.Main.MainViewModel(CoreApplication.MainView.CoreWindow.Dispatcher);
                 mainViewModel.OnInitialized += OnMainViewModelInitialized;
 
                 // Ensure the current window is active
