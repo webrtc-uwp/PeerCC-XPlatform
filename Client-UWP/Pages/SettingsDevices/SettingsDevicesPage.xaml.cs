@@ -61,9 +61,9 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetVideoCodecsList()
         {
-            _videoCodecsList = GuiLogic.Instance.videoCodecsList;
+            _videoCodecsList = GuiLogic.Instance.VideoCodecsList;
 
-            if (_videoCodecsList != null)
+            if (_videoCodecsList.Count != 0)
                 _localSettings.SerializeVideoCodecsNameList(_videoCodecsList);
 
             cbVideoCodecs.ItemsSource = _localSettings.DeserializeVideoCodecsNameList();

@@ -291,7 +291,7 @@ namespace GuiCore
             return config;
         }
 
-        public List<string> videoCodecsList = new List<string>();
+        public List<string> VideoCodecsList = new List<string>();
         public void GetCodecs()
         {
             //RTCRtpCapabilities audioCapabilities = RTCRtpSender.GetCapabilities(_factory, "audio");
@@ -302,8 +302,8 @@ namespace GuiCore
             RTCRtpCapabilities videoCapabilities = RTCRtpSender.GetCapabilities(_factory, "video");
             IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
             foreach (var item in videoCodecs)
-                if (!videoCodecsList.Contains(item.Name))
-                    videoCodecsList.Add(item.Name);
+                if (!VideoCodecsList.Contains(item.Name))
+                    VideoCodecsList.Add(item.Name);
 
             localSettings.Values["VideoCodecsNameList"] = null;
         }
