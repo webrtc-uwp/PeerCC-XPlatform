@@ -9,12 +9,5 @@ namespace Client_UWP.Models
         public string Credential { get; set; }
 
         public IceServerModel() {}
-
-        public IceServerModel(List<string> urls, string username, string credential)
-        {
-            Urls = urls;
-            Username = username;
-            Credential = credential;
-        }
     }
 }
