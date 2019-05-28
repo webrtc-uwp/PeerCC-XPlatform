@@ -108,19 +108,15 @@ namespace Client_UWP.Pages.SettingsConnection
 
                 Frame.Navigate(typeof(SettingsConnectionPage));
             };
-        }
 
-        private void TextBox_KeyDown(object sender, KeyRoutedEventArgs e)
-        {
-            if (e.Key == Windows.System.VirtualKey.Enter)
+            btnAddUrl.Click += (sender, args) =>
             {
-                e.Handled = true;
                 listIceServers.Items.Add(tbServerUrl.Text);
 
                 ListUrls.Add(tbServerUrl.Text);
 
                 tbServerUrl.Text = "";
-            }
+            };
         }
     }
 }
