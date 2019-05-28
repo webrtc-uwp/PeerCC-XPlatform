@@ -315,7 +315,7 @@ namespace GuiCore
 
             Debug.WriteLine("Creating peer connection.");
             PeerConnection = new RTCPeerConnection(ConfigureRtc());
-            
+
             OnPeerConnectionCreated?.Invoke();
 
             if (PeerConnection == null) 

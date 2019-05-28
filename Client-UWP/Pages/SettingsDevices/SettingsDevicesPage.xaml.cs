@@ -61,10 +61,15 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetVideoCodecsList()
         {
-            foreach (var videoCodec in DefaultSettings.GetVideoCodecs)
-                _videoCodecsList.Add(videoCodec.Name);
+            _videoCodecsList = GuiLogic.Instance.videoCodecsList;
 
-            cbVideoCodecs.ItemsSource = _videoCodecsList;
+            if (_videoCodecsList != null)
+            {
+                _localSettings.SerializeVideoCodecsNameList(null);
+                _localSettings.SerializeVideoCodecsNameList(_videoCodecsList);
+            }
+
+            cbVideoCodecs.ItemsSource = _localSettings.DeserializeVideoCodecsNameList();
 
             cbVideoCodecs.SelectionChanged += CbVideoCodecs_SelectionChanged;
 

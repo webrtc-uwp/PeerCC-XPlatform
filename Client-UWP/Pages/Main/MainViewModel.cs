@@ -48,8 +48,6 @@ namespace Client_UWP.Pages.Main
                     GuiLogic.Instance.SetCall();
                 });
 
-                
-
                 RunOnUiThread(() => OnInitialized?.Invoke());
             }
             else

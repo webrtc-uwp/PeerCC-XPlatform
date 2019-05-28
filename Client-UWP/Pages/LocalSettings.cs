@@ -1,5 +1,6 @@
 ﻿using Client_UWP.Models;
 using GuiCore.Utilities;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Windows.Storage;
 
@@ -28,6 +29,12 @@ namespace Client_UWP.Pages
 
         public AccountModel DeserializeSelectedAccount() =>
             XmlSerialization<AccountModel>.Deserialize((string)localSettings.Values["SelectedAccount"]);
+
+        public void SerializeVideoCodecsNameList(List<string> videoCodecsNameList) =>
+            localSettings.Values["VideoCodecsNameList"] = XmlSerialization<List<string>>.Serialize(videoCodecsNameList);
+
+        public List<string> DeserializeVideoCodecsNameList() =>
+            XmlSerialization<List<string>>.Deserialize((string)localSettings.Values["VideoCodecsNameList"]);
 
         public object GetSelectedVideoCodecName => localSettings.Values["SelectedVideoCodecName"];
         public void SetSelectedVideoCodecName(string selectedVideoCodecName) => localSettings.Values["SelectedVideoCodecName"] = selectedVideoCodecName;
