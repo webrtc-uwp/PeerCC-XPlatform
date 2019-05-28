@@ -302,7 +302,10 @@ namespace GuiCore
             RTCRtpCapabilities videoCapabilities = RTCRtpSender.GetCapabilities(_factory, "video");
             IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
             foreach (var item in videoCodecs)
-                videoCodecsList.Add(item.Name);
+                if (!videoCodecsList.Contains(item.Name))
+                    videoCodecsList.Add(item.Name);
+
+            localSettings.Values["VideoCodecsNameList"] = null;
         }
 
         /// <summary>
