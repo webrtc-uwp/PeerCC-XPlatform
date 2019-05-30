@@ -44,6 +44,7 @@ namespace Client_UWP.Pages.Main
                 Task.Run(async() => 
                 {
                     await Devices.Instance.Initialize();
+                    await Devices.Instance.GetMediaDevices();
 
                     GuiLogic.Instance.SetCall();
                 });

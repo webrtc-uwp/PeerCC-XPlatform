@@ -4,7 +4,7 @@ using ClientCore.Call;
 
 namespace WebRtcAdapter.Call
 {
-    class MediaVideoFormat : IMediaVideoFormat
+    public class MediaVideoFormat : IMediaVideoFormat
     {
         public string Id { get; private set; }
 
@@ -12,23 +12,17 @@ namespace WebRtcAdapter.Call
 
         public IList<int> FrameRates { get; private set; }
 
-        public string GetId(string id)
-        {
-            return id;
-        }
+        public void GetId(string id) => Id = id;
 
-        public Size GetDimension(int width, int height)
+        public void GetDimension(int width, int height)
         {
             Size size = new Size();
             size.Width = width;
             size.Height = height;
 
-            return size;
+            Dimension = size;
         }
 
-        public IList<int> GetFrameRates(List<int> frameRates)
-        {
-            return frameRates;
-        }
+        public void GetFrameRates(List<int> frameRates) => FrameRates = frameRates;
     }
 }

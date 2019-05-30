@@ -90,6 +90,30 @@ namespace GuiCore
             });
         }
 
+        public async Task GetMediaDevices()
+        {
+            List<WebRtcAdapter.Call.MediaDevice> videoDevicesList = new List<WebRtcAdapter.Call.MediaDevice>();
+            List<WebRtcAdapter.Call.MediaDevice> audioCapturersList = new List<WebRtcAdapter.Call.MediaDevice>();
+            List<WebRtcAdapter.Call.MediaDevice> audioRendersList = new List<WebRtcAdapter.Call.MediaDevice>();
+
+            IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
+            DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioCaptureSelector());
+            DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioRenderSelector());
+
+            foreach (IVideoDeviceInfo videoDevice in videoDevices)
+            {
+                var mediaDevice = new WebRtcAdapter.Call.MediaDevice();
+                mediaDevice.GetMediaKind(videoDevice.Info.Kind.ToString());
+                mediaDevice.GetId(videoDevice.Info.Id);
+                mediaDevice.GetDisplayName(videoDevice.Info.Name);
+
+                var videoFormatsList = await GetMediaVideoFormatList(videoDevice.Info.Id);
+
+                mediaDevice.GetVideoFormats(videoFormatsList);
+                videoDevicesList.Add(mediaDevice); 
+            }
+        }
+
         /// <summary>
         /// Gets permission from the OS to get access to a media capture device. 
         /// If prermissions are not enabled for the calling application, the OS 
@@ -136,6 +160,44 @@ namespace GuiCore
             public bool MrcEnabled { get; set; }
             public string ResolutionDescription { get; set; }
             public string FrameRateDescription { get; set; }
+        }
+
+        public IAsyncOperation<IList<WebRtcAdapter.Call.MediaVideoFormat>> GetMediaVideoFormatList(string deviceId)
+        {
+            var mediaCapture = new MediaCapture();
+            var mediaSettings = new MediaCaptureInitializationSettings();
+
+            mediaSettings.VideoDeviceId = deviceId;
+
+            Task initTask = mediaCapture.InitializeAsync(mediaSettings).AsTask();
+
+            return initTask.ContinueWith(initResult =>
+            {
+                if (initResult.Exception != null)
+                {
+                    Debug.WriteLine("Failed to initialize video device: " + initResult.Exception.Message);
+                    return null;
+                }
+                var streamProperties =
+                    mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
+
+                IList<WebRtcAdapter.Call.MediaVideoFormat> mediaVideoFormatList = new List<WebRtcAdapter.Call.MediaVideoFormat>();
+
+                foreach (VideoEncodingProperties property in streamProperties)
+                {
+                    uint frameRate = property.FrameRate.Numerator / property.FrameRate.Denominator;
+
+                    var mediaVideoFormat = new WebRtcAdapter.Call.MediaVideoFormat();
+                    //mediaVideoFormat.GetId("");
+                    mediaVideoFormat.GetDimension((int)property.Width, (int)property.Height);
+
+                    Debug.WriteLine($"W:{property.Width} H:{property.Height} FR:{frameRate}");
+
+                    //mediaVideoFormat.GetFrameRates(null);
+                    mediaVideoFormatList.Add(mediaVideoFormat);
+                }
+                return mediaVideoFormatList;
+            }).AsAsyncOperation<IList<WebRtcAdapter.Call.MediaVideoFormat>>();
         }
 
         public IAsyncOperation<IList<CaptureCapability>> GetVideoCaptureCapabilities(string deviceId)

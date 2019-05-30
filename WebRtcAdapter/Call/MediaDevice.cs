@@ -13,24 +13,30 @@ namespace WebRtcAdapter.Call
 
         public IList<IMediaVideoFormat> VideoFormats { get; private set; }
 
-        public MediaKind GetMediaKind(MediaKind mediaKind)
+        public void GetMediaKind(string mediaKind)
         {
-            return mediaKind;
+            if (mediaKind.ToLower() == "audio")
+                Kind = MediaKind.Audio;
+            if (mediaKind.ToLower() == "video")
+                Kind = MediaKind.Video;
         }
 
-        public string GetId(string id)
+        public void GetId(string id)
         {
-            return id;
+            Id = id;
         }
 
-        public string GetDisplayName(string displayName)
+        public void GetDisplayName(string displayName)
         {
-            return displayName;
+            DisplayName = displayName;
         }
 
-        public IList<IMediaVideoFormat> GetVideoFormats(List<IMediaVideoFormat> mediaVideoFormatList)
+        public void GetVideoFormats(IList<MediaVideoFormat> mediaVideoFormatList)
         {
-            return mediaVideoFormatList;
+            VideoFormats = new List<IMediaVideoFormat>();
+
+            foreach (var m in mediaVideoFormatList)
+                VideoFormats.Add(m);
         }
     }
 }
