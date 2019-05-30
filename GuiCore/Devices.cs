@@ -107,9 +107,10 @@ namespace GuiCore
                 mediaDevice.GetId(videoDevice.Info.Id);
                 mediaDevice.GetDisplayName(videoDevice.Info.Name);
 
-                var videoFormatsList = await GetMediaVideoFormatList(videoDevice.Info.Id);
+                IList<WebRtcAdapter.Call.MediaVideoFormat> videoFormatsList = await GetMediaVideoFormatList(videoDevice.Info.Id);
 
                 mediaDevice.GetVideoFormats(videoFormatsList);
+
                 videoDevicesList.Add(mediaDevice); 
             }
         }
@@ -183,20 +184,43 @@ namespace GuiCore
 
                 IList<WebRtcAdapter.Call.MediaVideoFormat> mediaVideoFormatList = new List<WebRtcAdapter.Call.MediaVideoFormat>();
 
+                List<string> resolutionsList = new List<string>();
                 foreach (VideoEncodingProperties property in streamProperties)
                 {
-                    uint frameRate = property.FrameRate.Numerator / property.FrameRate.Denominator;
+                    string resolutionString = $"{property.Width}x{property.Height}";
+                    if (resolutionsList.Count == 0)
+                        resolutionsList.Add(resolutionString);
+                    if (!resolutionsList.Contains(resolutionString))
+                        resolutionsList.Add(resolutionString);
+                }
 
+                foreach (string rs in resolutionsList)
+                {
+                    var x = rs.Split("x");
+                    string width = x[0];
+                    string height = x[1];
+
+                    List<int> frameRatesList = new List<int>();
+                    foreach (VideoEncodingProperties property in streamProperties)
+                    {
+                        if (property.Width == int.Parse(width) && property.Height == int.Parse(height))
+                        {
+                            int frameRate = (int)(property.FrameRate.Numerator / property.FrameRate.Denominator);
+
+                            if (frameRatesList.Count == 0)
+                                frameRatesList.Add(frameRate);
+                            if (!frameRatesList.Contains(frameRate)) 
+                                frameRatesList.Add(frameRate);
+                        }
+                    }
                     var mediaVideoFormat = new WebRtcAdapter.Call.MediaVideoFormat();
-                    //mediaVideoFormat.GetId("");
-                    mediaVideoFormat.GetDimension((int)property.Width, (int)property.Height);
+                    mediaVideoFormat.GetId(rs);
+                    mediaVideoFormat.GetDimension(int.Parse(width), int.Parse(height));
+                    mediaVideoFormat.GetFrameRates(frameRatesList);
 
-                    Debug.WriteLine($"W:{property.Width} H:{property.Height} FR:{frameRate}");
-
-                    //mediaVideoFormat.GetFrameRates(null);
                     mediaVideoFormatList.Add(mediaVideoFormat);
                 }
-                return mediaVideoFormatList;
+                 return mediaVideoFormatList;
             }).AsAsyncOperation<IList<WebRtcAdapter.Call.MediaVideoFormat>>();
         }
 
