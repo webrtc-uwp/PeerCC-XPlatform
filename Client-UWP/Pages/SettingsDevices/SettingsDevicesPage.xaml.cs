@@ -55,7 +55,6 @@ namespace Client_UWP.Pages.SettingsDevices
             SetSpeakersList();
             SetAudioCodecsList();
             SetVideoCodecsList();
-            SetFrameRateList();
             SetResolutions();
         }
 
@@ -197,32 +196,45 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetFrameRateList()
         {
-            foreach (var captureCapability in Devices.Instance.CaptureCapabilityList)
+            foreach (var device in Devices.Instance.VideoMediaDevicesList)
             {
-                string frameRatesListItem = captureCapability.FrameRate.ToString() + " fps";
-
-                if (!_frameRatesList.Contains(frameRatesListItem))
-                    _frameRatesList.Add(frameRatesListItem);
+                if (device.DisplayName == (string)_localSettings.GetSelectedCameraName)
+                {
+                    foreach (var resolution in device.VideoFormats)
+                    {
+                        if ((resolution.Dimension.Width.ToString() + " x " + resolution.Dimension.Height.ToString()) == (string)_localSettings.GetSelectedResolutionString)
+                        {
+                            _frameRatesList.Clear();
+                            cbCaptureFrameRate.SelectedIndex = -1;
+                            foreach (var frameRate in resolution.FrameRates)
+                            {
+                                _frameRatesList.Add(frameRate.ToString());
+                            }
+                        }
+                    }
+                }
             }
-
-            cbCaptureFrameRate.ItemsSource = _frameRatesList;
 
             cbCaptureFrameRate.SelectionChanged += CbCaptureFrameRate_SelectionChanged;
 
-            ItemCollection frameRates = cbCaptureFrameRate.Items;
+            cbCaptureFrameRate.ItemsSource = _frameRatesList;
 
             if (_localSettings.GetSelectedFrameRateString != null)
             {
-                for (int i = 0; i < frameRates.Count; i++)
-                    if (frameRates[i].ToString() == (string)_localSettings.GetSelectedFrameRateString)
+                for (int i = 0; i < _frameRatesList.Count; i++)
+                    if (_frameRatesList[i].ToString() == (string)_localSettings.GetSelectedFrameRateString)
                         cbCaptureFrameRate.SelectedIndex = i;
             }
             else
-                cbCaptureFrameRate.SelectedIndex = 0;
+                cbCaptureFrameRate.SelectedIndex = -1;
         }
 
-        private void CbCaptureResolution_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+        private void CbCaptureResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
             _localSettings.SetSelectedResolutionString((string)cbCaptureResolution.SelectedValue);
+
+            SetFrameRateList();
+        }
 
         private void CbCaptureFrameRate_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
             _localSettings.SetSelectedFrameRateString((string)cbCaptureFrameRate.SelectedValue);
