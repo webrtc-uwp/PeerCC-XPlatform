@@ -105,8 +105,8 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetSpeakersList()
         {
-            foreach (var speaker in Devices.Instance.AudioRendersList)
-                _speakersList.Add(speaker.Name);
+            foreach (var speaker in Devices.Instance.AudioMediaDevicesRendersList)
+                _speakersList.Add(speaker.DisplayName);
 
             cbSpeakers.ItemsSource = _speakersList;
 
@@ -126,8 +126,8 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetMicrophonesList()
         {
-            foreach (var microphone in Devices.Instance.AudioCapturersList)
-                _microphonesList.Add(microphone.Name);
+            foreach (var microphone in Devices.Instance.AudioMediaDevicesCapturersList)
+                _microphonesList.Add(microphone.DisplayName);
 
             cbMicrophone.ItemsSource = _microphonesList;
 
@@ -147,8 +147,8 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetCamerasList()
         {
-            foreach (var videoDevice in Devices.Instance.VideoDevicesList)
-                _camerasList.Add(videoDevice.Name);
+            foreach (var videoDevice in Devices.Instance.VideoMediaDevicesList)
+                _camerasList.Add(videoDevice.DisplayName);
 
             cbCamera.ItemsSource = _camerasList;
 
