@@ -90,20 +90,40 @@ namespace GuiCore
             });
         }
 
+        public List<WebRtcAdapter.Call.MediaDevice> VideoMediaDevicesList = new List<WebRtcAdapter.Call.MediaDevice>();
+        public List<WebRtcAdapter.Call.MediaDevice> AudioMediaDevicesCapturersList = new List<WebRtcAdapter.Call.MediaDevice>();
+        public List<WebRtcAdapter.Call.MediaDevice> AudioMediaDevicesRendersList = new List<WebRtcAdapter.Call.MediaDevice>();
+
         public async Task GetMediaDevices()
         {
-            List<WebRtcAdapter.Call.MediaDevice> videoDevicesList = new List<WebRtcAdapter.Call.MediaDevice>();
-            List<WebRtcAdapter.Call.MediaDevice> audioCapturersList = new List<WebRtcAdapter.Call.MediaDevice>();
-            List<WebRtcAdapter.Call.MediaDevice> audioRendersList = new List<WebRtcAdapter.Call.MediaDevice>();
-
             IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
             DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioCaptureSelector());
             DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioRenderSelector());
 
+            foreach (var microphone in audioCapturers)
+            {
+                var mediaDevice = new WebRtcAdapter.Call.MediaDevice();
+                mediaDevice.GetMediaKind(microphone.Kind.ToString());
+                mediaDevice.GetId(microphone.Id);
+                mediaDevice.GetDisplayName(microphone.Name);
+
+                AudioMediaDevicesCapturersList.Add(mediaDevice);
+            }
+
+            foreach (var speaker in audioRenders)
+            {
+                var mediaDevice = new WebRtcAdapter.Call.MediaDevice();
+                mediaDevice.GetMediaKind(speaker.Kind.ToString());
+                mediaDevice.GetId(speaker.Id);
+                mediaDevice.GetDisplayName(speaker.Name);
+
+                AudioMediaDevicesRendersList.Add(mediaDevice);
+            }
+
             foreach (IVideoDeviceInfo videoDevice in videoDevices)
             {
                 var mediaDevice = new WebRtcAdapter.Call.MediaDevice();
-                mediaDevice.GetMediaKind(videoDevice.Info.Kind.ToString());
+                mediaDevice.GetMediaKind("Video");
                 mediaDevice.GetId(videoDevice.Info.Id);
                 mediaDevice.GetDisplayName(videoDevice.Info.Name);
 
@@ -111,7 +131,7 @@ namespace GuiCore
 
                 mediaDevice.GetVideoFormats(videoFormatsList);
 
-                videoDevicesList.Add(mediaDevice); 
+                VideoMediaDevicesList.Add(mediaDevice); 
             }
         }
 
