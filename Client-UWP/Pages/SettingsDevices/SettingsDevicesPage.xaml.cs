@@ -168,12 +168,15 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetResolutions()
         {
-            foreach (var captureCapability in Devices.Instance.CaptureCapabilityList)
+            foreach (var device in Devices.Instance.VideoMediaDevicesList)
             {
-                string resolutionsListItem = captureCapability.ResolutionDescription;
-
-                if (!_resolutionsList.Contains(resolutionsListItem))
-                    _resolutionsList.Add(resolutionsListItem);
+                if (device.DisplayName == (string)_localSettings.GetSelectedCameraName)
+                {
+                    foreach (var resolution in device.VideoFormats)
+                    {
+                        _resolutionsList.Add(resolution.Dimension.Width.ToString() + " x " + resolution.Dimension.Height.ToString());
+                    }
+                }
             }
 
             cbCaptureResolution.ItemsSource = _resolutionsList;
