@@ -7,6 +7,7 @@ using PeerCC.Account;
 using PeerCC.Signaling;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -291,7 +292,7 @@ namespace GuiCore
             return config;
         }
 
-        public List<string> VideoCodecsList = new List<string>();
+        public ObservableCollection<string> VideoCodecsList = new ObservableCollection<string>();
         public void GetCodecs()
         {
             //RTCRtpCapabilities audioCapabilities = RTCRtpSender.GetCapabilities(_factory, "audio");

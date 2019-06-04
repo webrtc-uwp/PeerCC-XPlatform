@@ -3,7 +3,7 @@ using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using GuiCore;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -17,13 +17,13 @@ namespace Client_UWP.Pages.SettingsDevices
     {
         private LocalSettings _localSettings = new LocalSettings();
 
-        private static List<string> _camerasList;
-        private static List<string> _microphonesList;
-        private static List<string> _speakersList;
-        private static List<string> _audioCodesList;
-        private static List<string> _videoCodecsList;
-        private static List<string> _frameRatesList;
-        private static List<string> _resolutionsList;
+        private static ObservableCollection<string> _camerasList;
+        private static ObservableCollection<string> _microphonesList;
+        private static ObservableCollection<string> _speakersList;
+        private static ObservableCollection<string> _audioCodesList;
+        private static ObservableCollection<string> _videoCodecsList;
+        private static ObservableCollection<string> _frameRatesList;
+        private static ObservableCollection<string> _resolutionsList;
 
         public SettingsDevicesPage()
         {
@@ -42,13 +42,13 @@ namespace Client_UWP.Pages.SettingsDevices
 
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
 
-            _camerasList = new List<string>();
-            _microphonesList = new List<string>();
-            _speakersList = new List<string>();
-            _audioCodesList = new List<string>();
-            _videoCodecsList = new List<string>();
-            _frameRatesList = new List<string>();
-            _resolutionsList = new List<string>();
+            _camerasList = new ObservableCollection<string>();
+            _microphonesList = new ObservableCollection<string>();
+            _speakersList = new ObservableCollection<string>();
+            _audioCodesList = new ObservableCollection<string>();
+            _videoCodecsList = new ObservableCollection<string>();
+            _frameRatesList = new ObservableCollection<string>();
+            _resolutionsList = new ObservableCollection<string>();
 
             SetCamerasList();
             SetMicrophonesList();
