@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Media.Capture;
-using Windows.Media.Devices;
 using Windows.Media.MediaProperties;
+using WebRtcAdapter.Call;
 
 namespace GuiCore
 {
@@ -32,19 +32,19 @@ namespace GuiCore
 
         private Devices() { }
 
-        public List<WebRtcAdapter.Call.MediaDevice> VideoMediaDevicesList = new List<WebRtcAdapter.Call.MediaDevice>();
-        public List<WebRtcAdapter.Call.MediaDevice> AudioMediaDevicesCapturersList = new List<WebRtcAdapter.Call.MediaDevice>();
-        public List<WebRtcAdapter.Call.MediaDevice> AudioMediaDevicesRendersList = new List<WebRtcAdapter.Call.MediaDevice>();
+        public List<MediaDevice> VideoMediaDevicesList = new List<MediaDevice>();
+        public List<MediaDevice> AudioMediaDevicesCapturersList = new List<MediaDevice>();
+        public List<MediaDevice> AudioMediaDevicesRendersList = new List<MediaDevice>();
 
         public async Task GetMediaDevices()
         {
             IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
-            DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioCaptureSelector());
-            DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioRenderSelector());
+            DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(Windows.Media.Devices.MediaDevice.GetAudioCaptureSelector());
+            DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(Windows.Media.Devices.MediaDevice.GetAudioRenderSelector());
 
             foreach (var microphone in audioCapturers)
             {
-                var mediaDevice = new WebRtcAdapter.Call.MediaDevice();
+                var mediaDevice = new MediaDevice();
                 mediaDevice.GetMediaKind(microphone.Kind.ToString());
                 mediaDevice.GetId(microphone.Id);
                 mediaDevice.GetDisplayName(microphone.Name);
@@ -54,7 +54,7 @@ namespace GuiCore
 
             foreach (var speaker in audioRenders)
             {
-                var mediaDevice = new WebRtcAdapter.Call.MediaDevice();
+                var mediaDevice = new MediaDevice();
                 mediaDevice.GetMediaKind(speaker.Kind.ToString());
                 mediaDevice.GetId(speaker.Id);
                 mediaDevice.GetDisplayName(speaker.Name);
@@ -64,12 +64,12 @@ namespace GuiCore
 
             foreach (IVideoDeviceInfo videoDevice in videoDevices)
             {
-                var mediaDevice = new WebRtcAdapter.Call.MediaDevice();
+                var mediaDevice = new MediaDevice();
                 mediaDevice.GetMediaKind("Video");
                 mediaDevice.GetId(videoDevice.Info.Id);
                 mediaDevice.GetDisplayName(videoDevice.Info.Name);
 
-                IList<WebRtcAdapter.Call.MediaVideoFormat> videoFormatsList = await GetMediaVideoFormatList(videoDevice.Info.Id);
+                IList<MediaVideoFormat> videoFormatsList = await GetMediaVideoFormatList(videoDevice.Info.Id);
 
                 mediaDevice.GetVideoFormats(videoFormatsList);
 
@@ -110,7 +110,7 @@ namespace GuiCore
             }).AsAsyncOperation();
         }
 
-        public IAsyncOperation<IList<WebRtcAdapter.Call.MediaVideoFormat>> GetMediaVideoFormatList(string deviceId)
+        public IAsyncOperation<IList<MediaVideoFormat>> GetMediaVideoFormatList(string deviceId)
         {
             var mediaCapture = new MediaCapture();
             var mediaSettings = new MediaCaptureInitializationSettings();
@@ -129,7 +129,7 @@ namespace GuiCore
                 var streamProperties =
                     mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
 
-                IList<WebRtcAdapter.Call.MediaVideoFormat> mediaVideoFormatList = new List<WebRtcAdapter.Call.MediaVideoFormat>();
+                IList<MediaVideoFormat> mediaVideoFormatList = new List<MediaVideoFormat>();
 
                 List<string> resolutionsList = new List<string>();
                 foreach (VideoEncodingProperties property in streamProperties)
@@ -160,7 +160,7 @@ namespace GuiCore
                                 frameRatesList.Add(frameRate);
                         }
                     }
-                    var mediaVideoFormat = new WebRtcAdapter.Call.MediaVideoFormat();
+                    var mediaVideoFormat = new MediaVideoFormat();
                     mediaVideoFormat.GetId(deviceId + resolution);
                     mediaVideoFormat.GetDimension(int.Parse(width), int.Parse(height));
                     mediaVideoFormat.GetFrameRates(frameRatesList);
@@ -168,7 +168,7 @@ namespace GuiCore
                     mediaVideoFormatList.Add(mediaVideoFormat);
                 }
                  return mediaVideoFormatList;
-            }).AsAsyncOperation<IList<WebRtcAdapter.Call.MediaVideoFormat>>();
+            }).AsAsyncOperation<IList<MediaVideoFormat>>();
         }
     }
 }
