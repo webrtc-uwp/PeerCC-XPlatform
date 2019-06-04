@@ -68,16 +68,19 @@ namespace Client_UWP.Pages.SettingsDevices
 
             cbVideoCodecs.SelectionChanged += CbVideoCodecs_SelectionChanged;
 
-            cbVideoCodecs.ItemsSource = _videoCodecsList;
-
-            if (_localSettings.GetSelectedVideoCodecName != null)
+            if (_videoCodecsList != null)
             {
-                for (int i = 0; i < _videoCodecsList.Count; i++)
-                    if (_videoCodecsList[i] == (string)_localSettings.GetSelectedVideoCodecName)
-                        cbVideoCodecs.SelectedIndex = i;
+                cbVideoCodecs.ItemsSource = _videoCodecsList;
+
+                if (_localSettings.GetSelectedVideoCodecName != null)
+                {
+                    for (int i = 0; i < _videoCodecsList.Count; i++)
+                        if (_videoCodecsList[i] == (string)_localSettings.GetSelectedVideoCodecName)
+                            cbVideoCodecs.SelectedIndex = i;
+                }
+                else
+                    cbVideoCodecs.SelectedIndex = -1;
             }
-            else
-                cbVideoCodecs.SelectedIndex = -1;
         }
 
         private void SetAudioCodecsList()

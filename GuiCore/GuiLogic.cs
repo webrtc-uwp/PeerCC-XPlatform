@@ -169,10 +169,10 @@ namespace GuiCore
             string selectedCameraName = (string)localSettings.Values["SelectedCameraName"];
             string preferredVideoDeviceId = string.Empty;
 
-            for (int i = 0; i < Devices.Instance.VideoDevicesList.Count; i++)
+            for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
             {
-                if (selectedCameraName == Devices.Instance.VideoDevicesList[i].Name)
-                    preferredVideoDeviceId = Devices.Instance.VideoDevicesList[i].Id;
+                if (selectedCameraName == Devices.Instance.VideoMediaDevicesList[i].DisplayName)
+                    preferredVideoDeviceId = Devices.Instance.VideoMediaDevicesList[i].Id;
             }
 
             return preferredVideoDeviceId;
@@ -183,10 +183,10 @@ namespace GuiCore
             string selectedSpeakerName = (string)localSettings.Values["SelectedSpeakerName"];
             string preferredOutputAudioDeviceId = string.Empty;
 
-            for (int i = 0; i < Devices.Instance.AudioRendersList.Count; i++)
+            for (int i = 0; i < Devices.Instance.AudioMediaDevicesRendersList.Count; i++)
             {
-                if (selectedSpeakerName == Devices.Instance.AudioRendersList[i].Name)
-                    preferredOutputAudioDeviceId = Devices.Instance.AudioRendersList[i].Id;
+                if (selectedSpeakerName == Devices.Instance.AudioMediaDevicesRendersList[i].DisplayName)
+                    preferredOutputAudioDeviceId = Devices.Instance.AudioMediaDevicesRendersList[i].Id;
             }
 
             return preferredOutputAudioDeviceId;
@@ -197,10 +197,10 @@ namespace GuiCore
             string selectedMicrophoneName = (string)localSettings.Values["SelectedMicrophoneName"];
             string preferredInputAudioDeviceId = string.Empty;
 
-            for (int i = 0; i < Devices.Instance.AudioCapturersList.Count; i++)
+            for (int i = 0; i < Devices.Instance.AudioMediaDevicesCapturersList.Count; i++)
             {
-                if (selectedMicrophoneName == Devices.Instance.AudioCapturersList[i].Name)
-                    preferredInputAudioDeviceId = Devices.Instance.AudioCapturersList[i].Id;
+                if (selectedMicrophoneName == Devices.Instance.AudioMediaDevicesCapturersList[i].DisplayName)
+                    preferredInputAudioDeviceId = Devices.Instance.AudioMediaDevicesCapturersList[i].Id;
             }
 
             return preferredInputAudioDeviceId;
@@ -369,15 +369,15 @@ namespace GuiCore
 
             IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
 
-            Devices.Device _selectedVideoDevice = Devices.Instance.VideoDevicesList[0];
+            MediaDevice _selectedVideoDevice = Devices.Instance.VideoMediaDevicesList[0];
 
-            for (int i = 0; i < Devices.Instance.VideoDevicesList.Count; i++)
-                if (Devices.Instance.VideoDevicesList[i].Name == localSettings.Values["SelectedCameraName"]?.ToString())
-                    _selectedVideoDevice = Devices.Instance.VideoDevicesList[i];
+            for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
+                if (Devices.Instance.VideoMediaDevicesList[i].DisplayName == localSettings.Values["SelectedCameraName"]?.ToString())
+                    _selectedVideoDevice = Devices.Instance.VideoMediaDevicesList[i];
 
             IMediaConstraints mediaConstraints = new MediaConstraints(mandatoryConstraints, optionalConstraints);
 
-            var videoCapturer = VideoCapturer.Create(_selectedVideoDevice.Name, _selectedVideoDevice.Id, false);
+            var videoCapturer = VideoCapturer.Create(_selectedVideoDevice.DisplayName, _selectedVideoDevice.Id, false);
 
             var videoOptions = new VideoOptions();
             videoOptions.Factory = _factory;

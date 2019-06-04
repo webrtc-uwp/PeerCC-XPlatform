@@ -8,7 +8,6 @@ using Windows.Foundation;
 using Windows.Media.Capture;
 using Windows.Media.Devices;
 using Windows.Media.MediaProperties;
-using Windows.Storage;
 
 namespace GuiCore
 {
@@ -31,64 +30,7 @@ namespace GuiCore
             }
         }
 
-        public ApplicationDataContainer localSettings =
-            ApplicationData.Current.LocalSettings;
-
         private Devices() { }
-
-        public List<Device> VideoDevicesList = new List<Device>();
-        public List<Device> AudioCapturersList = new List<Device>();
-        public List<Device> AudioRendersList = new List<Device>();
-
-        public List<CaptureCapability> CaptureCapabilityList = new List<CaptureCapability>();
-
-        public async Task Initialize()
-        {
-            IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
-            DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioCaptureSelector());
-            DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(MediaDevice.GetAudioRenderSelector());
-
-            foreach (IVideoDeviceInfo videoDevice in videoDevices)
-            {
-                VideoDevicesList.Add(new Device
-                {
-                    Id = videoDevice.Info.Id,
-                    Name = videoDevice.Info.Name
-                });
-            }
-
-            foreach (var audioCapturer in audioCapturers)
-            {
-                AudioCapturersList.Add(new Device
-                {
-                    Id = audioCapturer.Id,
-                    Name = audioCapturer.Name
-                });
-            }
-
-            foreach (var audioRender in audioRenders)
-            {
-                AudioRendersList.Add(new Device
-                {
-                    Id = audioRender.Id,
-                    Name = audioRender.Name
-                });
-            }
-
-            string cameraId = string.Empty;
-            foreach (var videoDevice in Instance.VideoDevicesList)
-                if (videoDevice.Name == (string)localSettings.Values["SelectedCameraName"])
-                    cameraId = videoDevice.Id;
-
-            var videoCaptureCapabilities = Instance.GetVideoCaptureCapabilities(cameraId);
-            await videoCaptureCapabilities.AsTask().ContinueWith(caps =>
-            {
-                IList<CaptureCapability> fpsList = caps.Result;
-
-                foreach (var fps in fpsList)
-                    CaptureCapabilityList.Add(fps);
-            });
-        }
 
         public List<WebRtcAdapter.Call.MediaDevice> VideoMediaDevicesList = new List<WebRtcAdapter.Call.MediaDevice>();
         public List<WebRtcAdapter.Call.MediaDevice> AudioMediaDevicesCapturersList = new List<WebRtcAdapter.Call.MediaDevice>();
@@ -168,21 +110,6 @@ namespace GuiCore
             }).AsAsyncOperation();
         }
 
-        /// <summary>
-        /// Video capture details (frame rate, resolution)
-        /// </summary>
-        public CaptureCapability VideoCaptureProfile;
-
-        public class CaptureCapability
-        {
-            public uint Width { get; set; }
-            public uint Height { get; set; }
-            public uint FrameRate { get; set; }
-            public bool MrcEnabled { get; set; }
-            public string ResolutionDescription { get; set; }
-            public string FrameRateDescription { get; set; }
-        }
-
         public IAsyncOperation<IList<WebRtcAdapter.Call.MediaVideoFormat>> GetMediaVideoFormatList(string deviceId)
         {
             var mediaCapture = new MediaCapture();
@@ -242,51 +169,6 @@ namespace GuiCore
                 }
                  return mediaVideoFormatList;
             }).AsAsyncOperation<IList<WebRtcAdapter.Call.MediaVideoFormat>>();
-        }
-
-        public IAsyncOperation<IList<CaptureCapability>> GetVideoCaptureCapabilities(string deviceId)
-        {
-            var mediaCapture = new MediaCapture();
-            var mediaSettings = new MediaCaptureInitializationSettings();
-
-            mediaSettings.VideoDeviceId = deviceId;
-
-            Task initTask = mediaCapture.InitializeAsync(mediaSettings).AsTask();
-
-            return initTask.ContinueWith(initResult =>
-            {
-                if (initResult.Exception != null)
-                {
-                    Debug.WriteLine("Failed to initialize video device: " + initResult.Exception.Message);
-                    return null;
-                }
-                var streamProperties =
-                    mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
-
-                IList<CaptureCapability> capabilityList = new List<CaptureCapability>();
-
-                foreach (VideoEncodingProperties property in streamProperties)
-                {
-                    uint frameRate = property.FrameRate.Numerator / property.FrameRate.Denominator;
-
-                    capabilityList.Add(new CaptureCapability
-                    {
-                        Width = property.Width,
-                        Height = property.Height,
-                        FrameRate = frameRate,
-                        MrcEnabled = true,
-                        FrameRateDescription = $"{frameRate} fps",
-                        ResolutionDescription = $"{property.Width} x {property.Height}"
-                    });
-                }
-                return capabilityList;
-            }).AsAsyncOperation<IList<CaptureCapability>>();
-        }
-
-        public class Device
-        {
-            public string Id { get; set; }
-            public string Name { get; set; }
         }
     }
 }
