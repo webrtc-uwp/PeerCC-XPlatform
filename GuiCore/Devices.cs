@@ -214,9 +214,9 @@ namespace GuiCore
                         resolutionsList.Add(resolutionString);
                 }
 
-                foreach (string rs in resolutionsList)
+                foreach (string resolution in resolutionsList)
                 {
-                    var x = rs.Split("x");
+                    var x = resolution.Split("x");
                     string width = x[0];
                     string height = x[1];
 
@@ -234,7 +234,7 @@ namespace GuiCore
                         }
                     }
                     var mediaVideoFormat = new WebRtcAdapter.Call.MediaVideoFormat();
-                    mediaVideoFormat.GetId(rs);
+                    mediaVideoFormat.GetId(deviceId + resolution);
                     mediaVideoFormat.GetDimension(int.Parse(width), int.Parse(height));
                     mediaVideoFormat.GetFrameRates(frameRatesList);
 
