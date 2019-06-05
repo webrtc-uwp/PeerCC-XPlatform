@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using WebRtcAdapter.Call;
+using System.Linq;
 
 namespace GuiCore
 {
@@ -142,23 +143,16 @@ namespace GuiCore
                     string width = r[0];
                     string height = r[1];
 
-                    List<int> frameRatesList = new List<int>();
-                    foreach (VideoEncodingProperties property in streamProperties)
-                    {
-                        if (property.Width == int.Parse(width) && property.Height == int.Parse(height))
-                        {
-                            int frameRate = (int)(property.FrameRate.Numerator / property.FrameRate.Denominator);
+                    HashSet<int> frameRateHashSet = new HashSet<int>();
 
-                            if (frameRatesList.Count == 0)
-                                frameRatesList.Add(frameRate);
-                            if (!frameRatesList.Contains(frameRate)) 
-                                frameRatesList.Add(frameRate);
-                        }
-                    }
+                    foreach (VideoEncodingProperties property in streamProperties)
+                        if (property.Width == int.Parse(width) && property.Height == int.Parse(height))
+                            frameRateHashSet.Add((int)(property.FrameRate.Numerator / property.FrameRate.Denominator));
+
                     var mediaVideoFormat = new MediaVideoFormat();
                     mediaVideoFormat.GetId(deviceId + resolution);
                     mediaVideoFormat.GetDimension(int.Parse(width), int.Parse(height));
-                    mediaVideoFormat.GetFrameRates(frameRatesList);
+                    mediaVideoFormat.GetFrameRates(frameRateHashSet.OrderBy(v => v).ToList());
 
                     mediaVideoFormatList.Add(mediaVideoFormat);
                 }
