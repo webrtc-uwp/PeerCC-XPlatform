@@ -4,6 +4,7 @@ using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using GuiCore;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -171,7 +172,7 @@ namespace Client_UWP.Pages.SettingsDevices
                 {
                     _resolutionsList.Clear();
                     cbCaptureResolution.SelectedIndex = -1;
-                    foreach (var resolution in device.VideoFormats)
+                    foreach (var resolution in device.VideoFormats.OrderBy(v => v.Dimension.Width))
                     {
                         _resolutionsList.Add(resolution.Dimension.Width.ToString() + " x " + resolution.Dimension.Height.ToString());
                     }

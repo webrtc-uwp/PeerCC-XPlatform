@@ -140,23 +140,23 @@ namespace GuiCore
                 foreach (string resolution in resolutionsHashSet)
                 {
                     string[] r = resolution.Split("x");
-                    string width = r[0];
-                    string height = r[1];
+                    int width = int.Parse(r[0]);
+                    int height = int.Parse(r[1]);
 
                     HashSet<int> frameRateHashSet = new HashSet<int>();
 
                     foreach (VideoEncodingProperties property in streamProperties)
-                        if (property.Width == int.Parse(width) && property.Height == int.Parse(height))
+                        if (property.Width == width && property.Height == height)
                             frameRateHashSet.Add((int)(property.FrameRate.Numerator / property.FrameRate.Denominator));
 
                     var mediaVideoFormat = new MediaVideoFormat();
                     mediaVideoFormat.GetId(deviceId + resolution);
-                    mediaVideoFormat.GetDimension(int.Parse(width), int.Parse(height));
+                    mediaVideoFormat.GetDimension(width, height);
                     mediaVideoFormat.GetFrameRates(frameRateHashSet.OrderBy(v => v).ToList());
 
                     mediaVideoFormatList.Add(mediaVideoFormat);
                 }
-                 return mediaVideoFormatList;
+                return mediaVideoFormatList;
             }).AsAsyncOperation<IList<MediaVideoFormat>>();
         }
     }
