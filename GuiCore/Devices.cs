@@ -126,26 +126,21 @@ namespace GuiCore
                     Debug.WriteLine("Failed to initialize video device: " + initResult.Exception.Message);
                     return null;
                 }
-                var streamProperties =
+                IReadOnlyList<IMediaEncodingProperties> streamProperties =
                     mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
 
                 IList<MediaVideoFormat> mediaVideoFormatList = new List<MediaVideoFormat>();
 
-                List<string> resolutionsList = new List<string>();
-                foreach (VideoEncodingProperties property in streamProperties)
-                {
-                    string resolutionString = $"{property.Width}x{property.Height}";
-                    if (resolutionsList.Count == 0)
-                        resolutionsList.Add(resolutionString);
-                    if (!resolutionsList.Contains(resolutionString))
-                        resolutionsList.Add(resolutionString);
-                }
+                HashSet<string> resolutionsHashSet = new HashSet<string>();
 
-                foreach (string resolution in resolutionsList)
+                foreach (VideoEncodingProperties property in streamProperties)
+                    resolutionsHashSet.Add($"{property.Width}x{property.Height}");
+
+                foreach (string resolution in resolutionsHashSet)
                 {
-                    var x = resolution.Split("x");
-                    string width = x[0];
-                    string height = x[1];
+                    string[] r = resolution.Split("x");
+                    string width = r[0];
+                    string height = r[1];
 
                     List<int> frameRatesList = new List<int>();
                     foreach (VideoEncodingProperties property in streamProperties)
