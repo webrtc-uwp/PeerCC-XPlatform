@@ -59,10 +59,14 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetVideoCodecsList()
         {
-            _videoCodecsList = GuiLogic.Instance.VideoCodecsList;
+            foreach (string videoCodecName in GuiLogic.Instance.VideoCodecsDict.Values)
+                _videoCodecsList.Add(videoCodecName);
 
             if (_videoCodecsList.Count != 0)
+            {
+                _localSettings.SerializeVideoCodecsNameList(null);
                 _localSettings.SerializeVideoCodecsNameList(_videoCodecsList);
+            }
             else
                 _videoCodecsList = _localSettings.DeserializeVideoCodecsNameList();
 
