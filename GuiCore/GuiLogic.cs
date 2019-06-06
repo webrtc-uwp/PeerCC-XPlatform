@@ -287,7 +287,7 @@ namespace GuiCore
                 IceServers = _iceServers
             };
 
-            GetCodecs();
+            //GetCodecs();
 
             return config;
         }
@@ -529,7 +529,8 @@ namespace GuiCore
 
                 var audioCodecList = DefaultSettings.GetAudioCodecs;
                 var videoCodecList = DefaultSettings.GetVideoCodecs;
-
+                localSettings.Values["SelectedAudioCodecName"] = null;
+                localSettings.Values["SelectedVideoCodecName"] = null;
                 for (int i = 0; i < audioCodecList.Count; i++)
                 {
                     if (localSettings.Values["SelectedAudioCodecName"] != null)
