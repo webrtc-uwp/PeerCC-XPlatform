@@ -287,7 +287,7 @@ namespace GuiCore
                 IceServers = _iceServers
             };
 
-            //GetCodecs();
+            GetCodecs();
 
             return config;
         }
@@ -528,9 +528,9 @@ namespace GuiCore
                 IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
                 var audioCodecList = DefaultSettings.GetAudioCodecs;
-                var videoCodecList = DefaultSettings.GetVideoCodecs;
-                localSettings.Values["SelectedAudioCodecName"] = null;
-                localSettings.Values["SelectedVideoCodecName"] = null;
+                //var videoCodecList = DefaultSettings.GetVideoCodecs;
+                //localSettings.Values["SelectedAudioCodecName"] = null;
+                //localSettings.Values["SelectedVideoCodecName"] = null;
                 for (int i = 0; i < audioCodecList.Count; i++)
                 {
                     if (localSettings.Values["SelectedAudioCodecName"] != null)
@@ -542,20 +542,35 @@ namespace GuiCore
                         AudioCodec = audioCodecList.First();
                 }
 
-                for (int i = 0; i < videoCodecList.Count; i++)
+                //for (int i = 0; i < videoCodecList.Count; i++)
+                //{
+                //    if (localSettings.Values["SelectedVideoCodecName"] != null)
+                //    {
+                //        if (videoCodecList[i].Name == localSettings.Values["SelectedVideoCodecName"].ToString())
+                //            VideoCodec = videoCodecList[i];
+                //    }
+                //    else
+                //        VideoCodec = videoCodecList.First();
+                //}
+
+                foreach (var vCodec in VideoCodecsDict)
                 {
                     if (localSettings.Values["SelectedVideoCodecName"] != null)
                     {
-                        if (videoCodecList[i].Name == localSettings.Values["SelectedVideoCodecName"].ToString())
-                            VideoCodec = videoCodecList[i];
+                        if (vCodec.Value == (string)localSettings.Values["SelectedVideoCodecName"])
+                        {
+                            Codec videoCodec = new Codec();
+                            videoCodec.GetMediaKind(MediaKind.Video);
+                            videoCodec.GetId(vCodec.Key);
+                            videoCodec.GetDisplayName(vCodec.Value);
+                            //videoCodec.GetRate(0);
+                        }
                     }
-                    else
-                        VideoCodec = videoCodecList.First();
                 }
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
-                SdpUtils.SelectCodecs(ref modifiedSdp, AudioCodec.PreferredPayloadType, VideoCodec.PreferredPayloadType);
+                //SdpUtils.SelectCodecs(ref modifiedSdp, AudioCodec.PreferredPayloadType, VideoCodec.PreferredPayloadType);
                 var sdpInit = new RTCSessionDescriptionInit();
                 sdpInit.Sdp = modifiedSdp;
                 sdpInit.Type = offer.SdpType;
