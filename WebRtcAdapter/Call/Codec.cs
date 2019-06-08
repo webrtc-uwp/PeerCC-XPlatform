@@ -12,24 +12,24 @@ namespace WebRtcAdapter.Call
 
         public int Rate { get; private set; }
 
-        public MediaKind GetMediaKind(MediaKind mediaKind)
+        public void SetMediaKind(MediaKind mediaKind)
         {
-            return mediaKind;
+            Kind = mediaKind;
         }
 
-        public string GetId(string id)
+        public void SetId(string id)
         {
-            return id;
+            Id = id;
         }
 
-        public string GetDisplayName(string displayName)
+        public void SetDisplayName(string displayName)
         {
-            return displayName;
+            DisplayName = displayName;
         }
 
-        public int GetRate(int rate)
+        public void SetRate(int rate)
         {
-            return rate;
+            Rate = rate;
         }
     }
 }

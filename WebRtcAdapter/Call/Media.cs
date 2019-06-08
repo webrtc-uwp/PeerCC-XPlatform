@@ -11,13 +11,13 @@ namespace WebRtcAdapter.Call
 
         public Task<IList<ICodec>> GetCodecsAsync(MediaKind kind)
         {
-            Codec codec = new Codec();
-            codec.GetDisplayName("");
-            codec.GetId("");
-            codec.GetMediaKind(MediaKind.Audio);
-            codec.GetRate(111);
+            //Codec codec = new Codec();
+            //codec.GetDisplayName("");
+            //codec.GetId("");
+            //codec.GetMediaKind(MediaKind.Audio);
+            //codec.GetRate(111);
 
-            codecList.Add(codec);
+            //codecList.Add(codec);
 
             return Task.Run(() => codecList);
         }

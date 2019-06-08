@@ -5,6 +5,7 @@ using Client_UWP.Pages.SettingsDebug;
 using GuiCore;
 using System.Collections.ObjectModel;
 using System.Linq;
+using WebRtcAdapter.Call;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -60,8 +61,8 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetVideoCodecsList()
         {
-            foreach (string videoCodecName in GuiLogic.Instance.VideoCodecsDict.Values)
-                _videoCodecsList.Add(videoCodecName);
+            foreach (Codec videoCodec in GuiLogic.Instance.VideoCodecsList)
+                _videoCodecsList.Add(videoCodec.DisplayName);
 
             if (_videoCodecsList.Count != 0)
             {

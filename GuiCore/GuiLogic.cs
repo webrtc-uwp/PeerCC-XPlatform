@@ -88,7 +88,8 @@ namespace GuiCore
         /// <summary>
         /// Video codec used in WebRTC session.
         /// </summary>
-        public CodecInfoModel VideoCodec { get; set; }
+        //public CodecInfoModel VideoCodec { get; set; }
+        public Codec VideoCodec { get; set; }
 
         /// <summary>
         /// Audio codec used in WebRTC session.
@@ -292,7 +293,8 @@ namespace GuiCore
             return config;
         }
 
-        public Dictionary<string, string> VideoCodecsDict = new Dictionary<string, string>();
+        public List<Codec> VideoCodecsList = new List<Codec>();
+
         public void GetCodecs()
         {
             //RTCRtpCapabilities audioCapabilities = RTCRtpSender.GetCapabilities(_factory, "audio");
@@ -305,7 +307,14 @@ namespace GuiCore
             foreach (var item in videoCodecs)
             {
                 string payload = item.PreferredPayloadType.ToString();
-                VideoCodecsDict.Add(payload, item.Name + " " + payload);
+
+                Codec videoCodec = new Codec();
+                videoCodec.SetMediaKind(MediaKind.Video);
+                videoCodec.SetId(item.PreferredPayloadType.ToString());
+                videoCodec.SetDisplayName(item.Name + " " + payload);
+                videoCodec.SetRate((int)item.ClockRate);
+
+                VideoCodecsList.Add(videoCodec);
             }
         }
 
@@ -529,8 +538,7 @@ namespace GuiCore
 
                 var audioCodecList = DefaultSettings.GetAudioCodecs;
                 //var videoCodecList = DefaultSettings.GetVideoCodecs;
-                //localSettings.Values["SelectedAudioCodecName"] = null;
-                //localSettings.Values["SelectedVideoCodecName"] = null;
+
                 for (int i = 0; i < audioCodecList.Count; i++)
                 {
                     if (localSettings.Values["SelectedAudioCodecName"] != null)
@@ -542,35 +550,22 @@ namespace GuiCore
                         AudioCodec = audioCodecList.First();
                 }
 
-                //for (int i = 0; i < videoCodecList.Count; i++)
-                //{
-                //    if (localSettings.Values["SelectedVideoCodecName"] != null)
-                //    {
-                //        if (videoCodecList[i].Name == localSettings.Values["SelectedVideoCodecName"].ToString())
-                //            VideoCodec = videoCodecList[i];
-                //    }
-                //    else
-                //        VideoCodec = videoCodecList.First();
-                //}
-
-                foreach (var vCodec in VideoCodecsDict)
+                if (localSettings.Values["SelectedVideoCodecName"] != null)
                 {
-                    if (localSettings.Values["SelectedVideoCodecName"] != null)
+                    foreach (var vCodec in VideoCodecsList)
                     {
-                        if (vCodec.Value == (string)localSettings.Values["SelectedVideoCodecName"])
-                        {
-                            Codec videoCodec = new Codec();
-                            videoCodec.GetMediaKind(MediaKind.Video);
-                            videoCodec.GetId(vCodec.Key);
-                            videoCodec.GetDisplayName(vCodec.Value);
-                            //videoCodec.GetRate(0);
-                        }
+                        if (vCodec.DisplayName == (string)localSettings.Values["SelectedVideoCodecName"])
+                            VideoCodec = vCodec;
                     }
                 }
+                else
+                    VideoCodec = VideoCodecsList.First();
+
+
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
-                //SdpUtils.SelectCodecs(ref modifiedSdp, AudioCodec.PreferredPayloadType, VideoCodec.PreferredPayloadType);
+                SdpUtils.SelectCodecs(ref modifiedSdp, AudioCodec.PreferredPayloadType, int.Parse(VideoCodec.Id));
                 var sdpInit = new RTCSessionDescriptionInit();
                 sdpInit.Sdp = modifiedSdp;
                 sdpInit.Type = offer.SdpType;
