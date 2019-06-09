@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using WebRtcAdapter.Call;
@@ -133,8 +134,8 @@ namespace GuiCore
             callConfiguration.PreferredAudioOutputDeviceId = GetPreferredOutputAudioDeviceId();
             callConfiguration.PreferredVideoDeviceId = GetPreferredVideoDeviceId();
 
+            callConfiguration.PreferredVideoFormatId = GetPreferredVideoFormatId();
             callConfiguration.PreferredFrameRate = GetPreferredFrameRate();
-            callConfiguration.PreferredVideoFormatId = null;
 
             callConfiguration.PreferredAudioCodecId = GetPreferredAudioCodecId();
             callConfiguration.PreferredVideoCodecId = GetPreferredVideoCodecId();
@@ -157,12 +158,28 @@ namespace GuiCore
             iceServers = iceServersList;
         }
 
+        private string GetPreferredVideoFormatId()
+        {
+            string selectedResolution = (string)localSettings.Values["SelectedResolution"];
+            string preferredVideoFormatId = string.Empty;
+
+            for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
+            {
+                for (int j = 0; j < Devices.Instance.VideoMediaDevicesList[i].VideoFormats.Count; j++)
+                {
+                    Size dimension = Devices.Instance.VideoMediaDevicesList[i].VideoFormats[j].Dimension;
+                    string resolutionString = dimension.Width.ToString() + " x " + dimension.Height.ToString();
+                    if (selectedResolution == resolutionString)
+                        preferredVideoFormatId = Devices.Instance.VideoMediaDevicesList[i].VideoFormats[j].Id;
+                }
+            }
+
+            return preferredVideoFormatId;
+        }
+
         private int? GetPreferredFrameRate()
         {
-            string selectedFrameRate = (string)localSettings.Values["SelectedFrameRate"];
-            string preferredFrameRate = selectedFrameRate.Substring(0, selectedFrameRate.Length - 3);
-
-            return int.Parse(preferredFrameRate);
+            return int.Parse((string)localSettings.Values["SelectedFrameRate"]);
         }
 
         private string GetPreferredVideoDeviceId()
