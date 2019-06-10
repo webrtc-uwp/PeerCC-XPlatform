@@ -140,8 +140,8 @@ namespace GuiCore
             callConfiguration.PreferredAudioCodecId = GetPreferredAudioCodecId();
             callConfiguration.PreferredVideoCodecId = GetPreferredVideoCodecId();
 
-            callConfiguration.LocalVideoElement = null;
-            callConfiguration.RemoteVideoElement = null;
+            callConfiguration.LocalVideoElement = MediaElementImpl.GetMediaElement(SelfVideo);
+            callConfiguration.RemoteVideoElement = MediaElementImpl.GetMediaElement(PeerVideo);
 
             callProvider.PlaceCallAsync(callConfiguration);
 

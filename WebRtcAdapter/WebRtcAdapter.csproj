@@ -127,6 +127,7 @@
     <Compile Include="Call\Codec.cs" />
     <Compile Include="Call\Media.cs" />
     <Compile Include="Call\MediaDevice.cs" />
+    <Compile Include="Call\MediaElementImpl.cs" />
     <Compile Include="Call\MediaProvider.cs" />
     <Compile Include="Call\MediaProviderFactory.cs" />
     <Compile Include="Call\MediaVideoFormat.cs" />
