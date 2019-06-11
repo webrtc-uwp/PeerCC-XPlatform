@@ -118,7 +118,7 @@ namespace GuiCore
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
-        public void SetCall()
+        public void ConfigureCall()
         {
             // Call
             ICallProvider callFactory =
@@ -226,6 +226,12 @@ namespace GuiCore
         {
             string selectedVideoCodecName = (string)localSettings.Values["SelectedVideoCodecName"];
             string preferredVideoCodecId = string.Empty;
+
+            for (int i = 0; i < VideoCodecsList.Count; i++)
+            {
+                if (selectedVideoCodecName == VideoCodecsList[i].DisplayName)
+                    preferredVideoCodecId = VideoCodecsList[i].Id;
+            }
             
             // TODO: get video codecs list
             // from RTCRtpCapabilities getCapabilities(WebRtcFactory factory, string kind);
