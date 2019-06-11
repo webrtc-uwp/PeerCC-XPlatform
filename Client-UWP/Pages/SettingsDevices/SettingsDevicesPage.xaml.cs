@@ -91,21 +91,32 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetAudioCodecsList()
         {
-            foreach (var audioCodec in DefaultSettings.GetAudioCodecs)
-                _audioCodesList.Add(audioCodec.Name);
+            foreach (var audioCodec in GuiLogic.Instance.AudioCodecsList)
+                _audioCodesList.Add(audioCodec.DisplayName);
+
+            if (_audioCodesList.Count != 0)
+            {
+                _localSettings.SerializeVideoCodecsNameList(null);
+                _localSettings.SerializeVideoCodecsNameList(_audioCodesList);
+            }
+            else
+                _audioCodesList = _localSettings.DeserializeAudioCodecsNameList();
 
             cbAudioCodecs.SelectionChanged += CbAudioCodec_SelectionChanged;
 
-            cbAudioCodecs.ItemsSource = _audioCodesList;
-
-            if (_localSettings.GetSelectedAudioCodecName != null)
+            if (_audioCodesList != null)
             {
-                for (int i = 0; i < _audioCodesList.Count; i++)
-                    if (_audioCodesList[i] == (string)_localSettings.GetSelectedAudioCodecName)
-                        cbAudioCodecs.SelectedIndex = i;
+                cbAudioCodecs.ItemsSource = _audioCodesList;
+
+                if (_localSettings.GetSelectedAudioCodecName != null)
+                {
+                    for (int i = 0; i < _audioCodesList.Count; i++)
+                        if (_audioCodesList[i] == (string)_localSettings.GetSelectedAudioCodecName)
+                            cbAudioCodecs.SelectedIndex = i;
+                }
+                else
+                    cbAudioCodecs.SelectedIndex = -1;
             }
-            else
-                cbAudioCodecs.SelectedIndex = -1;
         }
 
         private void SetSpeakersList()

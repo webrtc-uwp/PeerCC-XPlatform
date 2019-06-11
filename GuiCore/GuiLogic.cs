@@ -7,7 +7,6 @@ using PeerCC.Account;
 using PeerCC.Signaling;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -89,13 +88,12 @@ namespace GuiCore
         /// <summary>
         /// Video codec used in WebRTC session.
         /// </summary>
-        //public CodecInfoModel VideoCodec { get; set; }
         public Codec VideoCodec { get; set; }
 
         /// <summary>
         /// Audio codec used in WebRTC session.
         /// </summary>
-        public CodecInfoModel AudioCodec { get; set; }
+        public Codec AudioCodec { get; set; }
 
         private GuiLogic()
         {
@@ -311,13 +309,24 @@ namespace GuiCore
         }
 
         public List<Codec> VideoCodecsList = new List<Codec>();
+        public List<Codec> AudioCodecsList = new List<Codec>();
 
         public void GetCodecs()
         {
             //RTCRtpCapabilities audioCapabilities = RTCRtpSender.GetCapabilities(_factory, "audio");
             //IReadOnlyList<RTCRtpCodecCapability> audioCodecs = audioCapabilities.Codecs;
             //foreach (var item in audioCodecs)
-            //    Debug.WriteLine("!!!audio codecs: " + item.Name);
+            //{
+            //    string payload = item.PreferredPayloadType.ToString();
+
+            //    Codec audioCodec = new Codec();
+            //    audioCodec.SetMediaKind(MediaKind.Video);
+            //    audioCodec.SetId(payload);
+            //    audioCodec.SetDisplayName(item.Name + " " + payload);
+            //    audioCodec.SetRate((int)item.ClockRate);
+
+            //    AudioCodecsList.Add(audioCodec);
+            //}
 
             RTCRtpCapabilities videoCapabilities = RTCRtpSender.GetCapabilities(_factory, "video");
             IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
@@ -327,7 +336,7 @@ namespace GuiCore
 
                 Codec videoCodec = new Codec();
                 videoCodec.SetMediaKind(MediaKind.Video);
-                videoCodec.SetId(item.PreferredPayloadType.ToString());
+                videoCodec.SetId(payload);
                 videoCodec.SetDisplayName(item.Name + " " + payload);
                 videoCodec.SetRate((int)item.ClockRate);
 
@@ -553,19 +562,15 @@ namespace GuiCore
                 offerOptions.OfferToReceiveVideo = true;
                 IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
-                var audioCodecList = DefaultSettings.GetAudioCodecs;
-                //var videoCodecList = DefaultSettings.GetVideoCodecs;
-
-                for (int i = 0; i < audioCodecList.Count; i++)
+                if (localSettings.Values["SelectedAudioCodecName"] != null)
                 {
-                    if (localSettings.Values["SelectedAudioCodecName"] != null)
+                    foreach (var aCodec in AudioCodecsList)
                     {
-                        if (audioCodecList[i].Name == localSettings.Values["SelectedAudioCodecName"].ToString())
-                            AudioCodec = audioCodecList[i];
+                        if (aCodec.DisplayName == (string)localSettings.Values["SelectedAudioCodecName"])
+                            AudioCodec = aCodec;
                     }
-                    else
-                        AudioCodec = audioCodecList.First();
                 }
+                else AudioCodec = AudioCodecsList.First();
 
                 if (localSettings.Values["SelectedVideoCodecName"] != null)
                 {
@@ -582,7 +587,7 @@ namespace GuiCore
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
-                SdpUtils.SelectCodecs(ref modifiedSdp, AudioCodec.PreferredPayloadType, int.Parse(VideoCodec.Id));
+                //SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(AudioCodec.Id), int.Parse(VideoCodec.Id));
                 var sdpInit = new RTCSessionDescriptionInit();
                 sdpInit.Sdp = modifiedSdp;
                 sdpInit.Type = offer.SdpType;

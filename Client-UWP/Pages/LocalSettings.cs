@@ -32,8 +32,14 @@ namespace Client_UWP.Pages
         public void SerializeVideoCodecsNameList(ObservableCollection<string> videoCodecsNameList) =>
             localSettings.Values["VideoCodecsNameList"] = XmlSerialization<ObservableCollection<string>>.Serialize(videoCodecsNameList);
 
+        public void SerializeAudioCodecsNameList(ObservableCollection<string> audioCodecsNameList) =>
+            localSettings.Values["AudioCodecsNameList"] = XmlSerialization<ObservableCollection<string>>.Serialize(audioCodecsNameList);
+
         public ObservableCollection<string> DeserializeVideoCodecsNameList() =>
             XmlSerialization<ObservableCollection<string>>.Deserialize((string)localSettings.Values["VideoCodecsNameList"]);
+
+        public ObservableCollection<string> DeserializeAudioCodecsNameList() =>
+            XmlSerialization<ObservableCollection<string>>.Deserialize((string)localSettings.Values["AudioCodecsNameList"]);
 
         public object GetSelectedVideoCodecName => localSettings.Values["SelectedVideoCodecName"];
         public void SetSelectedVideoCodecName(string selectedVideoCodecName) => localSettings.Values["SelectedVideoCodecName"] = selectedVideoCodecName;

@@ -14,32 +14,6 @@ namespace GuiCore
                 new IceServer { Urls = new List<string> { "stun:stun3.l.google.com:19302" } },
                 new IceServer { Urls = new List<string> { "stun:stun4.l.google.com:19302" } }
             };
-
-        public static IList<CodecInfoModel> GetAudioCodecs
-            => new List<CodecInfoModel>
-            {
-                new CodecInfoModel { PreferredPayloadType = 111, ClockRate = 48000, Name = "opus" },
-                new CodecInfoModel { PreferredPayloadType = 103, ClockRate = 16000, Name = "ISAC" },
-                new CodecInfoModel { PreferredPayloadType = 9, ClockRate = 8000, Name = "G722" },
-                new CodecInfoModel { PreferredPayloadType = 102, ClockRate = 8000, Name = "ILBC" },
-                new CodecInfoModel { PreferredPayloadType = 0, ClockRate = 8000, Name = "PCMU" },
-                new CodecInfoModel { PreferredPayloadType = 8, ClockRate = 8000, Name = "PCMA" }
-            };
-
-        public static IList<CodecInfoModel> GetVideoCodecs
-            => new List<CodecInfoModel>
-            {
-                new CodecInfoModel { PreferredPayloadType = 96, ClockRate = 90000, Name = "VP8" },
-                new CodecInfoModel { PreferredPayloadType = 98, ClockRate = 90000, Name = "VP9" },
-                new CodecInfoModel { PreferredPayloadType = 100, ClockRate = 90000, Name = "H264" }
-            };
-    }
-
-    public class CodecInfoModel
-    {
-        public byte PreferredPayloadType { get; set; }
-        public string Name { get; set; }
-        public int ClockRate { get; set; }
     }
 
     // SDP negotiation attributes
