@@ -232,10 +232,6 @@ namespace GuiCore
                 if (selectedVideoCodecName == VideoCodecsList[i].DisplayName)
                     preferredVideoCodecId = VideoCodecsList[i].Id;
             }
-            
-            // TODO: get video codecs list
-            // from RTCRtpCapabilities getCapabilities(WebRtcFactory factory, string kind);
-            // set preferredVideoCodecId
 
             return preferredVideoCodecId;
         }
