@@ -118,7 +118,7 @@ namespace GuiCore
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
-        public void ConfigureCall()
+        public Call SetCall()
         {
             // Call
             ICallProvider callFactory =
@@ -126,6 +126,24 @@ namespace GuiCore
 
             CallProvider callProvider = (CallProvider)callFactory;
 
+            callProvider.PlaceCallAsync(ConfigureCall());
+
+            Call = (Call)callProvider.GetCall();
+
+            CallInfo callInfo = new CallInfo();
+            callInfo.SetCall(Call);
+            callInfo.SetSdp("");
+
+            Call.OnFrameRateChanged += (x, y) => { };
+            Call.OnResolutionChanged += (x, y) => { };
+
+            //Call.HangupAsync();
+
+            return Call;
+        }
+
+        public CallConfiguration ConfigureCall()
+        {
             CallConfiguration callConfiguration = new CallConfiguration();
             callConfiguration.IceServers = iceServers;
             callConfiguration.PreferredInputAudioDeviceId = GetPreferredInputAudioDeviceId();
@@ -141,15 +159,9 @@ namespace GuiCore
             callConfiguration.LocalVideoElement = MediaElementImpl.GetMediaElement(SelfVideo);
             callConfiguration.RemoteVideoElement = MediaElementImpl.GetMediaElement(PeerVideo);
 
-            callProvider.PlaceCallAsync(callConfiguration);
-
-            Call = (Call)callProvider.GetCall();
-
-            Call.OnFrameRateChanged += (x, y) => { };
-            Call.OnResolutionChanged += (x, y) => { };
-
-            //Call.HangupAsync();
+            return callConfiguration;
         }
+
         private List<IceServer> iceServers = new List<IceServer>();
         public void GetIceServers(List<IceServer> iceServersList)
         {

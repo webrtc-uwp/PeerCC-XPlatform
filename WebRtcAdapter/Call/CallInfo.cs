@@ -8,12 +8,12 @@ namespace WebRtcAdapter.Call
 
         public string Sdp { get; private set; }
 
-        public void GetSdp(string sdp)
+        public void SetSdp(string sdp)
         {
             Sdp = sdp;
         }
 
-        public void GetCall(Call call)
+        public void SetCall(Call call)
         {
             Call = call;
         }
