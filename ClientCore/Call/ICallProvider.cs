@@ -4,7 +4,7 @@ namespace ClientCore.Call
 {
     public interface ICallProvider
     {
-        Task<ICallInfo> PlaceCallAsync(CallConfiguration config);
+        ICallInfo PlaceCall(CallConfiguration config);
 
         Task<ICallInfo> AnswerCallAsync(
             CallConfiguration config,

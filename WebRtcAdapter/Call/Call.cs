@@ -1,5 +1,5 @@
 ﻿using ClientCore.Call;
-using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace WebRtcAdapter.Call
@@ -11,7 +11,7 @@ namespace WebRtcAdapter.Call
 
         public Task HangupAsync()
         {
-            throw new NotImplementedException();
+            return Task.Run(() => Debug.WriteLine("Hangup async."));
         }
     }
 }

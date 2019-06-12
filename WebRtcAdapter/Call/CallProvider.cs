@@ -5,24 +5,19 @@ namespace WebRtcAdapter.Call
 {
     public class CallProvider : ICallProvider
     {
-        public static CallProvider Create()
+        public static ICallProvider Create()
         {
             return new CallProvider();
         }
 
-        public Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
+        public Task<ICallInfo> AnswerCallAsync(CallConfiguration config, string sdpOfRemoteParty)
         {
-            //return Task.Run(() => (ICallInfo)new CallInfo());
-            return null;
+            throw new System.NotImplementedException();
         }
 
-        public Task<ICallInfo> AnswerCallAsync(
-            CallConfiguration config,
-            string sdpOfRemoteParty
-            )
+        public ICallInfo PlaceCall(CallConfiguration config)
         {
-            //return Task.Run(() => (ICallInfo)new CallInfo());
-            return null;
+            return new CallInfo();
         }
 
         public ICall GetCall()

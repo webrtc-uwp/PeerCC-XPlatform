@@ -7,7 +7,7 @@ namespace WebRtcAdapter.Call
     {
         public ICallProvider Create()
         {
-            return CallProvider.Create();
+            return new CallProvider();
         }
     }
 }

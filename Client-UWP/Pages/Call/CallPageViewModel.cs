@@ -26,7 +26,6 @@ namespace Client_UWP.Pages.Call
             {
                 _peerVideo = value;
                 GuiLogic.Instance.PeerVideo = _peerVideo;
-                GuiLogic.Instance.ConfigureCall();
             }
         }
     }

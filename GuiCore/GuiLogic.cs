@@ -118,28 +118,33 @@ namespace GuiCore
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
-        public Call SetCall()
+        public void SetCall(string sdp)
         {
-            // Call
             ICallProvider callFactory =
                 ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
 
             CallProvider callProvider = (CallProvider)callFactory;
 
-            callProvider.PlaceCallAsync(ConfigureCall());
-
             Call = (Call)callProvider.GetCall();
 
-            CallInfo callInfo = new CallInfo();
+            CallInfo callInfo = (CallInfo)callProvider.PlaceCall(ConfigureCall());
             callInfo.SetCall(Call);
-            callInfo.SetSdp("");
+            callInfo.SetSdp(sdp);
 
-            Call.OnFrameRateChanged += (x, y) => { };
-            Call.OnResolutionChanged += (x, y) => { };
+            Call.OnFrameRateChanged += Call_OnFrameRateChanged;
+            Call.OnResolutionChanged += Call_OnResolutionChanged;
 
-            //Call.HangupAsync();
+            //await Call.HangupAsync();
+        }
 
-            return Call;
+        private void Call_OnResolutionChanged(MediaDirection direction, Size dimension)
+        {
+            Debug.WriteLine($"Resolution changed - direction: {direction}, dimension: {dimension.Width} x {dimension.Height}");
+        }
+
+        private void Call_OnFrameRateChanged(MediaDirection direction, int frameRate)
+        {
+            Debug.WriteLine($"Frame rate changed - direction: {direction}, frame rate: {frameRate}");
         }
 
         public CallConfiguration ConfigureCall()
@@ -610,6 +615,8 @@ namespace GuiCore
                 await PeerConnection.SetLocalDescription(modifiedOffer);
 
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
+
+                SetCall(modifiedOffer.Sdp);
 
                 SendSdp(modifiedOffer);
             }
