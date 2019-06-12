@@ -131,18 +131,18 @@ namespace GuiCore
             callInfo.SetCall(Call);
             callInfo.SetSdp(sdp);
 
-            Call.OnFrameRateChanged += Call_OnFrameRateChanged;
             Call.OnResolutionChanged += Call_OnResolutionChanged;
+            Call.OnFrameRateChanged += Call_OnFrameRateChanged;
 
             //await Call.HangupAsync();
         }
 
-        private void Call_OnResolutionChanged(MediaDirection direction, Size dimension)
+        public void Call_OnResolutionChanged(MediaDirection direction, Size dimension)
         {
             Debug.WriteLine($"Resolution changed - direction: {direction}, dimension: {dimension.Width} x {dimension.Height}");
         }
 
-        private void Call_OnFrameRateChanged(MediaDirection direction, int frameRate)
+        public void Call_OnFrameRateChanged(MediaDirection direction, int frameRate)
         {
             Debug.WriteLine($"Frame rate changed - direction: {direction}, frame rate: {frameRate}");
         }
@@ -601,8 +601,6 @@ namespace GuiCore
                 }
                 else
                     VideoCodec = VideoCodecsList.First();
-
-
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
