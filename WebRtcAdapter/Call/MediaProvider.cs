@@ -5,19 +5,9 @@ namespace WebRtcAdapter.Call
 {
     public class MediaProvider : IMediaProvider
     {
-        public static MediaProvider Create()
-        {
-            return new MediaProvider();
-        }
-
         public Task<IMedia> GetMediaAsync()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public IMedia GetMedia()
-        {
-            return new Media();
+            return Task.Run(() => (IMedia)new Media());
         }
     }
 }

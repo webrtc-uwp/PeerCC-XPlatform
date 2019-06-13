@@ -137,6 +137,19 @@ namespace GuiCore
             //await Call.HangupAsync();
         }
 
+        private void SetMedia()
+        {
+            IMediaProvider mediaFactory =
+                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
+
+            Media = (Media)mediaFactory;
+
+            Media.GetCodecsAsync(MediaKind.Audio);
+            Media.GetCodecsAsync(MediaKind.Video);
+            Media.GetMediaDevicesAsync(MediaKind.Audio);
+            Media.GetMediaDevicesAsync(MediaKind.Video);
+        }
+
         public void Call_OnResolutionChanged(MediaDirection direction, Size dimension)
         {
             Debug.WriteLine($"Resolution changed - direction: {direction}, dimension: {dimension.Width} x {dimension.Height}");
