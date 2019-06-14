@@ -207,7 +207,10 @@ namespace GuiCore
 
         private int? GetPreferredFrameRate()
         {
-            return int.Parse((string)localSettings.Values["SelectedFrameRate"]);
+            if (localSettings.Values["SelectedFrameRate"] != null)
+                return int.Parse((string)localSettings.Values["SelectedFrameRate"]);
+            else
+                return -1;
         }
 
         private string GetPreferredVideoDeviceId()
