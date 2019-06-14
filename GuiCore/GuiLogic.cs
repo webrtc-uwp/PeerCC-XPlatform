@@ -947,19 +947,5 @@ namespace GuiCore
 
             HttpSignaler.SendToPeer(_peerId, json.Stringify());
         }
-
-        public void SetMedia()
-        {
-            // Media
-            IMediaProvider mediaFactory =
-                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
-
-            MediaProvider mediaProvider = (MediaProvider)mediaFactory;
-
-            Media = (Media)mediaProvider.GetMedia();
-
-            //Media.GetCodecsAsync(MediaKind.Audio);
-            //Media.GetMediaDevicesAsync(MediaKind.Audio);
-        }
     }
 }
