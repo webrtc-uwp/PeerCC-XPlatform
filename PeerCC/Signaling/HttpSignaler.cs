@@ -26,7 +26,7 @@ namespace PeerCC.Signaling
         private string _clientName;
         public ObservableCollection<Peer> _peers = new ObservableCollection<Peer>();
         private ManualResetEvent _sendEvent = new ManualResetEvent(false);
-        private ConcurrentQueue<Tuple<int, string>> _sendMessageQueue = new ConcurrentQueue<Tuple<int, string>>();
+        private ConcurrentQueue<Message> _sendMessageQueue = new ConcurrentQueue<Message>();
         private Thread _sendThread;
 
         public HttpSignaler()
@@ -79,11 +79,12 @@ namespace PeerCC.Signaling
                             {
                                 _sendEvent.WaitOne();
                                 _sendEvent.Reset();
-                                Tuple<int, string> peerMessageTuple;
-                                while (_sendMessageQueue.TryDequeue(out peerMessageTuple))
+
+                                Message message;
+                                while (_sendMessageQueue.TryDequeue(out message))
                                 {
-                                    if (-1 == peerMessageTuple.Item1) break;    // quit thread
-                                    SendToPeerAsync(peerMessageTuple.Item1, peerMessageTuple.Item2).Wait();
+                                    if (-1 == int.Parse(message.PeerId)) break;    // quit thread
+                                    SentToPeerAsync(message).Wait();
                                 }
                                 Thread.Yield();
                             }
@@ -185,18 +186,23 @@ namespace PeerCC.Signaling
             }
         }
 
-        public override void SendToPeer(int peer_id, string message)
+        public override void SendToPeer(Message message)
         {
             // A message is queued to deliver to the server in order the
             // messages are created. This prevents the server from
             // accidentally receiving a message sent later because an
             // earlier HTTP request was delayed before the next HTTP
             // request was able to succeed.
-            _sendMessageQueue.Enqueue(new Tuple<int, string>(peer_id, message));
+            _sendMessageQueue.Enqueue(new Message
+            {
+                Id = message.Id,
+                Content = message.Content,
+                PeerId = message.PeerId
+            });
             _sendEvent.Set();
         }
 
-        private async Task<bool> SendToPeerAsync(int peer_id, string message)
+        private async Task<bool> SendToPeerAsync(Message message)
         {
             try
             {
@@ -204,6 +210,8 @@ namespace PeerCC.Signaling
                     return false;
 
                 Debug.Assert(IsConnected());
+
+                int peer_id = int.Parse(message.Id);
 
                 if (!IsConnected() || peer_id == -1)
                     return false;
@@ -213,7 +221,8 @@ namespace PeerCC.Signaling
                         "message?peer_id={0}&to={1} HTTP/1.0",
                         _myId, peer_id);
 
-                var content = new StringContent(message, System.Text.Encoding.UTF8, "application/json");
+                StringContent content = 
+                    new StringContent(message.Content, System.Text.Encoding.UTF8, "application/json");
 
                 Debug.WriteLine("Sending to remote peer: " + request + " " + message);
 
@@ -259,7 +268,12 @@ namespace PeerCC.Signaling
 
             // By putting an invalid peer ID and null message into the queue,
             // the send message thread is signaled to quit.
-            _sendMessageQueue.Enqueue(new Tuple<int, string>(-1, null));
+            _sendMessageQueue.Enqueue(new Message
+            {
+                PeerId = "-1",
+                Content = null
+            });
+
             _sendEvent.Set();
 
             // The spawned sender thread is no longer usable as it will quit.
@@ -416,23 +430,20 @@ namespace PeerCC.Signaling
 
                 Debug.Assert(IsConnected());
 
-                if (!IsConnected() || message.PeerId == "")
+                int peer_id = int.Parse(message.PeerId);
+
+                if (!IsConnected() || peer_id == -1)
                     return;
 
                 string request =
                     string.Format(
-                        "message?peer_id={0}&to={1}" +
-                        "Content-Length: {2}\r\n" +
-                        "Content-Type: text/plain\r\n" +
-                        "\r\n" +
-                        "{3}",
-                    _myId, message.PeerId, message.Content.Length, message.Content);
+                        "message?peer_id={0}&to={1} HTTP/1.0",
+                        _myId, peer_id);
 
-                var content = new StringContent(message.Content, System.Text.Encoding.UTF8, "application/json");
+                StringContent content = 
+                    new StringContent(message.Content, System.Text.Encoding.UTF8, "application/json");
 
-                Debug.WriteLine("Sending to remote peer id: " + message.PeerId);
-                Debug.WriteLine("Message id: " + message.Id + ", content: " + message.Content);
-                Debug.WriteLine("Formated request: " + request);
+                Debug.WriteLine("Sending to remote peer: " + request + " " + message);
 
                 // Send request, await response
                 HttpResponseMessage response = await _httpClient.PostAsync(
@@ -447,7 +458,7 @@ namespace PeerCC.Signaling
             }
         }
 
-        private List<Message> messagesList = new List<Message>();
+        private List<Message> _messagesList = new List<Message>();
         private object _locker = new object();
 
         /// <summary>
@@ -506,7 +517,7 @@ namespace PeerCC.Signaling
 
                                 lock (_locker)
                                 {
-                                    messagesList.Add(message);
+                                    _messagesList.Add(message);
                                 }
 
                                 OnMessageFromPeer(message);
@@ -546,7 +557,7 @@ namespace PeerCC.Signaling
 
             lock (_locker)
             {
-                messagesList.ForEach(m => { list.Add(m); });
+                _messagesList.ForEach(m => { list.Add(m); });
             }
 
             return list;

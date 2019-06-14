@@ -647,14 +647,6 @@ namespace GuiCore
         }
 
         /// <summary>
-        /// Helper method to send a hangup message to a peer.
-        /// </summary>
-        private void SendHangupMessage()
-        {
-            HttpSignaler.SendToPeer(_peerId, "BYE");
-        }
-
-        /// <summary>
         /// Closes a peer connection.
         /// </summary>
         private void ClosePeerConnection()
@@ -946,9 +938,27 @@ namespace GuiCore
 
         private void SendMessage(IJsonValue json)
         {
-            Debug.WriteLine($"Send message json: {json}");
+            HttpSignaler.SendToPeer(new Message
+            {
+                Id = "0",
+                Content = json.Stringify(),
+                PeerId = _peerId.ToString()
+            });
 
-            HttpSignaler.SendToPeer(_peerId, json.Stringify());
+            Debug.WriteLine($"Send message json: {json}");
+        }
+
+        /// <summary>
+        /// Helper method to send a hangup message to a peer.
+        /// </summary>
+        private void SendHangupMessage()
+        {
+            HttpSignaler.SendToPeer(new Message
+            {
+                Id = "0",
+                Content = "BYE",
+                PeerId = _peerId.ToString()
+            });
         }
     }
 }
