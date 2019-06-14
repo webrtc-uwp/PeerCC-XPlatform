@@ -137,17 +137,16 @@ namespace GuiCore
             //await Call.HangupAsync();
         }
 
-        private void SetMedia()
+        private async Task SetMedia()
         {
             IMediaProvider mediaFactory =
                 ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
 
-            Media = (Media)mediaFactory;
+            Media = (Media)await mediaFactory.GetMediaAsync();
 
-            Media.GetCodecsAsync(MediaKind.Audio);
-            Media.GetCodecsAsync(MediaKind.Video);
-            Media.GetMediaDevicesAsync(MediaKind.Audio);
-            Media.GetMediaDevicesAsync(MediaKind.Video);
+            IList<ICodec> audioCodecsList = await Media.GetCodecsAsync(MediaKind.Audio); 
+            //Media.GetMediaDevicesAsync(MediaKind.Audio);
+            IList<ICodec> videoCodecsList = await Media.GetCodecsAsync(MediaKind.Video);
         }
 
         public void Call_OnResolutionChanged(MediaDirection direction, Size dimension)
@@ -582,6 +581,8 @@ namespace GuiCore
         public async Task ConnectToPeer(int peerId)
         {
             Debug.Assert(_peerId == -1);
+
+            await SetMedia();
 
             if (PeerConnection != null)
             {
