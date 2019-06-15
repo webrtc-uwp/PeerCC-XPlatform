@@ -144,9 +144,11 @@ namespace GuiCore
 
             Media = (Media)await mediaFactory.GetMediaAsync();
 
-            IList<ICodec> audioCodecsList = await Media.GetCodecsAsync(MediaKind.Audio); 
-            //Media.GetMediaDevicesAsync(MediaKind.Audio);
-            IList<ICodec> videoCodecsList = await Media.GetCodecsAsync(MediaKind.Video);
+            IList<IMediaDevice> microphonesList = await Media.GetMediaDevicesAsync(MediaKind.AudioInputDevice);
+            IList<IMediaDevice> speakersList = await Media.GetMediaDevicesAsync(MediaKind.AudioOutputDevice);
+            IList<IMediaDevice> camerasList = await Media.GetMediaDevicesAsync(MediaKind.VideoDevice);
+            IList<ICodec> audioCodecsList = await Media.GetCodecsAsync(MediaKind.AudioCodec); 
+            IList<ICodec> videoCodecsList = await Media.GetCodecsAsync(MediaKind.VideoCodec);
         }
 
         public void Call_OnResolutionChanged(MediaDirection direction, Size dimension)
@@ -354,7 +356,7 @@ namespace GuiCore
             //    string payload = item.PreferredPayloadType.ToString();
 
             //    Codec audioCodec = new Codec();
-            //    audioCodec.SetMediaKind(MediaKind.Video);
+            //    audioCodec.SetMediaKind(MediaKind.Audio);
             //    audioCodec.SetId(payload);
             //    audioCodec.SetDisplayName(item.Name + " " + payload);
             //    audioCodec.SetRate((int)item.ClockRate);
@@ -369,7 +371,7 @@ namespace GuiCore
                 string payload = item.PreferredPayloadType.ToString();
 
                 Codec videoCodec = new Codec();
-                videoCodec.SetMediaKind(MediaKind.Video);
+                videoCodec.SetMediaKind(MediaKind.VideoDevice);
                 videoCodec.SetId(payload);
                 videoCodec.SetDisplayName(item.Name + " " + payload);
                 videoCodec.SetRate((int)item.ClockRate);

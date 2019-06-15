@@ -15,10 +15,12 @@ namespace WebRtcAdapter.Call
 
         public void GetMediaKind(string mediaKind)
         {
-            if (mediaKind.ToLower() == "audio")
-                Kind = MediaKind.Audio;
-            if (mediaKind.ToLower() == "video")
-                Kind = MediaKind.Video;
+            if (mediaKind == MediaKind.AudioInputDevice.ToString())
+                Kind = MediaKind.AudioInputDevice;
+            if (mediaKind == MediaKind.AudioOutputDevice.ToString())
+                Kind = MediaKind.AudioOutputDevice;
+            if (mediaKind == MediaKind.VideoDevice.ToString())
+                Kind = MediaKind.VideoDevice;
         }
 
         public void GetId(string id)
