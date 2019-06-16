@@ -261,10 +261,10 @@ namespace GuiCore
             string selectedVideoCodecName = (string)localSettings.Values["SelectedVideoCodecName"];
             string preferredVideoCodecId = string.Empty;
 
-            for (int i = 0; i < VideoCodecsList.Count; i++)
+            for (int i = 0; i < Devices.Instance.VideoCodecsList.Count; i++)
             {
-                if (selectedVideoCodecName == VideoCodecsList[i].DisplayName)
-                    preferredVideoCodecId = VideoCodecsList[i].Id;
+                if (selectedVideoCodecName == Devices.Instance.VideoCodecsList[i].DisplayName)
+                    preferredVideoCodecId = Devices.Instance.VideoCodecsList[i].Id;
             }
 
             return preferredVideoCodecId;
@@ -339,45 +339,7 @@ namespace GuiCore
                 IceServers = _iceServers
             };
 
-            GetCodecs();
-
             return config;
-        }
-
-        public List<Codec> VideoCodecsList = new List<Codec>();
-        public List<Codec> AudioCodecsList = new List<Codec>();
-
-        public void GetCodecs()
-        {
-            //RTCRtpCapabilities audioCapabilities = RTCRtpSender.GetCapabilities(_factory, "audio");
-            //IReadOnlyList<RTCRtpCodecCapability> audioCodecs = audioCapabilities.Codecs;
-            //foreach (var item in audioCodecs)
-            //{
-            //    string payload = item.PreferredPayloadType.ToString();
-
-            //    Codec audioCodec = new Codec();
-            //    audioCodec.SetMediaKind(MediaKind.Audio);
-            //    audioCodec.SetId(payload);
-            //    audioCodec.SetDisplayName(item.Name + " " + payload);
-            //    audioCodec.SetRate((int)item.ClockRate);
-
-            //    AudioCodecsList.Add(audioCodec);
-            //}
-
-            RTCRtpCapabilities videoCapabilities = RTCRtpSender.GetCapabilities(_factory, "video");
-            IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
-            foreach (var item in videoCodecs)
-            {
-                string payload = item.PreferredPayloadType.ToString();
-
-                Codec videoCodec = new Codec();
-                videoCodec.SetMediaKind(MediaKind.VideoDevice);
-                videoCodec.SetId(payload);
-                videoCodec.SetDisplayName(item.Name + " " + payload);
-                videoCodec.SetRate((int)item.ClockRate);
-
-                VideoCodecsList.Add(videoCodec);
-            }
         }
 
         /// <summary>
@@ -440,11 +402,11 @@ namespace GuiCore
 
             IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
 
-            MediaDevice _selectedVideoDevice = Devices.Instance.VideoMediaDevicesList[0];
+            MediaDevice _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[0];
 
             for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
                 if (Devices.Instance.VideoMediaDevicesList[i].DisplayName == localSettings.Values["SelectedCameraName"]?.ToString())
-                    _selectedVideoDevice = Devices.Instance.VideoMediaDevicesList[i];
+                    _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[i];
 
             IMediaConstraints mediaConstraints = new MediaConstraints(mandatoryConstraints, optionalConstraints);
 
@@ -602,24 +564,24 @@ namespace GuiCore
 
                 if (localSettings.Values["SelectedAudioCodecName"] != null)
                 {
-                    foreach (var aCodec in AudioCodecsList)
+                    foreach (var aCodec in Devices.Instance.AudioCodecsList)
                     {
                         if (aCodec.DisplayName == (string)localSettings.Values["SelectedAudioCodecName"])
-                            AudioCodec = aCodec;
+                            AudioCodec = (Codec)aCodec;
                     }
                 }
-                else AudioCodec = AudioCodecsList.First();
+                else AudioCodec = (Codec)Devices.Instance.AudioCodecsList.First();
 
                 if (localSettings.Values["SelectedVideoCodecName"] != null)
                 {
-                    foreach (var vCodec in VideoCodecsList)
+                    foreach (var vCodec in Devices.Instance.VideoCodecsList)
                     {
                         if (vCodec.DisplayName == (string)localSettings.Values["SelectedVideoCodecName"])
-                            VideoCodec = vCodec;
+                            VideoCodec = (Codec)vCodec;
                     }
                 }
                 else
-                    VideoCodec = VideoCodecsList.First();
+                    VideoCodec = (Codec)Devices.Instance.VideoCodecsList.First();
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;

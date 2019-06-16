@@ -43,7 +43,7 @@ namespace Client_UWP.Pages.Main
 
                 Task.Run(async() => 
                 {
-                    await Devices.Instance.GetMediaDevices();
+                    await Devices.Instance.GetMediaAsync();
                 });
 
                 RunOnUiThread(() => OnInitialized?.Invoke());

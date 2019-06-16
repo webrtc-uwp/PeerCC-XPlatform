@@ -64,7 +64,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetVideoCodecsList()
         {
-            foreach (Codec videoCodec in GuiLogic.Instance.VideoCodecsList)
+            foreach (Codec videoCodec in Devices.Instance.VideoCodecsList)
                 _videoCodecsList.Add(videoCodec.DisplayName);
 
             if (_videoCodecsList.Count != 0)
@@ -92,7 +92,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetAudioCodecsList()
         {
-            foreach (var audioCodec in GuiLogic.Instance.AudioCodecsList)
+            foreach (var audioCodec in Devices.Instance.AudioCodecsList)
                 _audioCodesList.Add(audioCodec.DisplayName);
 
             if (_audioCodesList.Count != 0)

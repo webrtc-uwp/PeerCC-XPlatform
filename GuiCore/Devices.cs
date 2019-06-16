@@ -9,6 +9,7 @@ using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using WebRtcAdapter.Call;
 using System.Linq;
+using ClientCore.Call;
 
 namespace GuiCore
 {
@@ -33,49 +34,26 @@ namespace GuiCore
 
         private Devices() { }
 
-        public List<MediaDevice> VideoMediaDevicesList = new List<MediaDevice>();
-        public List<MediaDevice> AudioMediaDevicesCapturersList = new List<MediaDevice>();
-        public List<MediaDevice> AudioMediaDevicesRendersList = new List<MediaDevice>();
+        public IList<IMediaDevice> VideoMediaDevicesList = new List<IMediaDevice>();
+        public IList<IMediaDevice> AudioMediaDevicesCapturersList = new List<IMediaDevice>();
+        public IList<IMediaDevice> AudioMediaDevicesRendersList = new List<IMediaDevice>();
 
-        public async Task GetMediaDevices()
+        public IList<ICodec> AudioCodecsList = new List<ICodec>();
+        public IList<ICodec> VideoCodecsList = new List<ICodec>();
+
+        public async Task GetMediaAsync()
         {
-            IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
-            DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(Windows.Media.Devices.MediaDevice.GetAudioCaptureSelector());
-            DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(Windows.Media.Devices.MediaDevice.GetAudioRenderSelector());
+            IMediaProvider mediaFactory =
+                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
 
-            foreach (var microphone in audioCapturers)
-            {
-                var mediaDevice = new MediaDevice();
-                mediaDevice.GetMediaKind(microphone.Kind.ToString());
-                mediaDevice.GetId(microphone.Id);
-                mediaDevice.GetDisplayName(microphone.Name);
+            Media Media = (Media)await mediaFactory.GetMediaAsync();
 
-                AudioMediaDevicesCapturersList.Add(mediaDevice);
-            }
+            AudioMediaDevicesCapturersList = await Media.GetMediaDevicesAsync(MediaKind.AudioInputDevice);
+            AudioMediaDevicesRendersList = await Media.GetMediaDevicesAsync(MediaKind.AudioOutputDevice);
+            VideoMediaDevicesList = await Media.GetMediaDevicesAsync(MediaKind.VideoDevice);
 
-            foreach (var speaker in audioRenders)
-            {
-                var mediaDevice = new MediaDevice();
-                mediaDevice.GetMediaKind(speaker.Kind.ToString());
-                mediaDevice.GetId(speaker.Id);
-                mediaDevice.GetDisplayName(speaker.Name);
-
-                AudioMediaDevicesRendersList.Add(mediaDevice);
-            }
-
-            foreach (IVideoDeviceInfo videoDevice in videoDevices)
-            {
-                var mediaDevice = new MediaDevice();
-                mediaDevice.GetMediaKind("Video");
-                mediaDevice.GetId(videoDevice.Info.Id);
-                mediaDevice.GetDisplayName(videoDevice.Info.Name);
-
-                IList<MediaVideoFormat> videoFormatsList = await GetMediaVideoFormatList(videoDevice.Info.Id);
-
-                mediaDevice.GetVideoFormats(videoFormatsList);
-
-                VideoMediaDevicesList.Add(mediaDevice); 
-            }
+            AudioCodecsList = await Media.GetCodecsAsync(MediaKind.AudioCodec);
+            VideoCodecsList = await Media.GetCodecsAsync(MediaKind.VideoCodec);
         }
 
         /// <summary>
