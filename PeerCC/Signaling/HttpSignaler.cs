@@ -458,9 +458,6 @@ namespace PeerCC.Signaling
             }
         }
 
-        private List<Message> _messagesList = new List<Message>();
-        private object _locker = new object();
-
         /// <summary>
         /// Long lasting loop to get server responses 
         /// and to get notified about connected/disconnected peers and messages.
@@ -510,17 +507,12 @@ namespace PeerCC.Signaling
                             {
                                 messageId++;
 
-                                var message = new Message();
-                                message.Id = messageId.ToString();
-                                message.PeerId = peerId.ToString();
-                                message.Content = result;
-
-                                lock (_locker)
+                                OnMessageFromPeer(new Message
                                 {
-                                    _messagesList.Add(message);
-                                }
-
-                                OnMessageFromPeer(message);
+                                    Id = messageId.ToString(),
+                                    PeerId = peerId.ToString(),
+                                    Content = result
+                                });
                             }
                         }
                     }
@@ -548,19 +540,8 @@ namespace PeerCC.Signaling
         /// failed.</returns>
         public async Task<IList<Message>> WaitForMessagesAsync()
         {
-            return await Task.Run(() => GetMessagesList());
-        }
-
-        private IList<Message> GetMessagesList()
-        {
-            IList<Message> list = new List<Message>();
-
-            lock (_locker)
-            {
-                _messagesList.ForEach(m => { list.Add(m); });
-            }
-
-            return list;
+            // This method is not currently used.
+            return await Task.Run(() => new List<Message>());
         }
 
         private static readonly string _localPeerRandom = new Func<string>(() =>
