@@ -127,7 +127,7 @@ namespace Client_UWP.Pages.Main
                     iceServersList.Add(iceServer);
                 }
                 GuiLogic.Instance.AddIceServers(iceServersList);
-                GuiLogic.Instance.GetIceServers(iceServersList);
+                GuiLogic.Instance.SetIceServers(iceServersList);
             }
         }
 

@@ -182,7 +182,7 @@ namespace GuiCore
         }
 
         private List<IceServer> iceServers = new List<IceServer>();
-        public void GetIceServers(List<IceServer> iceServersList)
+        public void SetIceServers(List<IceServer> iceServersList)
         {
             iceServers = iceServersList;
         }
@@ -275,13 +275,11 @@ namespace GuiCore
             string selectedAudioCodecName = (string)localSettings.Values["SelectedAudioCodecName"];
             string preferredAudioCodecId = string.Empty;
 
-            //for (int i = 0; i < DefaultSettings.GetAudioCodecs.Count; i++)
-            //{
-
-
-            //    if (selectedAudioCodecName == DefaultSettings.GetAudioCodecs[i].Name)
-            //        preferredAudioCodecId = DefaultSettings.GetAudioCodecs[i].Id;
-            //}
+            for (int i = 0; i < Devices.Instance.AudioCodecsList.Count; i++)
+            {
+                if (selectedAudioCodecName == Devices.Instance.AudioCodecsList[i].DisplayName)
+                    preferredAudioCodecId = Devices.Instance.AudioCodecsList[i].Id;
+            }
 
             return preferredAudioCodecId;
         }
