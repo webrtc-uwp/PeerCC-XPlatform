@@ -1,14 +1,10 @@
-﻿using Org.WebRtc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Media.Capture;
-using Windows.Media.MediaProperties;
 using WebRtcAdapter.Call;
-using System.Linq;
 using ClientCore.Call;
 
 namespace GuiCore
@@ -87,55 +83,6 @@ namespace GuiCore
                 }
                 return accessRequestAccepted;
             }).AsAsyncOperation();
-        }
-
-        public IAsyncOperation<IList<MediaVideoFormat>> GetMediaVideoFormatList(string deviceId)
-        {
-            var mediaCapture = new MediaCapture();
-            var mediaSettings = new MediaCaptureInitializationSettings();
-
-            mediaSettings.VideoDeviceId = deviceId;
-
-            Task initTask = mediaCapture.InitializeAsync(mediaSettings).AsTask();
-
-            return initTask.ContinueWith(initResult =>
-            {
-                if (initResult.Exception != null)
-                {
-                    Debug.WriteLine("Failed to initialize video device: " + initResult.Exception.Message);
-                    return null;
-                }
-                IReadOnlyList<IMediaEncodingProperties> streamProperties =
-                    mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
-
-                IList<MediaVideoFormat> mediaVideoFormatList = new List<MediaVideoFormat>();
-
-                HashSet<string> resolutionsHashSet = new HashSet<string>();
-
-                foreach (VideoEncodingProperties property in streamProperties)
-                    resolutionsHashSet.Add($"{property.Width}x{property.Height}");
-
-                foreach (string resolution in resolutionsHashSet)
-                {
-                    string[] r = resolution.Split("x");
-                    int width = int.Parse(r[0]);
-                    int height = int.Parse(r[1]);
-
-                    HashSet<int> frameRateHashSet = new HashSet<int>();
-
-                    foreach (VideoEncodingProperties property in streamProperties)
-                        if (property.Width == width && property.Height == height)
-                            frameRateHashSet.Add((int)(property.FrameRate.Numerator / property.FrameRate.Denominator));
-
-                    var mediaVideoFormat = new MediaVideoFormat();
-                    mediaVideoFormat.GetId(deviceId + resolution);
-                    mediaVideoFormat.GetDimension(width, height);
-                    mediaVideoFormat.GetFrameRates(frameRateHashSet.OrderBy(v => v).ToList());
-
-                    mediaVideoFormatList.Add(mediaVideoFormat);
-                }
-                return mediaVideoFormatList;
-            }).AsAsyncOperation<IList<MediaVideoFormat>>();
         }
     }
 }
