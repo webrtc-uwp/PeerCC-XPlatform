@@ -63,7 +63,7 @@ namespace GuiCore
             }
         }
 
-        public ApplicationDataContainer localSettings =
+        private ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
 
         public bool PeerConnectedToServer;
@@ -118,16 +118,55 @@ namespace GuiCore
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
-        public void SetCall(string sdp)
+        private CallConfiguration ConfigureCall(CallProvider callProvider)
+        {
+            var callConfiguration = new CallConfiguration();
+
+            callConfiguration.IceServers = iceServers;
+            callConfiguration.PreferredInputAudioDeviceId = callProvider.GetPreferredInputAudioDeviceId(Devices.Instance.AudioMediaDevicesCapturersList);
+            callConfiguration.PreferredAudioOutputDeviceId = callProvider.GetPreferredOutputAudioDeviceId(Devices.Instance.AudioMediaDevicesRendersList);
+            callConfiguration.PreferredVideoDeviceId = callProvider.GetPreferredVideoDeviceId(Devices.Instance.VideoMediaDevicesList);
+            callConfiguration.PreferredVideoFormatId = callProvider.GetPreferredVideoFormatId(Devices.Instance.VideoMediaDevicesList);
+            callConfiguration.PreferredFrameRate = callProvider.GetPreferredFrameRate();
+            callConfiguration.PreferredAudioCodecId = callProvider.GetPreferredAudioCodecId(Devices.Instance.AudioCodecsList);
+            callConfiguration.PreferredVideoCodecId = callProvider.GetPreferredVideoCodecId(Devices.Instance.VideoCodecsList);
+            callConfiguration.LocalVideoElement = MediaElementImpl.GetMediaElement(SelfVideo);
+            callConfiguration.RemoteVideoElement = MediaElementImpl.GetMediaElement(PeerVideo);
+
+            return callConfiguration;
+        }
+
+        public CallProvider SetCallProvider()
         {
             ICallProvider callFactory =
                 ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
 
-            CallProvider callProvider = (CallProvider)callFactory;
+            return (CallProvider)callFactory;
+        }
+
+        public void SetLocalCall(string sdp)
+        {
+            CallProvider callProvider = SetCallProvider();
+
+            CallInfo callInfo = (CallInfo)callProvider.PlaceCall(ConfigureCall(callProvider));
 
             Call = (Call)callProvider.GetCall();
+            callInfo.SetCall(Call);
+            callInfo.SetSdp(sdp);
 
-            CallInfo callInfo = (CallInfo)callProvider.PlaceCall(ConfigureCall());
+            Call.OnResolutionChanged += Call_OnResolutionChanged;
+            Call.OnFrameRateChanged += Call_OnFrameRateChanged;
+
+            //await Call.HangupAsync();
+        }
+
+        public void SetRemoteCall(string sdp)
+        {
+            CallProvider callProvider = SetCallProvider();
+
+            CallInfo callInfo = (CallInfo)callProvider.AnswerCall(ConfigureCall(callProvider), sdp);
+
+            Call = (Call)callProvider.GetCall();
             callInfo.SetCall(Call);
             callInfo.SetSdp(sdp);
 
@@ -161,127 +200,10 @@ namespace GuiCore
             Debug.WriteLine($"Frame rate changed - direction: {direction}, frame rate: {frameRate}");
         }
 
-        public CallConfiguration ConfigureCall()
-        {
-            CallConfiguration callConfiguration = new CallConfiguration();
-            callConfiguration.IceServers = iceServers;
-            callConfiguration.PreferredInputAudioDeviceId = GetPreferredInputAudioDeviceId();
-            callConfiguration.PreferredAudioOutputDeviceId = GetPreferredOutputAudioDeviceId();
-            callConfiguration.PreferredVideoDeviceId = GetPreferredVideoDeviceId();
-
-            callConfiguration.PreferredVideoFormatId = GetPreferredVideoFormatId();
-            callConfiguration.PreferredFrameRate = GetPreferredFrameRate();
-
-            callConfiguration.PreferredAudioCodecId = GetPreferredAudioCodecId();
-            callConfiguration.PreferredVideoCodecId = GetPreferredVideoCodecId();
-
-            callConfiguration.LocalVideoElement = MediaElementImpl.GetMediaElement(SelfVideo);
-            callConfiguration.RemoteVideoElement = MediaElementImpl.GetMediaElement(PeerVideo);
-
-            return callConfiguration;
-        }
-
         private List<IceServer> iceServers = new List<IceServer>();
         public void SetIceServers(List<IceServer> iceServersList)
         {
             iceServers = iceServersList;
-        }
-
-        private string GetPreferredVideoFormatId()
-        {
-            string selectedResolution = (string)localSettings.Values["SelectedResolution"];
-            string preferredVideoFormatId = string.Empty;
-
-            for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
-            {
-                for (int j = 0; j < Devices.Instance.VideoMediaDevicesList[i].VideoFormats.Count; j++)
-                {
-                    Size dimension = Devices.Instance.VideoMediaDevicesList[i].VideoFormats[j].Dimension;
-                    string resolutionString = dimension.Width.ToString() + " x " + dimension.Height.ToString();
-                    if (selectedResolution == resolutionString)
-                        preferredVideoFormatId = Devices.Instance.VideoMediaDevicesList[i].VideoFormats[j].Id;
-                }
-            }
-
-            return preferredVideoFormatId;
-        }
-
-        private int? GetPreferredFrameRate()
-        {
-            if (localSettings.Values["SelectedFrameRate"] != null)
-                return int.Parse((string)localSettings.Values["SelectedFrameRate"]);
-            else
-                return -1;
-        }
-
-        private string GetPreferredVideoDeviceId()
-        {
-            string selectedCameraName = (string)localSettings.Values["SelectedCameraName"];
-            string preferredVideoDeviceId = string.Empty;
-
-            for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
-            {
-                if (selectedCameraName == Devices.Instance.VideoMediaDevicesList[i].DisplayName)
-                    preferredVideoDeviceId = Devices.Instance.VideoMediaDevicesList[i].Id;
-            }
-
-            return preferredVideoDeviceId;
-        }
-
-        private string GetPreferredOutputAudioDeviceId()
-        {
-            string selectedSpeakerName = (string)localSettings.Values["SelectedSpeakerName"];
-            string preferredOutputAudioDeviceId = string.Empty;
-
-            for (int i = 0; i < Devices.Instance.AudioMediaDevicesRendersList.Count; i++)
-            {
-                if (selectedSpeakerName == Devices.Instance.AudioMediaDevicesRendersList[i].DisplayName)
-                    preferredOutputAudioDeviceId = Devices.Instance.AudioMediaDevicesRendersList[i].Id;
-            }
-
-            return preferredOutputAudioDeviceId;
-        }
-
-        private string GetPreferredInputAudioDeviceId()
-        {
-            string selectedMicrophoneName = (string)localSettings.Values["SelectedMicrophoneName"];
-            string preferredInputAudioDeviceId = string.Empty;
-
-            for (int i = 0; i < Devices.Instance.AudioMediaDevicesCapturersList.Count; i++)
-            {
-                if (selectedMicrophoneName == Devices.Instance.AudioMediaDevicesCapturersList[i].DisplayName)
-                    preferredInputAudioDeviceId = Devices.Instance.AudioMediaDevicesCapturersList[i].Id;
-            }
-
-            return preferredInputAudioDeviceId;
-        }
-
-        private string GetPreferredVideoCodecId()
-        {
-            string selectedVideoCodecName = (string)localSettings.Values["SelectedVideoCodecName"];
-            string preferredVideoCodecId = string.Empty;
-
-            for (int i = 0; i < Devices.Instance.VideoCodecsList.Count; i++)
-            {
-                if (selectedVideoCodecName == Devices.Instance.VideoCodecsList[i].DisplayName)
-                    preferredVideoCodecId = Devices.Instance.VideoCodecsList[i].Id;
-            }
-
-            return preferredVideoCodecId;
-        }
-
-        private string GetPreferredAudioCodecId()
-        {
-            string selectedAudioCodecName = (string)localSettings.Values["SelectedAudioCodecName"];
-            string preferredAudioCodecId = string.Empty;
-
-            for (int i = 0; i < Devices.Instance.AudioCodecsList.Count; i++)
-            {
-                if (selectedAudioCodecName == Devices.Instance.AudioCodecsList[i].DisplayName)
-                    preferredAudioCodecId = Devices.Instance.AudioCodecsList[i].Id;
-            }
-
-            return preferredAudioCodecId;
         }
 
         public void AddIceServers(List<IceServer> iceServersList)
@@ -593,7 +515,7 @@ namespace GuiCore
 
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
-                SetCall(modifiedOffer.Sdp);
+                SetLocalCall(modifiedOffer.Sdp);
 
                 SendSdp(modifiedOffer);
             }
@@ -857,9 +779,12 @@ namespace GuiCore
 
                     if (messageType == RTCSdpType.Offer)
                     {
+                        SetRemoteCall(sdp);
+
                         var answerOptions = new RTCAnswerOptions();
                         IRTCSessionDescription answer = await PeerConnection.CreateAnswer(answerOptions);
                         await PeerConnection.SetLocalDescription(answer);
+
                         // Send answer
                         SendSdp(answer);
                     }
