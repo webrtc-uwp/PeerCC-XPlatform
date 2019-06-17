@@ -176,20 +176,6 @@ namespace GuiCore
             //await Call.HangupAsync();
         }
 
-        private async Task SetMedia()
-        {
-            IMediaProvider mediaFactory =
-                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
-
-            Media = (Media)await mediaFactory.GetMediaAsync();
-
-            IList<IMediaDevice> microphonesList = await Media.GetMediaDevicesAsync(MediaKind.AudioInputDevice);
-            IList<IMediaDevice> speakersList = await Media.GetMediaDevicesAsync(MediaKind.AudioOutputDevice);
-            IList<IMediaDevice> camerasList = await Media.GetMediaDevicesAsync(MediaKind.VideoDevice);
-            IList<ICodec> audioCodecsList = await Media.GetCodecsAsync(MediaKind.AudioCodec); 
-            IList<ICodec> videoCodecsList = await Media.GetCodecsAsync(MediaKind.VideoCodec);
-        }
-
         public void Call_OnResolutionChanged(MediaDirection direction, Size dimension)
         {
             Debug.WriteLine($"Resolution changed - direction: {direction}, dimension: {dimension.Width} x {dimension.Height}");
@@ -465,8 +451,6 @@ namespace GuiCore
         public async Task ConnectToPeer(int peerId)
         {
             Debug.Assert(_peerId == -1);
-
-            await SetMedia();
 
             if (PeerConnection != null)
             {
