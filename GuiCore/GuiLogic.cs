@@ -315,7 +315,7 @@ namespace GuiCore
                     frameRates.Add(frameRate);
             }
 
-            // Maximum values for the selected camera
+            // Maximum and minimum values for the selected camera
             IReadOnlyList<IConstraint> mandatoryConstraints = new List<IConstraint>()
             {
                 new Constraint("maxWidth", widths.Max().ToString()),
@@ -375,58 +375,7 @@ namespace GuiCore
             }
         }
 
-        private bool _cameraEnabled = true;
-        private bool _microphoneIsOn = true;
-
-        /// <summary>
-        /// Add local media track event handler.
-        /// </summary>
-        /// <param name="track">Media track kind.</param>
-        public void Instance_OnAddLocalTrack(IMediaStreamTrack track)
-        {
-            Debug.WriteLine("Add local track!");
-
-            if (track.Kind == "audio")
-            {
-                if (_microphoneIsOn)
-                {
-                    Debug.WriteLine("audio!");
-                }
-            }
-            if (track.Kind == "video")
-            {
-                if (_cameraEnabled)
-                {
-                    Debug.WriteLine("video!");
-                    EnableLocalVideoStream();
-                }
-            }
-        }
-
         public object MediaLock { get; set; } = new object();
-        private bool VideoEnabled = true;
-
-        /// <summary>
-        /// Enables the local video stream.
-        /// </summary>
-        private void EnableLocalVideoStream()
-        {
-            lock (MediaLock)
-            {
-                if (_selfVideoTrack != null)
-                    _selfVideoTrack.Enabled = true;
-                VideoEnabled = true;
-            }
-        }
-
-        /// <summary>
-        /// Add remote media track event handler.
-        /// </summary>
-        /// <param name="track">Media track kind.</param>
-        public void Instance_OnAddRemoteTrack(IMediaStreamTrack track)
-        {
-            Debug.WriteLine("MainPage: Add remote media track!");
-        }
 
         public event Action<IMediaStreamTrack> OnAddLocalTrack;
 
