@@ -118,18 +118,18 @@ namespace GuiCore
                 .GetAccount(serviceUri, HttpSignaler.LocalPeer.Name, HttpSignaler);
         }
 
-        private CallConfiguration ConfigureCall(CallProvider callProvider)
+        private CallConfiguration ConfigureCall(Call call)
         {
             var callConfiguration = new CallConfiguration();
 
             callConfiguration.IceServers = iceServers;
-            callConfiguration.PreferredInputAudioDeviceId = callProvider.GetPreferredInputAudioDeviceId(Devices.Instance.AudioMediaDevicesCapturersList);
-            callConfiguration.PreferredAudioOutputDeviceId = callProvider.GetPreferredOutputAudioDeviceId(Devices.Instance.AudioMediaDevicesRendersList);
-            callConfiguration.PreferredVideoDeviceId = callProvider.GetPreferredVideoDeviceId(Devices.Instance.VideoMediaDevicesList);
-            callConfiguration.PreferredVideoFormatId = callProvider.GetPreferredVideoFormatId(Devices.Instance.VideoMediaDevicesList);
-            callConfiguration.PreferredFrameRate = callProvider.GetPreferredFrameRate();
-            callConfiguration.PreferredAudioCodecId = callProvider.GetPreferredAudioCodecId(Devices.Instance.AudioCodecsList);
-            callConfiguration.PreferredVideoCodecId = callProvider.GetPreferredVideoCodecId(Devices.Instance.VideoCodecsList);
+            callConfiguration.PreferredInputAudioDeviceId = call.GetPreferredInputAudioDeviceId(Devices.Instance.AudioMediaDevicesCapturersList);
+            callConfiguration.PreferredAudioOutputDeviceId = call.GetPreferredOutputAudioDeviceId(Devices.Instance.AudioMediaDevicesRendersList);
+            callConfiguration.PreferredVideoDeviceId = call.GetPreferredVideoDeviceId(Devices.Instance.VideoMediaDevicesList);
+            callConfiguration.PreferredVideoFormatId = call.GetPreferredVideoFormatId(Devices.Instance.VideoMediaDevicesList);
+            callConfiguration.PreferredFrameRate = call.GetPreferredFrameRate();
+            callConfiguration.PreferredAudioCodecId = call.GetPreferredAudioCodecId(Devices.Instance.AudioCodecsList);
+            callConfiguration.PreferredVideoCodecId = call.GetPreferredVideoCodecId(Devices.Instance.VideoCodecsList);
             callConfiguration.LocalVideoElement = MediaElementImpl.GetMediaElement(SelfVideo);
             callConfiguration.RemoteVideoElement = MediaElementImpl.GetMediaElement(PeerVideo);
 
@@ -148,11 +148,11 @@ namespace GuiCore
         {
             CallProvider callProvider = SetCallProvider();
 
-            CallInfo callInfo = (CallInfo)callProvider.PlaceCall(ConfigureCall(callProvider));
+            //CallInfo callInfo = (CallInfo)callProvider.PlaceCall(ConfigureCall(callProvider));
 
-            Call = (Call)callProvider.GetCall();
-            callInfo.SetCall(Call);
-            callInfo.SetSdp(sdp);
+            //Call = (Call)callProvider.GetCall();
+            //callInfo.SetCall(Call);
+            //callInfo.SetSdp(sdp);
 
             Call.OnResolutionChanged += Call_OnResolutionChanged;
             Call.OnFrameRateChanged += Call_OnFrameRateChanged;
@@ -164,11 +164,11 @@ namespace GuiCore
         {
             CallProvider callProvider = SetCallProvider();
 
-            CallInfo callInfo = (CallInfo)callProvider.AnswerCall(ConfigureCall(callProvider), sdp);
+            //CallInfo callInfo = (CallInfo)callProvider.AnswerCall(ConfigureCall(callProvider), sdp);
 
-            Call = (Call)callProvider.GetCall();
-            callInfo.SetCall(Call);
-            callInfo.SetSdp(sdp);
+            //Call = (Call)callProvider.GetCall();
+            //callInfo.SetCall(Call);
+            //callInfo.SetSdp(sdp);
 
             Call.OnResolutionChanged += Call_OnResolutionChanged;
             Call.OnFrameRateChanged += Call_OnFrameRateChanged;
@@ -463,7 +463,7 @@ namespace GuiCore
 
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
-                SetLocalCall(modifiedOffer.Sdp);
+                //SetLocalCall(modifiedOffer.Sdp);
 
                 SendSdp(modifiedOffer);
             }
@@ -727,7 +727,7 @@ namespace GuiCore
 
                     if (messageType == RTCSdpType.Offer)
                     {
-                        SetRemoteCall(sdp);
+                        //SetRemoteCall(sdp);
 
                         var answerOptions = new RTCAnswerOptions();
                         IRTCSessionDescription answer = await PeerConnection.CreateAnswer(answerOptions);

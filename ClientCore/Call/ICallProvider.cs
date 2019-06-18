@@ -1,9 +1,9 @@
-﻿namespace ClientCore.Call
+﻿using System.Threading.Tasks;
+
+namespace ClientCore.Call
 {
     public interface ICallProvider
     {
-        ICallInfo PlaceCall(CallConfiguration config);
-
-        ICallInfo AnswerCall(CallConfiguration config, string sdpOfRemoteParty);
+        Task<ICall> GetCallAsync();
     }
 }
