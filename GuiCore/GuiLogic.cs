@@ -435,8 +435,6 @@ namespace GuiCore
 
                 CallInfo callInfo = (CallInfo)await Call.PlaceCallAsync(ConfigureCall(Call));
 
-                string offerSdp = callInfo.Sdp;
-
                 JsonObject json = callInfo.Json;
 
                 HttpSignaler.SendToPeer(new Message

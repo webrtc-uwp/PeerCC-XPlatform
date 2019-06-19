@@ -50,30 +50,9 @@ namespace WebRtcAdapter.Call
             offerOptions.OfferToReceiveVideo = true;
             IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
-            //if (localSettings.Values["SelectedAudioCodecName"] != null)
-            //{
-            //    foreach (var aCodec in Devices.Instance.AudioCodecsList)
-            //    {
-            //        if (aCodec.DisplayName == (string)localSettings.Values["SelectedAudioCodecName"])
-            //            AudioCodec = (Codec)aCodec;
-            //    }
-            //}
-            //else AudioCodec = (Codec)Devices.Instance.AudioCodecsList.First();
-
-            //if (localSettings.Values["SelectedVideoCodecName"] != null)
-            //{
-            //    foreach (var vCodec in Devices.Instance.VideoCodecsList)
-            //    {
-            //        if (vCodec.DisplayName == (string)localSettings.Values["SelectedVideoCodecName"])
-            //            VideoCodec = (Codec)vCodec;
-            //    }
-            //}
-            //else
-            //    VideoCodec = (Codec)Devices.Instance.VideoCodecsList.First();
-
             // Alter sdp to force usage of selected codecs
             string modifiedSdp = offer.Sdp;
-            //SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(AudioCodec.Id), int.Parse(VideoCodec.Id));
+            //SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(config.PreferredAudioCodecId), int.Parse(config.PreferredVideoCodecId));
             var sdpInit = new RTCSessionDescriptionInit();
             sdpInit.Sdp = modifiedSdp;
             sdpInit.Type = offer.SdpType;
