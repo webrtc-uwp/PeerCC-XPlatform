@@ -1,6 +1,4 @@
-﻿using Windows.Data.Json;
-
-namespace ClientCore.Call
+﻿namespace ClientCore.Call
 {
     public interface ICallInfo
     {
@@ -15,8 +13,8 @@ namespace ClientCore.Call
         string Sdp { get; }
 
         /// <summary>
-        /// Get the offer or answer JSON.
+        /// Get the offer or answer JSON string.
         /// </summary>
-        JsonObject Json { get; }
+        string JsonString { get; }
     }
 }

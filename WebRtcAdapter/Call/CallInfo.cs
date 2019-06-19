@@ -1,5 +1,4 @@
 ﻿using ClientCore.Call;
-using Windows.Data.Json;
 
 namespace WebRtcAdapter.Call
 {
@@ -9,7 +8,7 @@ namespace WebRtcAdapter.Call
 
         public string Sdp { get; private set; }
 
-        public JsonObject Json { get; private set; }
+        public string JsonString { get; private set; }
 
         public void SetCall(Call call)
         {
@@ -21,9 +20,9 @@ namespace WebRtcAdapter.Call
             Sdp = sdp;
         }
 
-        public void SetJson(JsonObject json)
+        public void SetJsonString(string jsonString)
         {
-            Json = json;
+            JsonString = jsonString;
         }
     }
 }

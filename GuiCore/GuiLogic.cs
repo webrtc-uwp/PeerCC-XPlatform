@@ -435,16 +435,12 @@ namespace GuiCore
 
                 CallInfo callInfo = (CallInfo)await Call.PlaceCallAsync(ConfigureCall(Call));
 
-                JsonObject json = callInfo.Json;
-
                 HttpSignaler.SendToPeer(new Message
                 {
                     Id = "0",
-                    Content = json.Stringify(),
+                    Content = callInfo.JsonString,
                     PeerId = _peerId.ToString()
                 });
-
-                Debug.WriteLine($"Send message json: {json}");
             }
         }
 

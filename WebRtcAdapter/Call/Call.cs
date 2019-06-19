@@ -62,12 +62,12 @@ namespace WebRtcAdapter.Call
 
             Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
-            JsonObject json = SdpToJson(modifiedOffer);
+            string jsonString = SdpToJsonString(modifiedOffer);
 
             CallInfo callInfo = new CallInfo();
             callInfo.SetCall(new Call());
             callInfo.SetSdp(modifiedSdp);
-            callInfo.SetJson(json);
+            callInfo.SetJsonString(jsonString);
 
             return callInfo;
         }
@@ -77,12 +77,11 @@ namespace WebRtcAdapter.Call
         /// </summary>
         /// <param name="description">RTC session description.</param>
         /// <returns>JSON object.</returns>
-        private JsonObject SdpToJson(IRTCSessionDescription description)
+        private string SdpToJsonString(IRTCSessionDescription description)
         {
             JsonObject json = null;
             Debug.WriteLine($"Sent session description: {description.Sdp}");
 
-            json = new JsonObject();
             string messageType = null;
 
             switch (description.SdpType)
@@ -93,11 +92,13 @@ namespace WebRtcAdapter.Call
                 default: Debug.Assert(false, description.SdpType.ToString()); break;
             }
 
-            return new JsonObject
+            json = new JsonObject
             {
                 { NegotiationAtributes.Type, JsonValue.CreateStringValue(messageType) },
                 { NegotiationAtributes.Sdp, JsonValue.CreateStringValue(description.Sdp) }
             };
+
+            return json.Stringify();
 
             //SendMessage(json);
         }
