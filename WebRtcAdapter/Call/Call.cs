@@ -1,8 +1,11 @@
 ﻿using ClientCore.Call;
+using Org.WebRtc;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using Windows.Storage;
 
 namespace WebRtcAdapter.Call
@@ -12,9 +15,112 @@ namespace WebRtcAdapter.Call
         public event FrameRateChangeHandler OnFrameRateChanged;
         public event ResolutionChangeHandler OnResolutionChanged;
 
-        public Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
+
+        private readonly object _peerConnectionLock = new object();
+        private RTCPeerConnection _peerConnection_DoNotUse;
+        public RTCPeerConnection PeerConnection
         {
-            return Task.Run(() => (ICallInfo)new CallInfo());
+            get
+            {
+                lock (_peerConnectionLock)
+                {
+                    return _peerConnection_DoNotUse;
+                }
+            }
+            set
+            {
+                lock (_peerConnectionLock)
+                {
+                    if (value == null)
+                    {
+                        if (_peerConnection_DoNotUse != null)
+                        {
+                            (_peerConnection_DoNotUse as IDisposable)?.Dispose();
+                        }
+                    }
+                    _peerConnection_DoNotUse = value;
+                }
+            }
+        }
+
+        public async Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
+        {
+            var offerOptions = new RTCOfferOptions();
+            offerOptions.OfferToReceiveAudio = true;
+            offerOptions.OfferToReceiveVideo = true;
+            IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
+
+            //if (localSettings.Values["SelectedAudioCodecName"] != null)
+            //{
+            //    foreach (var aCodec in Devices.Instance.AudioCodecsList)
+            //    {
+            //        if (aCodec.DisplayName == (string)localSettings.Values["SelectedAudioCodecName"])
+            //            AudioCodec = (Codec)aCodec;
+            //    }
+            //}
+            //else AudioCodec = (Codec)Devices.Instance.AudioCodecsList.First();
+
+            //if (localSettings.Values["SelectedVideoCodecName"] != null)
+            //{
+            //    foreach (var vCodec in Devices.Instance.VideoCodecsList)
+            //    {
+            //        if (vCodec.DisplayName == (string)localSettings.Values["SelectedVideoCodecName"])
+            //            VideoCodec = (Codec)vCodec;
+            //    }
+            //}
+            //else
+            //    VideoCodec = (Codec)Devices.Instance.VideoCodecsList.First();
+
+            // Alter sdp to force usage of selected codecs
+            string modifiedSdp = offer.Sdp;
+            //SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(AudioCodec.Id), int.Parse(VideoCodec.Id));
+            var sdpInit = new RTCSessionDescriptionInit();
+            sdpInit.Sdp = modifiedSdp;
+            sdpInit.Type = offer.SdpType;
+            var modifiedOffer = new RTCSessionDescription(sdpInit);
+
+            await PeerConnection.SetLocalDescription(modifiedOffer);
+
+            Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
+
+            JsonObject json = SdpToJson(modifiedOffer);
+
+            CallInfo callInfo = new CallInfo();
+            callInfo.SetCall(new Call());
+            callInfo.SetSdp(modifiedSdp);
+            callInfo.SetJson(json);
+
+            return callInfo;
+        }
+
+        /// <summary>
+        /// Creates JSON object from SDP.
+        /// </summary>
+        /// <param name="description">RTC session description.</param>
+        /// <returns>JSON object.</returns>
+        private JsonObject SdpToJson(IRTCSessionDescription description)
+        {
+            JsonObject json = null;
+            Debug.WriteLine($"Sent session description: {description.Sdp}");
+
+            json = new JsonObject();
+            string messageType = null;
+
+            switch (description.SdpType)
+            {
+                case RTCSdpType.Offer: messageType = "offer"; break;
+                case RTCSdpType.Answer: messageType = "answer"; break;
+                case RTCSdpType.Pranswer: messageType = "pranswer"; break;
+                default: Debug.Assert(false, description.SdpType.ToString()); break;
+            }
+
+            return new JsonObject
+            {
+                { NegotiationAtributes.Type, JsonValue.CreateStringValue(messageType) },
+                { NegotiationAtributes.Sdp, JsonValue.CreateStringValue(description.Sdp) }
+            };
+
+            //SendMessage(json);
         }
 
         public Task<ICallInfo> AnswerCallAsync(CallConfiguration config, string sdpOfRemoteParty)
@@ -125,6 +231,16 @@ namespace WebRtcAdapter.Call
             }
 
             return preferredAudioCodecId;
+        }
+
+        // SDP negotiation attributes
+        public class NegotiationAtributes
+        {
+            public static readonly string SdpMid = "sdpMid";
+            public static readonly string SdpMLineIndex = "sdpMLineIndex";
+            public static readonly string Candidate = "candidate";
+            public static readonly string Type = "type";
+            public static readonly string Sdp = "sdp";
         }
     }
 }

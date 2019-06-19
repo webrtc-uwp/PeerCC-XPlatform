@@ -36,32 +36,32 @@ namespace GuiCore
             }
         }
 
-        private readonly object _peerConnectionLock = new object();
-        private RTCPeerConnection _peerConnection_DoNotUse;
-        public RTCPeerConnection PeerConnection
-        {
-            get
-            {
-                lock (_peerConnectionLock)
-                {
-                    return _peerConnection_DoNotUse;
-                }
-            }
-            set
-            {
-                lock (_peerConnectionLock)
-                {
-                    if (value == null)
-                    {
-                        if (_peerConnection_DoNotUse != null)
-                        {
-                            (_peerConnection_DoNotUse as IDisposable)?.Dispose();
-                        }
-                    }
-                    _peerConnection_DoNotUse = value;
-                }
-            }
-        }
+        //private readonly object _peerConnectionLock = new object();
+        //private RTCPeerConnection _peerConnection_DoNotUse;
+        //public RTCPeerConnection PeerConnection
+        //{
+        //    get
+        //    {
+        //        lock (_peerConnectionLock)
+        //        {
+        //            return _peerConnection_DoNotUse;
+        //        }
+        //    }
+        //    set
+        //    {
+        //        lock (_peerConnectionLock)
+        //        {
+        //            if (value == null)
+        //            {
+        //                if (_peerConnection_DoNotUse != null)
+        //                {
+        //                    (_peerConnection_DoNotUse as IDisposable)?.Dispose();
+        //                }
+        //            }
+        //            _peerConnection_DoNotUse = value;
+        //        }
+        //    }
+        //}
 
         private ApplicationDataContainer localSettings =
             ApplicationData.Current.LocalSettings;
@@ -254,22 +254,22 @@ namespace GuiCore
         /// <returns>True if connection to a peer is successfully created.</returns>
         private bool CreatePeerConnection()
         {
-            Debug.Assert(PeerConnection == null);
+            Debug.Assert(Call.PeerConnection == null);
 
             Debug.WriteLine("Creating peer connection.");
-            PeerConnection = new RTCPeerConnection(ConfigureRtc());
+            Call.PeerConnection = new RTCPeerConnection(ConfigureRtc());
 
             OnPeerConnectionCreated?.Invoke();
 
-            if (PeerConnection == null) 
+            if (Call.PeerConnection == null) 
                 throw new NullReferenceException("Peer connection is not created.");
 
-            PeerConnection.OnIceGatheringStateChange += PeerConnection_OnIceGatheringStateChange;
-            PeerConnection.OnIceConnectionStateChange += PeerConnection_OnIceConnectionStateChange;
+            Call.PeerConnection.OnIceGatheringStateChange += PeerConnection_OnIceGatheringStateChange;
+            Call.PeerConnection.OnIceConnectionStateChange += PeerConnection_OnIceConnectionStateChange;
 
-            PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
-            PeerConnection.OnTrack += PeerConnection_OnTrack;
-            PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
+            Call.PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
+            Call.PeerConnection.OnTrack += PeerConnection_OnTrack;
+            Call.PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
 
             GetUserMedia();
 
@@ -283,13 +283,13 @@ namespace GuiCore
         private void PeerConnection_OnIceGatheringStateChange()
         {
             Debug.WriteLine("Ice connection state change, gathering-state = "
-                    + PeerConnection.IceGatheringState.ToString().ToLower());
+                    + Call.PeerConnection.IceGatheringState.ToString().ToLower());
         }
 
         private void PeerConnection_OnIceConnectionStateChange()
         {
             Debug.WriteLine("Ice connection state change, state="
-                    + (PeerConnection != null ? PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
+                    + (Call.PeerConnection != null ? Call.PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
         }
 
         private void GetUserMedia()
@@ -351,8 +351,8 @@ namespace GuiCore
         private void AddLocalMediaTracks()
         {
             Debug.WriteLine("Adding local media tracks.");
-            PeerConnection.AddTrack(_selfVideoTrack);
-            PeerConnection.AddTrack(_selfAudioTrack);
+            Call.PeerConnection.AddTrack(_selfVideoTrack);
+            Call.PeerConnection.AddTrack(_selfAudioTrack);
 
             OnAddLocalTrack?.Invoke(_selfVideoTrack);
             OnAddLocalTrack?.Invoke(_selfAudioTrack);
@@ -416,7 +416,14 @@ namespace GuiCore
         {
             Debug.Assert(_peerId == -1);
 
-            if (PeerConnection != null)
+            ICallProvider callFactory =
+                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+
+            CallProvider callProvider = (CallProvider)callFactory;
+
+            Call = (Call)await callProvider.GetCallAsync();
+
+            if (Call.PeerConnection != null)
             {
                 Debug.WriteLine("[Error] We only support connection to one peer at a time.");
                 return;
@@ -425,47 +432,21 @@ namespace GuiCore
             if (CreatePeerConnection())
             {
                 _peerId = peerId;
-                var offerOptions = new RTCOfferOptions();
-                offerOptions.OfferToReceiveAudio = true;
-                offerOptions.OfferToReceiveVideo = true;
-                IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
-                if (localSettings.Values["SelectedAudioCodecName"] != null)
+                CallInfo callInfo = (CallInfo)await Call.PlaceCallAsync(ConfigureCall(Call));
+
+                string offerSdp = callInfo.Sdp;
+
+                JsonObject json = callInfo.Json;
+
+                HttpSignaler.SendToPeer(new Message
                 {
-                    foreach (var aCodec in Devices.Instance.AudioCodecsList)
-                    {
-                        if (aCodec.DisplayName == (string)localSettings.Values["SelectedAudioCodecName"])
-                            AudioCodec = (Codec)aCodec;
-                    }
-                }
-                else AudioCodec = (Codec)Devices.Instance.AudioCodecsList.First();
+                    Id = "0",
+                    Content = json.Stringify(),
+                    PeerId = _peerId.ToString()
+                });
 
-                if (localSettings.Values["SelectedVideoCodecName"] != null)
-                {
-                    foreach (var vCodec in Devices.Instance.VideoCodecsList)
-                    {
-                        if (vCodec.DisplayName == (string)localSettings.Values["SelectedVideoCodecName"])
-                            VideoCodec = (Codec)vCodec;
-                    }
-                }
-                else
-                    VideoCodec = (Codec)Devices.Instance.VideoCodecsList.First();
-
-                // Alter sdp to force usage of selected codecs
-                string modifiedSdp = offer.Sdp;
-                //SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(AudioCodec.Id), int.Parse(VideoCodec.Id));
-                var sdpInit = new RTCSessionDescriptionInit();
-                sdpInit.Sdp = modifiedSdp;
-                sdpInit.Type = offer.SdpType;
-                var modifiedOffer = new RTCSessionDescription(sdpInit);
-
-                await PeerConnection.SetLocalDescription(modifiedOffer);
-
-                Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
-
-                //SetLocalCall(modifiedOffer.Sdp);
-
-                SendSdp(modifiedOffer);
+                Debug.WriteLine($"Send message json: {json}");
             }
         }
 
@@ -486,13 +467,13 @@ namespace GuiCore
         {
             lock (MediaLock)
             {
-                if (PeerConnection != null)
+                if (Call.PeerConnection != null)
                 {
                     _peerId = -1;
 
-                    PeerConnection.OnIceCandidate -= PeerConnection_OnIceCandidate;
-                    PeerConnection.OnTrack -= PeerConnection_OnTrack;
-                    PeerConnection.OnRemoveTrack -= PeerConnection_OnRemoveTrack;
+                    Call.PeerConnection.OnIceCandidate -= PeerConnection_OnIceCandidate;
+                    Call.PeerConnection.OnTrack -= PeerConnection_OnTrack;
+                    Call.PeerConnection.OnRemoveTrack -= PeerConnection_OnRemoveTrack;
 
                     if (_peerVideoTrack != null) _peerVideoTrack.Element = null;
                     if (_selfVideoTrack != null) _selfVideoTrack.Element = null;
@@ -509,7 +490,7 @@ namespace GuiCore
 
                     OnPeerConnectionClosed?.Invoke();
 
-                    PeerConnection = null;
+                    Call.PeerConnection = null;
 
                     OnReadyToConnect?.Invoke();
 
@@ -651,7 +632,7 @@ namespace GuiCore
                        ? jMessage.GetNamedString(NegotiationAtributes.Type) 
                        : null;
 
-                if (PeerConnection == null)
+                if (Call.PeerConnection == null)
                 {
                     if (!string.IsNullOrEmpty(type))
                     {
@@ -687,7 +668,7 @@ namespace GuiCore
                     }
                 }
 
-                if (PeerConnection != null && !string.IsNullOrEmpty(type))
+                if (Call.PeerConnection != null && !string.IsNullOrEmpty(type))
                 {
                     if (type == "offer-loopback")
                     {
@@ -723,15 +704,15 @@ namespace GuiCore
                     sdpInit.Type = messageType;
                     var description = new RTCSessionDescription(sdpInit);
 
-                    await PeerConnection.SetRemoteDescription(description);
+                    await Call.PeerConnection.SetRemoteDescription(description);
 
                     if (messageType == RTCSdpType.Offer)
                     {
                         //SetRemoteCall(sdp);
 
                         var answerOptions = new RTCAnswerOptions();
-                        IRTCSessionDescription answer = await PeerConnection.CreateAnswer(answerOptions);
-                        await PeerConnection.SetLocalDescription(answer);
+                        IRTCSessionDescription answer = await Call.PeerConnection.CreateAnswer(answerOptions);
+                        await Call.PeerConnection.SetLocalDescription(answer);
 
                         // Send answer
                         SendSdp(answer);
@@ -765,7 +746,7 @@ namespace GuiCore
                     candidateInit.SdpMLineIndex = (ushort)sdpMLineIndex;
                     candidate = new RTCIceCandidate(candidateInit);
 
-                    await PeerConnection.AddIceCandidate(candidate);
+                    await Call.PeerConnection.AddIceCandidate(candidate);
 
                     Debug.WriteLine($"Receiving ice candidate:\n{content}");
                 }
