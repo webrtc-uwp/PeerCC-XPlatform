@@ -104,6 +104,16 @@ namespace GuiCore
             HttpSignaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
         }
 
+        private void Call_OnSendMessageToRemotePeer(object sender, string e)
+        {
+            HttpSignaler.SendToPeer(new Message
+            {
+                Id = "0",
+                Content = e,
+                PeerId = _peerId.ToString()
+            });
+        }
+
         private void HttpSignaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
             => Instance.MessageFromPeerTaskRun(e.Message);
 
@@ -423,6 +433,8 @@ namespace GuiCore
 
             Call = (Call)await callProvider.GetCallAsync();
 
+            Call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
+
             if (Call.PeerConnection != null)
             {
                 Debug.WriteLine("[Error] We only support connection to one peer at a time.");
@@ -435,12 +447,13 @@ namespace GuiCore
 
                 CallInfo callInfo = (CallInfo)await Call.PlaceCallAsync(ConfigureCall(Call));
 
-                HttpSignaler.SendToPeer(new Message
-                {
-                    Id = "0",
-                    Content = callInfo.JsonString,
-                    PeerId = _peerId.ToString()
-                });
+
+                //HttpSignaler.SendToPeer(new Message
+                //{
+                //    Id = "0",
+                //    Content = callInfo.JsonString,
+                //    PeerId = _peerId.ToString()
+                //});
             }
         }
 

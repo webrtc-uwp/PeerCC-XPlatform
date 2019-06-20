@@ -43,6 +43,11 @@ namespace WebRtcAdapter.Call
             }
         }
 
+        /// <summary>
+        /// Send JSON string to remote peer.
+        /// </summary>
+        public event EventHandler<string> OnSendMessageToRemotePeer;
+
         public async Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
         {
             var offerOptions = new RTCOfferOptions();
@@ -68,6 +73,8 @@ namespace WebRtcAdapter.Call
             callInfo.SetCall(new Call());
             callInfo.SetSdp(modifiedSdp);
             callInfo.SetJsonString(jsonString);
+
+            OnSendMessageToRemotePeer.Invoke(this, jsonString);
 
             return callInfo;
         }
