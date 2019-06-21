@@ -50,6 +50,12 @@ namespace WebRtcAdapter.Call
 
         public async Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
         {
+            //if (PeerConnection != null)
+            //{
+            //    Debug.WriteLine("[Error] We only support connection to one peer at a time.");
+            //    return null;
+            //}
+
             var offerOptions = new RTCOfferOptions();
             offerOptions.OfferToReceiveAudio = true;
             offerOptions.OfferToReceiveVideo = true;
@@ -77,6 +83,72 @@ namespace WebRtcAdapter.Call
             OnSendMessageToRemotePeer.Invoke(this, jsonString);
 
             return callInfo;
+        }
+
+        // Public events to notify about connection status
+        public event Action OnPeerConnectionCreated;
+
+        /// <summary>
+        /// Creates a peer connection.
+        /// </summary>
+        /// <returns>True if connection to a peer is successfully created.</returns>
+        private bool CreatePeerConnection()
+        {
+            Debug.Assert(PeerConnection == null);
+
+            Debug.WriteLine("Creating peer connection.");
+            PeerConnection = new RTCPeerConnection(ConfigureRtc());
+
+            OnPeerConnectionCreated?.Invoke();
+
+            if (PeerConnection == null)
+                throw new NullReferenceException("Peer connection is not created.");
+
+            PeerConnection.OnIceGatheringStateChange += PeerConnection_OnIceGatheringStateChange;
+            PeerConnection.OnIceConnectionStateChange += PeerConnection_OnIceConnectionStateChange;
+
+            //PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
+            //PeerConnection.OnTrack += PeerConnection_OnTrack;
+            //PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
+
+            //GetUserMedia();
+
+            //AddLocalMediaTracks();
+
+            //BindSelfVideo();
+
+            return true;
+        }
+
+        private void PeerConnection_OnIceGatheringStateChange()
+        {
+            Debug.WriteLine("Ice connection state change, gathering-state = "
+                    + PeerConnection.IceGatheringState.ToString().ToLower());
+        }
+
+        private void PeerConnection_OnIceConnectionStateChange()
+        {
+            Debug.WriteLine("Ice connection state change, state="
+                    + (PeerConnection != null ? PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
+        }
+
+        private readonly List<RTCIceServer> _iceServers;
+        private WebRtcFactory _factory;
+
+        private RTCConfiguration ConfigureRtc()
+        {
+            var factoryConfig = new WebRtcFactoryConfiguration();
+            _factory = new WebRtcFactory(factoryConfig);
+
+            var config = new RTCConfiguration()
+            {
+                Factory = _factory,
+                BundlePolicy = RTCBundlePolicy.Balanced,
+                IceTransportPolicy = RTCIceTransportPolicy.All,
+                IceServers = _iceServers
+            };
+
+            return config;
         }
 
         /// <summary>
