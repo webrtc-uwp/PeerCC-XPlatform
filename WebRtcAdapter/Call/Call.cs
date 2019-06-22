@@ -107,9 +107,9 @@ namespace WebRtcAdapter.Call
             PeerConnection.OnIceGatheringStateChange += PeerConnection_OnIceGatheringStateChange;
             PeerConnection.OnIceConnectionStateChange += PeerConnection_OnIceConnectionStateChange;
 
-            //PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
-            //PeerConnection.OnTrack += PeerConnection_OnTrack;
-            //PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
+            PeerConnection.OnIceCandidate += PeerConnection_OnIceCandidate;
+            PeerConnection.OnTrack += PeerConnection_OnTrack;
+            PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
 
             //GetUserMedia();
 
@@ -118,6 +118,89 @@ namespace WebRtcAdapter.Call
             //BindSelfVideo();
 
             return true;
+        }
+
+        /// <summary>
+        /// Called when WebRTC detects another ICE candidate.
+        /// This candidate needs to be sent to the other peer.
+        /// </summary>
+        /// <param name="Event">Details about RTCPeerConnectionIceEvent</param>
+        private void PeerConnection_OnIceCandidate(IRTCPeerConnectionIceEvent Event)
+        {
+            if (Event.Candidate == null) return;
+
+            double index = (double)Event.Candidate.SdpMLineIndex;
+
+            JsonObject json = null;
+
+            json = new JsonObject
+            {
+                { NegotiationAtributes.SdpMid, JsonValue.CreateStringValue(Event.Candidate.SdpMid) },
+                { NegotiationAtributes.SdpMLineIndex, JsonValue.CreateNumberValue(index) },
+                { NegotiationAtributes.Candidate, JsonValue.CreateStringValue(Event.Candidate.Candidate) }
+            };
+
+            Debug.WriteLine($"Send ice candidate:\n{json.Stringify()}");
+
+            OnSendMessageToRemotePeer.Invoke(this, json.Stringify());
+        }
+
+        private IMediaStreamTrack _peerVideoTrack;
+        private IMediaStreamTrack _selfVideoTrack;
+        private IMediaStreamTrack _peerAudioTrack;
+        private IMediaStreamTrack _selfAudioTrack;
+
+        public Windows.UI.Xaml.Controls.MediaElement SelfVideo { get; set; }
+        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
+
+        public event Action<string, string> FramesPerSecondChanged;
+        public event Action<string, uint, uint> ResolutionChanged;
+
+        /// <summary>
+        /// Invoked when the remote peer added media stream to the peer connection.
+        /// </summary>
+        public event Action<IMediaStreamTrack> OnAddRemoteTrack;
+
+        private void PeerConnection_OnTrack(IRTCTrackEvent Event)
+        {
+            if (Event.Track.Kind == "video")
+            {
+                _peerVideoTrack = Event.Track;
+
+                if (_peerVideoTrack != null)
+                {
+                    _peerVideoTrack.Element = MediaElementMaker.Bind(PeerVideo);
+                    ((MediaStreamTrack)_peerVideoTrack).OnFrameRateChanged += (float frameRate) =>
+                    {
+                        FramesPerSecondChanged?.Invoke("PEER", frameRate.ToString("0.0"));
+                    };
+                    ((MediaStreamTrack)_peerVideoTrack).OnResolutionChanged += (uint width, uint height) =>
+                    {
+                        ResolutionChanged?.Invoke("PEER", width, height);
+                    };
+                }
+            }
+            else if (Event.Track.Kind == "audio")
+            {
+                _peerAudioTrack = Event.Track;
+            }
+
+            OnAddRemoteTrack?.Invoke(Event.Track);
+        }
+
+        /// <summary>
+        /// Invoked when the remote peer removed a media stream from the peer connection.
+        /// </summary>
+        public event Action<IMediaStreamTrack> OnRemoveRemoteTrack;
+
+        private void PeerConnection_OnRemoveTrack(IRTCTrackEvent Event)
+        {
+            if (Event.Track.Kind == "video")
+            {
+                _peerVideoTrack.Element = null;
+            }
+
+            OnRemoveRemoteTrack?.Invoke(Event.Track);
         }
 
         private void PeerConnection_OnIceGatheringStateChange()
