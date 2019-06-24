@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -111,13 +112,69 @@ namespace WebRtcAdapter.Call
             PeerConnection.OnTrack += PeerConnection_OnTrack;
             PeerConnection.OnRemoveTrack += PeerConnection_OnRemoveTrack;
 
-            //GetUserMedia();
+            GetUserMedia();
 
             //AddLocalMediaTracks();
 
             //BindSelfVideo();
 
             return true;
+        }
+
+        private void GetUserMedia()
+        {
+            Debug.WriteLine("Getting user media.");
+
+            MediaDevice _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[0];
+
+            for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
+                if (Devices.Instance.VideoMediaDevicesList[i].DisplayName == (string)localSettings.Values["SelectedCameraName"])
+                    _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[i];
+
+            List<int> widths = new List<int>();
+            List<int> heights = new List<int>();
+            List<int> frameRates = new List<int>();
+
+            foreach (var videoFormat in _selectedVideoDevice.VideoFormats)
+            {
+                widths.Add(videoFormat.Dimension.Width);
+                heights.Add(videoFormat.Dimension.Height);
+
+                foreach (var frameRate in videoFormat.FrameRates)
+                    frameRates.Add(frameRate);
+            }
+
+            // Maximum and minimum values for the selected camera
+            IReadOnlyList<IConstraint> mandatoryConstraints = new List<IConstraint>()
+            {
+                new Constraint("maxWidth", widths.Max().ToString()),
+                new Constraint("minWidth", widths.Min().ToString()),
+                new Constraint("maxHeight", heights.Max().ToString()),
+                new Constraint("minHeight", heights.Min().ToString()),
+                new Constraint("maxFrameRate", frameRates.Max().ToString()),
+                new Constraint("minFrameRate", frameRates.Min().ToString())
+            };
+
+            // Add optional constrains
+            IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
+
+            IMediaConstraints mediaConstraints = new MediaConstraints(mandatoryConstraints, optionalConstraints);
+
+            var videoCapturer = VideoCapturer.Create(_selectedVideoDevice.DisplayName, _selectedVideoDevice.Id, false);
+
+            var videoOptions = new VideoOptions();
+            videoOptions.Factory = _factory;
+            videoOptions.Capturer = videoCapturer;
+            videoOptions.Constraints = mediaConstraints;
+
+            var videoTrackSource = VideoTrackSource.Create(videoOptions);
+            _selfVideoTrack = MediaStreamTrack.CreateVideoTrack("SELF_VIDEO", videoTrackSource);
+
+            var audioOptions = new AudioOptions();
+            audioOptions.Factory = _factory;
+
+            var audioTrackSource = AudioTrackSource.Create(audioOptions);
+            _selfAudioTrack = MediaStreamTrack.CreateAudioTrack("SELF_AUDIO", audioTrackSource);
         }
 
         /// <summary>

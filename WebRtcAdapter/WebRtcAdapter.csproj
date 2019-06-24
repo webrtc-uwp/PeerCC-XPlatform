@@ -131,6 +131,7 @@
     <Compile Include="Call\MediaProvider.cs" />
     <Compile Include="Call\MediaProviderFactory.cs" />
     <Compile Include="Call\MediaVideoFormat.cs" />
+    <Compile Include="Devices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.cs" />
     <EmbeddedResource Include="Properties\WebRtcAdapter.rd.xml" />
