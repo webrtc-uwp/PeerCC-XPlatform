@@ -5,9 +5,9 @@ namespace WebRtcAdapter.Call
 {
     public class CallProvider : ICallProvider
     {
-        public Task<ICall> GetCallAsync()
+        public ICall GetCallAsync()
         {
-            return Task.Run(() => (ICall)new Call());
+            return new Call();
         }
     }
 }

@@ -101,7 +101,7 @@ namespace GuiCore
             _iceServers = new List<RTCIceServer>();
             PeerConnectedToServer = false;
 
-            HttpSignaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
+            //HttpSignaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
         }
 
         private void Call_OnSendMessageToRemotePeer(object sender, string e)
@@ -431,7 +431,7 @@ namespace GuiCore
 
             CallProvider callProvider = (CallProvider)callFactory;
 
-            Call = (Call)await callProvider.GetCallAsync();
+            Call = (Call)callProvider.GetCallAsync();
 
             Call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
 

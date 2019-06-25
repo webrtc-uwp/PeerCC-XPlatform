@@ -21,6 +21,8 @@ using Client_UWP.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using ClientCore.Call;
+using WebRtcAdapter.Call;
+using ClientCore.Signaling;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -39,6 +41,8 @@ namespace Client_UWP.Pages.Main
 
         private AccountModel accountModel;
 
+        private WebRtcAdapter.Call.Call Call;
+
         public MainPage()
         {
             AddDefaultAccount();
@@ -53,6 +57,13 @@ namespace Client_UWP.Pages.Main
 
             //_signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
 
+            ICallProvider callFactory =
+                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+
+            CallProvider callProvider = (CallProvider)callFactory;
+
+            Call = (WebRtcAdapter.Call.Call)callProvider.GetCallAsync();
+
             Loaded += OnLoaded;
 
             Debug.WriteLine($"Connecting to server from local peer: {_signaler.LocalPeer.Name}");
@@ -64,13 +75,20 @@ namespace Client_UWP.Pages.Main
             _signaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
             _signaler.PeerConnected += Signaler_PeerConnected;
             _signaler.PeerDisconnected += Signaler_PeerDisconnected;
-
-            GuiLogic.Instance.OnPeerConnectionCreated += async () =>
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
-                    => Frame.Navigate(typeof(CallPage)));
+            _signaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
 
             InitView();
         }
+
+        private void HttpSignaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
+        {
+            int peerId = int.Parse(e.Message.PeerId);
+            string content = e.Message.Content;
+
+            Call.MessageFromPeerTaskRun(peerId, content);
+        }
+
+        
 
         private void AddDefaultAccount()
         {
@@ -302,8 +320,38 @@ namespace Client_UWP.Pages.Main
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
-                Task.Run(async () => await GuiLogic.Instance.ConnectToPeer(remotePeer.Id));
+                //Task.Run(async () => await GuiLogic.Instance.ConnectToPeer(remotePeer.Id));
+
+                _peerId = remotePeer.Id;
+
+                
+
+
+                Task.Run(async () => 
+                {
+                    
+
+                    Call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
+
+                    Call.OnPeerConnectionCreated += async () =>
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
+                            => Frame.Navigate(typeof(CallPage)));
+
+                    CallInfo callInfo = (CallInfo)await Call.PlaceCallAsync(null);
+                });
             };
+        }
+
+        private int _peerId;
+
+        private void Call_OnSendMessageToRemotePeer(object sender, string e)
+        {
+            _signaler.SendToPeer(new Message
+            {
+                Id = "0",
+                Content = e,
+                PeerId = _peerId.ToString()
+            });
         }
 
         private void PeersListView_Tapped(object sender, TappedRoutedEventArgs e) =>

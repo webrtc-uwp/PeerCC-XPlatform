@@ -30,6 +30,9 @@ namespace WebRtcAdapter
 
         private Devices() { }
 
+        public Windows.UI.Xaml.Controls.MediaElement SelfVideo { get; set; }
+        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
+
         public IList<IMediaDevice> VideoMediaDevicesList = new List<IMediaDevice>();
         public IList<IMediaDevice> AudioMediaDevicesCapturersList = new List<IMediaDevice>();
         public IList<IMediaDevice> AudioMediaDevicesRendersList = new List<IMediaDevice>();

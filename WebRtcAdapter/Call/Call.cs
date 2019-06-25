@@ -44,6 +44,158 @@ namespace WebRtcAdapter.Call
             }
         }
 
+        public void MessageFromPeerTaskRun(int peerId, string content)
+        {
+            Debug.WriteLine($"MFP! {peerId} : {content}");
+
+            Task.Run(async () =>
+            {
+                //Debug.Assert(_peerId == peerId || _peerId == -1);
+                //Debug.Assert(content.Length > 0);
+
+                //if (_peerId != peerId && _peerId != -1)
+                //{
+                //    Debug.WriteLine("Received a message from unknown peer " +
+                //        "while already in a conversation with a different peer.");
+
+                //    return;
+                //}
+
+                if (!JsonObject.TryParse(content, out JsonObject jMessage))
+                {
+                    Debug.WriteLine($"Received unknown message: {content}");
+                    return;
+                }
+
+                string type = jMessage.ContainsKey(NegotiationAtributes.Type)
+                       ? jMessage.GetNamedString(NegotiationAtributes.Type)
+                       : null;
+
+                if (PeerConnection == null)
+                {
+                    if (!string.IsNullOrEmpty(type))
+                    {
+                        // Create the peer connection only when call is 
+                        // about to get initiated. Otherwise ignore the 
+                        // message from peers which could be result 
+                        // of old (but not yet fully closed) connections.
+                        if (type == "offer" || type == "answer" || type == "json")
+                        {
+                            //Debug.Assert(_peerId == -1);
+                            //_peerId = peerId;
+
+                            if (!CreatePeerConnection())
+                            {
+                                Debug.WriteLine("Failed to initialize our PeerConnection instance");
+
+                                //await HttpSignaler.SignOut();
+                                return;
+                            }
+                            //else if (_peerId != peerId)
+                            //{
+                            //    Debug.WriteLine("Received a message from unknown peer while already " +
+                            //        "in a conversation with a different peer.");
+
+                            //    return;
+                            //}
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("[Warn] Received an untyped message after closing peer connection.");
+                        return;
+                    }
+                }
+
+                if (PeerConnection != null && !string.IsNullOrEmpty(type))
+                {
+                    if (type == "offer-loopback")
+                    {
+                        // Loopback not supported
+                        Debug.Assert(false);
+                    }
+
+                    string sdp = null;
+
+                    sdp = jMessage.ContainsKey(NegotiationAtributes.Sdp)
+                          ? jMessage.GetNamedString(NegotiationAtributes.Sdp)
+                          : null;
+
+                    if (string.IsNullOrEmpty(sdp))
+                    {
+                        Debug.WriteLine("[Error] Can't parse received session description message.");
+                        return;
+                    }
+
+                    Debug.WriteLine($"Received session description:\n{content}");
+
+                    RTCSdpType messageType = RTCSdpType.Offer;
+                    switch (type)
+                    {
+                        case "offer": messageType = RTCSdpType.Offer; break;
+                        case "answer": messageType = RTCSdpType.Answer; break;
+                        case "pranswer": messageType = RTCSdpType.Pranswer; break;
+                        default: Debug.Assert(false, type); break;
+                    }
+
+                    var sdpInit = new RTCSessionDescriptionInit();
+                    sdpInit.Sdp = sdp;
+                    sdpInit.Type = messageType;
+                    var description = new RTCSessionDescription(sdpInit);
+
+                    await PeerConnection.SetRemoteDescription(description);
+
+                    if (messageType == RTCSdpType.Offer)
+                    {
+                        //SetRemoteCall(sdp);
+
+                        var answerOptions = new RTCAnswerOptions();
+                        IRTCSessionDescription answer = await PeerConnection.CreateAnswer(answerOptions);
+                        await PeerConnection.SetLocalDescription(answer);
+
+                        // Send answer
+                        //SendSdp(answer);
+
+                        string jsonString = SdpToJsonString(answer);
+
+                        OnSendMessageToRemotePeer.Invoke(this, jsonString);
+                    }
+                }
+                else
+                {
+                    RTCIceCandidate candidate = null;
+
+                    string sdpMid = jMessage.ContainsKey(NegotiationAtributes.SdpMid)
+                           ? jMessage.GetNamedString(NegotiationAtributes.SdpMid)
+                           : null;
+
+                    double sdpMLineIndex = jMessage.ContainsKey(NegotiationAtributes.SdpMLineIndex)
+                           ? jMessage.GetNamedNumber(NegotiationAtributes.SdpMLineIndex)
+                           : -1;
+
+                    string sdpCandidate = jMessage.ContainsKey(NegotiationAtributes.Candidate)
+                           ? jMessage.GetNamedString(NegotiationAtributes.Candidate)
+                           : null;
+
+                    if (string.IsNullOrEmpty(sdpMid) || sdpMLineIndex == -1 || string.IsNullOrEmpty(sdpCandidate))
+                    {
+                        Debug.WriteLine($"[Error] Can't parse received message.\n{content}");
+                        return;
+                    }
+
+                    var candidateInit = new RTCIceCandidateInit();
+                    candidateInit.Candidate = sdpCandidate;
+                    candidateInit.SdpMid = sdpMid;
+                    candidateInit.SdpMLineIndex = (ushort)sdpMLineIndex;
+                    candidate = new RTCIceCandidate(candidateInit);
+
+                    await PeerConnection.AddIceCandidate(candidate);
+
+                    Debug.WriteLine($"Receiving ice candidate:\n{content}");
+                }
+            }).Wait();
+        }
+
         /// <summary>
         /// Send JSON string to remote peer.
         /// </summary>
@@ -130,7 +282,7 @@ namespace WebRtcAdapter.Call
             if (_selfVideoTrack != null)
             {
 
-                _selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
+                _selfVideoTrack.Element = MediaElementMaker.Bind(Devices.Instance.SelfVideo);
                 ((MediaStreamTrack)_selfVideoTrack).OnFrameRateChanged += (float frameRate) =>
                 {
                     FramesPerSecondChanged?.Invoke("SELF", frameRate.ToString("0.0"));
@@ -240,9 +392,6 @@ namespace WebRtcAdapter.Call
         private IMediaStreamTrack _peerAudioTrack;
         private IMediaStreamTrack _selfAudioTrack;
 
-        public Windows.UI.Xaml.Controls.MediaElement SelfVideo { get; set; }
-        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
-
         public event Action<string, string> FramesPerSecondChanged;
         public event Action<string, uint, uint> ResolutionChanged;
 
@@ -259,7 +408,7 @@ namespace WebRtcAdapter.Call
 
                 if (_peerVideoTrack != null)
                 {
-                    _peerVideoTrack.Element = MediaElementMaker.Bind(PeerVideo);
+                    _peerVideoTrack.Element = MediaElementMaker.Bind(Devices.Instance.PeerVideo);
                     ((MediaStreamTrack)_peerVideoTrack).OnFrameRateChanged += (float frameRate) =>
                     {
                         FramesPerSecondChanged?.Invoke("PEER", frameRate.ToString("0.0"));
