@@ -435,14 +435,14 @@ namespace GuiCore
 
             Call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
 
-            if (Call.PeerConnection != null)
-            {
-                Debug.WriteLine("[Error] We only support connection to one peer at a time.");
-                return;
-            }
+            //if (Call.PeerConnection != null)
+            //{
+            //    Debug.WriteLine("[Error] We only support connection to one peer at a time.");
+            //    return;
+            //}
 
-            if (CreatePeerConnection())
-            {
+            //if (CreatePeerConnection())
+            //{
                 _peerId = peerId;
 
                 CallInfo callInfo = (CallInfo)await Call.PlaceCallAsync(ConfigureCall(Call));
@@ -454,7 +454,7 @@ namespace GuiCore
                 //    Content = callInfo.JsonString,
                 //    PeerId = _peerId.ToString()
                 //});
-            }
+            //}
         }
 
         /// <summary>

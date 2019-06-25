@@ -51,39 +51,43 @@ namespace WebRtcAdapter.Call
 
         public async Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
         {
-            //if (PeerConnection != null)
-            //{
-            //    Debug.WriteLine("[Error] We only support connection to one peer at a time.");
-            //    return null;
-            //}
+            if (PeerConnection != null)
+            {
+                Debug.WriteLine("[Error] We only support connection to one peer at a time.");
+                return null;
+            }
 
-            var offerOptions = new RTCOfferOptions();
-            offerOptions.OfferToReceiveAudio = true;
-            offerOptions.OfferToReceiveVideo = true;
-            IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
+            if (CreatePeerConnection())
+            {
+                var offerOptions = new RTCOfferOptions();
+                offerOptions.OfferToReceiveAudio = true;
+                offerOptions.OfferToReceiveVideo = true;
+                IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
-            // Alter sdp to force usage of selected codecs
-            string modifiedSdp = offer.Sdp;
-            //SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(config.PreferredAudioCodecId), int.Parse(config.PreferredVideoCodecId));
-            var sdpInit = new RTCSessionDescriptionInit();
-            sdpInit.Sdp = modifiedSdp;
-            sdpInit.Type = offer.SdpType;
-            var modifiedOffer = new RTCSessionDescription(sdpInit);
+                // Alter sdp to force usage of selected codecs
+                string modifiedSdp = offer.Sdp;
+                //SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(config.PreferredAudioCodecId), int.Parse(config.PreferredVideoCodecId));
+                var sdpInit = new RTCSessionDescriptionInit();
+                sdpInit.Sdp = modifiedSdp;
+                sdpInit.Type = offer.SdpType;
+                var modifiedOffer = new RTCSessionDescription(sdpInit);
 
-            await PeerConnection.SetLocalDescription(modifiedOffer);
+                await PeerConnection.SetLocalDescription(modifiedOffer);
 
-            Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
+                Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
 
-            string jsonString = SdpToJsonString(modifiedOffer);
+                string jsonString = SdpToJsonString(modifiedOffer);
 
-            CallInfo callInfo = new CallInfo();
-            callInfo.SetCall(new Call());
-            callInfo.SetSdp(modifiedSdp);
-            callInfo.SetJsonString(jsonString);
+                CallInfo callInfo = new CallInfo();
+                callInfo.SetCall(new Call());
+                callInfo.SetSdp(modifiedSdp);
+                callInfo.SetJsonString(jsonString);
 
-            OnSendMessageToRemotePeer.Invoke(this, jsonString);
+                OnSendMessageToRemotePeer.Invoke(this, jsonString);
 
-            return callInfo;
+                return callInfo;
+            }
+            return null;
         }
 
         // Public events to notify about connection status
@@ -114,11 +118,40 @@ namespace WebRtcAdapter.Call
 
             GetUserMedia();
 
-            //AddLocalMediaTracks();
+            AddLocalMediaTracks();
 
-            //BindSelfVideo();
+            BindSelfVideo();
 
             return true;
+        }
+
+        private void BindSelfVideo()
+        {
+            if (_selfVideoTrack != null)
+            {
+
+                _selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
+                ((MediaStreamTrack)_selfVideoTrack).OnFrameRateChanged += (float frameRate) =>
+                {
+                    FramesPerSecondChanged?.Invoke("SELF", frameRate.ToString("0.0"));
+                };
+                ((MediaStreamTrack)_selfVideoTrack).OnResolutionChanged += (uint width, uint height) =>
+                {
+                    ResolutionChanged?.Invoke("SELF", width, height);
+                };
+            }
+        }
+
+        public event Action<IMediaStreamTrack> OnAddLocalTrack;
+
+        private void AddLocalMediaTracks()
+        {
+            Debug.WriteLine("Adding local media tracks.");
+            PeerConnection.AddTrack(_selfVideoTrack);
+            PeerConnection.AddTrack(_selfAudioTrack);
+
+            OnAddLocalTrack?.Invoke(_selfVideoTrack);
+            OnAddLocalTrack?.Invoke(_selfAudioTrack);
         }
 
         private void GetUserMedia()
