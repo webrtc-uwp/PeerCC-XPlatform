@@ -23,6 +23,8 @@ using System.Collections.Generic;
 using ClientCore.Call;
 using WebRtcAdapter.Call;
 using ClientCore.Signaling;
+using ClientCore.Account;
+using PeerCC.Account;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -33,7 +35,7 @@ namespace Client_UWP.Pages.Main
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private HttpSignaler _signaler = GuiLogic.Instance.HttpSignaler;
+        private HttpSignaler _signaler = HttpSignaler.Instance;
 
         private MainViewModel _mainViewModel;
 
@@ -53,7 +55,7 @@ namespace Client_UWP.Pages.Main
 
             accountModel = _localSettings.DeserializeSelectedAccount();
 
-            GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
+            SetAccount(accountModel?.ServiceUri);
 
             //_signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
 
@@ -80,6 +82,17 @@ namespace Client_UWP.Pages.Main
             InitView();
         }
 
+        /// <summary>
+        /// Logs in local peer to server.
+        /// </summary>
+        /// <returns></returns>
+        public async Task LogInToServer()
+        {
+            Debug.WriteLine("Connects to server.");
+
+            await _signaler.Connect(Account.ServiceUri);
+        }
+
         private void HttpSignaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
         {
             int peerId = int.Parse(e.Message.PeerId);
@@ -88,7 +101,17 @@ namespace Client_UWP.Pages.Main
             Call.MessageFromPeerTaskRun(peerId, content);
         }
 
-        
+        Account Account;
+        public void SetAccount(string serviceUri)
+        {
+            IAccountProvider accountFactory =
+                ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
+
+            AccountProvider accountProvider = (AccountProvider)accountFactory;
+
+            Account = (Account)accountProvider
+                .GetAccount(serviceUri, HttpSignaler.Instance.LocalPeer.Name, HttpSignaler.Instance);
+        }
 
         private void AddDefaultAccount()
         {
@@ -269,7 +292,7 @@ namespace Client_UWP.Pages.Main
             }
             else
             {
-                tbServiceUri.Text = $"Service Uri: { GuiLogic.Instance.Account?.ServiceUri }";
+                tbServiceUri.Text = $"Service Uri: { Account?.ServiceUri }";
             }
 
             peersListView.SelectedIndex = -1;
@@ -287,7 +310,7 @@ namespace Client_UWP.Pages.Main
 
             ConnectPeer.Click += async (sender, args) =>
             {
-                await GuiLogic.Instance.LogInToServer();
+                await LogInToServer();
 
                 GuiLogic.Instance.PeerConnectedToServer = true;
 

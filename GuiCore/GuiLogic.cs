@@ -97,7 +97,7 @@ namespace GuiCore
 
         private GuiLogic()
         {
-            HttpSignaler = new HttpSignaler();
+            HttpSignaler = HttpSignaler.Instance;
             _iceServers = new List<RTCIceServer>();
             PeerConnectedToServer = false;
 
