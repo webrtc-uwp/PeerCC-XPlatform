@@ -47,11 +47,13 @@ namespace Client_UWP.Pages.Main
 
         public MainPage()
         {
+            PeerConnectedToServer = false;
+
             AddDefaultAccount();
 
             InitializeComponent();
 
-            AddDefaultIceServersList();
+            
 
             accountModel = _localSettings.DeserializeSelectedAccount();
 
@@ -65,6 +67,8 @@ namespace Client_UWP.Pages.Main
             CallProvider callProvider = (CallProvider)callFactory;
 
             Call = (WebRtcAdapter.Call.Call)callProvider.GetCallAsync();
+
+            AddDefaultIceServersList();
 
             Loaded += OnLoaded;
 
@@ -266,9 +270,11 @@ namespace Client_UWP.Pages.Main
             }
         }
 
+        private bool PeerConnectedToServer;
+
         private void InitView()
         {
-            if (GuiLogic.Instance.PeerConnectedToServer)
+            if (PeerConnectedToServer)
             {
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -312,7 +318,7 @@ namespace Client_UWP.Pages.Main
             {
                 await LogInToServer();
 
-                GuiLogic.Instance.PeerConnectedToServer = true;
+                PeerConnectedToServer = true;
 
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -320,9 +326,9 @@ namespace Client_UWP.Pages.Main
 
             DisconnectPeer.Click += async (sender, args) =>
             {
-                await GuiLogic.Instance.LogOutFromServer();
+                await LogOutFromServer();
 
-                GuiLogic.Instance.PeerConnectedToServer = false;
+                PeerConnectedToServer = false;
 
                 peersListView.Items.Clear();
 
@@ -363,6 +369,17 @@ namespace Client_UWP.Pages.Main
                     CallInfo callInfo = (CallInfo)await Call.PlaceCallAsync(null);
                 });
             };
+        }
+
+        /// <summary>
+        /// Logs out local peer from server.
+        /// </summary>
+        /// <returns></returns>
+        public async Task LogOutFromServer()
+        {
+            Debug.WriteLine("Disconnects from server.");
+
+            await _signaler.SignOut();
         }
 
         private int _peerId;
