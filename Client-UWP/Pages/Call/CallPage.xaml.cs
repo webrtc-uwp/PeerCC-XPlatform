@@ -18,7 +18,7 @@ namespace Client_UWP.Pages.Call
     /// </summary>
     public sealed partial class CallPage : Page
     {
-        private HttpSignaler _signaler = GuiLogic.Instance.HttpSignaler;
+        private HttpSignaler _signaler = HttpSignaler.Instance;
 
         private CallPageViewModel ViewModel { get; set; }
 

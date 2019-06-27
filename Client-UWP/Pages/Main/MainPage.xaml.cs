@@ -68,7 +68,7 @@ namespace Client_UWP.Pages.Main
 
             Call = (WebRtcAdapter.Call.Call)callProvider.GetCallAsync();
 
-            AddDefaultIceServersList();
+            //AddDefaultIceServersList();
 
             Loaded += OnLoaded;
 
@@ -169,8 +169,8 @@ namespace Client_UWP.Pages.Main
 
                     iceServersList.Add(iceServer);
                 }
-                GuiLogic.Instance.AddIceServers(iceServersList);
-                GuiLogic.Instance.SetIceServers(iceServersList);
+                //GuiLogic.Instance.AddIceServers(iceServersList);
+                //GuiLogic.Instance.SetIceServers(iceServersList);
             }
         }
 
