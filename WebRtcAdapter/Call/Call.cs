@@ -454,11 +454,13 @@ namespace WebRtcAdapter.Call
                     + (PeerConnection != null ? PeerConnection.IceConnectionState.ToString().ToLower() : "closed"));
         }
 
-        private readonly List<RTCIceServer> _iceServers;
+        private readonly List<RTCIceServer> _iceServers = new List<RTCIceServer>();
         private WebRtcFactory _factory;
 
         private RTCConfiguration ConfigureRtc()
         {
+            AddIceServers(AddDefaultIceServers);
+
             var factoryConfig = new WebRtcFactoryConfiguration();
             _factory = new WebRtcFactory(factoryConfig);
 
@@ -472,6 +474,56 @@ namespace WebRtcAdapter.Call
 
             return config;
         }
+
+        public void AddIceServers(List<IceServer> iceServersList)
+        {
+            List<string> urlsList = new List<string>();
+
+            foreach (IceServer ice in iceServersList)
+            {
+                foreach (string url in ice.Urls)
+                {
+                    string checkedUrl = string.Empty;
+
+                    if (url.StartsWith("stun"))
+                    {
+                        checkedUrl = url;
+                        if (!url.StartsWith("stun:"))
+                        {
+                            checkedUrl = $"stun:{url}";
+                        }
+                    }
+                    if (url.StartsWith("turn"))
+                    {
+                        checkedUrl = url;
+                        if (!url.StartsWith("turn:"))
+                        {
+                            checkedUrl = $"turn:{url}";
+                        }
+                    }
+                    urlsList.Add(checkedUrl);
+                }
+
+                RTCIceServer server = new RTCIceServer { Urls = urlsList };
+
+                if (ice.Username != null)
+                    server.Username = ice.Username;
+                if (ice.Credential != null)
+                    server.Credential = ice.Credential;
+
+                _iceServers.Add(server);
+            }
+        }
+
+        public static List<IceServer> AddDefaultIceServers
+            => new List<IceServer>()
+            {
+                new IceServer { Urls = new List<string> { "stun:stun.l.google.com:19302" } },
+                new IceServer { Urls = new List<string> { "stun:stun1.l.google.com:19302" } },
+                new IceServer { Urls = new List<string> { "stun:stun2.l.google.com:19302" } },
+                new IceServer { Urls = new List<string> { "stun:stun3.l.google.com:19302" } },
+                new IceServer { Urls = new List<string> { "stun:stun4.l.google.com:19302" } }
+            };
 
         /// <summary>
         /// Creates JSON object from SDP.
