@@ -244,6 +244,8 @@ namespace WebRtcAdapter.Call
 
         // Public events to notify about connection status
         public event Action OnPeerConnectionCreated;
+        public event Action OnPeerConnectionClosed;
+        public event Action OnReadyToConnect;
 
         /// <summary>
         /// Creates a peer connection.
@@ -664,6 +666,49 @@ namespace WebRtcAdapter.Call
             }
 
             return preferredAudioCodecId;
+        }
+
+        public int PeerId { get; set; }
+
+        public object MediaLock { get; set; } = new object();
+
+        /// <summary>
+        /// Closes a peer connection.
+        /// </summary>
+        public void ClosePeerConnection()
+        {
+            lock (MediaLock)
+            {
+                if (PeerConnection != null)
+                {
+                    PeerId = -1;
+
+                    PeerConnection.OnIceCandidate -= PeerConnection_OnIceCandidate;
+                    PeerConnection.OnTrack -= PeerConnection_OnTrack;
+                    PeerConnection.OnRemoveTrack -= PeerConnection_OnRemoveTrack;
+
+                    if (_peerVideoTrack != null) _peerVideoTrack.Element = null;
+                    if (_selfVideoTrack != null) _selfVideoTrack.Element = null;
+
+                    (_peerVideoTrack as IDisposable)?.Dispose();
+                    (_peerAudioTrack as IDisposable)?.Dispose();
+                    (_selfVideoTrack as IDisposable)?.Dispose();
+                    (_selfAudioTrack as IDisposable)?.Dispose();
+
+                    _peerVideoTrack = null;
+                    _peerAudioTrack = null;
+                    _selfVideoTrack = null;
+                    _selfAudioTrack = null;
+
+                    OnPeerConnectionClosed?.Invoke();
+
+                    PeerConnection = null;
+
+                    OnReadyToConnect?.Invoke();
+
+                    GC.Collect(); // Ensure all references are truly dropped.
+                }
+            }
         }
 
         // SDP negotiation attributes

@@ -1,4 +1,5 @@
 ﻿using Client_UWP.Pages.Main;
+using ClientCore.Signaling;
 using GuiCore;
 using PeerCC.Signaling;
 using System;
@@ -8,6 +9,7 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -34,10 +36,32 @@ namespace Client_UWP.Pages.Call
 
             Hangup.Click += (sender, args) =>
             {
-                GuiLogic.Instance.DisconnectFromPeer();
+                //GuiLogic.Instance.DisconnectFromPeer();
+
+                _signaler.SendToPeer(new Message
+                {
+                    Id = "0",
+                    Content = "BYE",
+                    PeerId = call.PeerId.ToString()
+                });
+
+                call.ClosePeerConnection();
 
                 Frame.Navigate(typeof(MainPage));
             };
+        }
+
+        WebRtcAdapter.Call.Call call;
+
+        /// <summary>
+        /// See Page.OnNavigatedTo()
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            call = (WebRtcAdapter.Call.Call)e.Parameter;
+
+            //call.HangupAsync();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
