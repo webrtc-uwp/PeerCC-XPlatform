@@ -45,15 +45,13 @@ namespace Client_UWP.Pages.Main
 
         private WebRtcAdapter.Call.Call Call;
 
+        private Account Account;
+
         public MainPage()
         {
-            PeerConnectedToServer = false;
-
             AddDefaultAccount();
 
             InitializeComponent();
-
-            
 
             accountModel = _localSettings.DeserializeSelectedAccount();
 
@@ -105,7 +103,6 @@ namespace Client_UWP.Pages.Main
             Call.MessageFromPeerTaskRun(peerId, content);
         }
 
-        Account Account;
         public void SetAccount(string serviceUri)
         {
             IAccountProvider accountFactory =
@@ -270,11 +267,9 @@ namespace Client_UWP.Pages.Main
             }
         }
 
-        private bool PeerConnectedToServer;
-
         private void InitView()
         {
-            if (PeerConnectedToServer)
+            if (_signaler.LocalPeerSignedIn)
             {
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -318,8 +313,6 @@ namespace Client_UWP.Pages.Main
             {
                 await LogInToServer();
 
-                PeerConnectedToServer = true;
-
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
             };
@@ -327,8 +320,6 @@ namespace Client_UWP.Pages.Main
             DisconnectPeer.Click += async (sender, args) =>
             {
                 await LogOutFromServer();
-
-                PeerConnectedToServer = false;
 
                 peersListView.Items.Clear();
 

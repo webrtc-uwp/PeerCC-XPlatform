@@ -41,10 +41,12 @@ namespace PeerCC.Signaling
         private Uri _baseHttpAddress;
         private int _myId;
         private string _clientName;
-        public ObservableCollection<Peer> _peers = new ObservableCollection<Peer>();
         private ManualResetEvent _sendEvent = new ManualResetEvent(false);
         private ConcurrentQueue<Message> _sendMessageQueue = new ConcurrentQueue<Message>();
         private Thread _sendThread;
+
+        public bool LocalPeerSignedIn = false;
+        public ObservableCollection<Peer> _peers = new ObservableCollection<Peer>();
 
         private HttpSignaler()
         {
@@ -178,6 +180,8 @@ namespace PeerCC.Signaling
                             return false;
 
                         OnSignedIn();
+
+                        LocalPeerSignedIn = true;
                     }
                 }
                 else if (_state == State.SigningOut)
@@ -266,6 +270,8 @@ namespace PeerCC.Signaling
             if (_state == State.NotConnected || _state == State.SigningOut)
                 return true;
             _state = State.SigningOut;
+
+            LocalPeerSignedIn = false;
 
             if (_myId != -1)
             {

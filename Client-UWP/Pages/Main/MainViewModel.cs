@@ -43,8 +43,6 @@ namespace Client_UWP.Pages.Main
 
                 Task.Run(async() => 
                 {
-                    await Devices.Instance.GetMediaAsync();
-
                     await WebRtcAdapter.Devices.Instance.GetMediaAsync();
                 });
 
