@@ -1,6 +1,5 @@
 ﻿using Client_UWP.Pages.Main;
 using ClientCore.Signaling;
-using GuiCore;
 using PeerCC.Signaling;
 using System;
 using System.Threading.Tasks;
@@ -20,6 +19,8 @@ namespace Client_UWP.Pages.Call
     /// </summary>
     public sealed partial class CallPage : Page
     {
+        private WebRtcAdapter.Call.Call call;
+
         private HttpSignaler _signaler = HttpSignaler.Instance;
 
         private CallPageViewModel ViewModel { get; set; }
@@ -36,8 +37,6 @@ namespace Client_UWP.Pages.Call
 
             Hangup.Click += (sender, args) =>
             {
-                //GuiLogic.Instance.DisconnectFromPeer();
-
                 _signaler.SendToPeer(new Message
                 {
                     Id = "0",
@@ -51,8 +50,6 @@ namespace Client_UWP.Pages.Call
             };
         }
 
-        WebRtcAdapter.Call.Call call;
-
         /// <summary>
         /// See Page.OnNavigatedTo()
         /// </summary>
@@ -60,8 +57,6 @@ namespace Client_UWP.Pages.Call
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             call = (WebRtcAdapter.Call.Call)e.Parameter;
-
-            //call.HangupAsync();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -72,11 +67,8 @@ namespace Client_UWP.Pages.Call
             ViewModel.PeerVideo = PeerVideo;
         }
 
-
         private void Signaler_PeerHangup(object sender, Peer e)
         {
-            GuiLogic.Instance.DisconnectFromPeer();
-
             Task.Run(async ()
                 => await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
                 => Frame.Navigate(typeof(MainPage))));

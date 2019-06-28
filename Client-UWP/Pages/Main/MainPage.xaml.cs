@@ -349,19 +349,10 @@ namespace Client_UWP.Pages.Main
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
-                //Task.Run(async () => await GuiLogic.Instance.ConnectToPeer(remotePeer.Id));
-
-                //_peerId = remotePeer.Id;
                 Call.PeerId = remotePeer.Id;
-
-
-                
-
 
                 Task.Run(async () => 
                 {
-                    
-
                     Call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
 
                     Call.OnPeerConnectionCreated += async () =>
@@ -383,8 +374,6 @@ namespace Client_UWP.Pages.Main
 
             await _signaler.SignOut();
         }
-
-        //private int _peerId;
 
         private void Call_OnSendMessageToRemotePeer(object sender, string e)
         {

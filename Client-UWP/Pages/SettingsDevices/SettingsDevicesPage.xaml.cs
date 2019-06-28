@@ -216,7 +216,7 @@ namespace Client_UWP.Pages.SettingsDevices
                     {
                         if ((resolution.Dimension.Width.ToString() + " x " + resolution.Dimension.Height.ToString()) == (string)_localSettings.GetSelectedResolutionString)
                         {
-                            GuiLogic.Instance.Call_OnResolutionChanged(MediaDirection.Local, resolution.Dimension);
+                            //GuiLogic.Instance.Call_OnResolutionChanged(MediaDirection.Local, resolution.Dimension);
 
                             _frameRatesList.Clear();
                             cbCaptureFrameRate.SelectedIndex = -1;
@@ -261,8 +261,8 @@ namespace Client_UWP.Pages.SettingsDevices
         {
             _localSettings.SetSelectedFrameRateString((string)cbCaptureFrameRate.SelectedValue);
 
-            if (cbCaptureFrameRate.SelectedValue != null)
-                GuiLogic.Instance.Call_OnFrameRateChanged(MediaDirection.Local, int.Parse((string)_localSettings.GetSelectedFrameRateString));
+            //if (cbCaptureFrameRate.SelectedValue != null)
+            //    GuiLogic.Instance.Call_OnFrameRateChanged(MediaDirection.Local, int.Parse((string)_localSettings.GetSelectedFrameRateString));
         }
 
         private void CbVideoCodecs_SelectionChanged(object sender, SelectionChangedEventArgs e) =>

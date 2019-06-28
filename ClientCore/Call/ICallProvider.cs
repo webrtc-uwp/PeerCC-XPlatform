@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace ClientCore.Call
+﻿namespace ClientCore.Call
 {
     public interface ICallProvider
     {

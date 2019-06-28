@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using ClientCore.Call;
+﻿using ClientCore.Call;
 
 namespace WebRtcAdapter.Call
 {

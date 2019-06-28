@@ -16,7 +16,6 @@ namespace WebRtcAdapter.Call
         public event FrameRateChangeHandler OnFrameRateChanged;
         public event ResolutionChangeHandler OnResolutionChanged;
 
-
         private readonly object _peerConnectionLock = new object();
         private RTCPeerConnection _peerConnection_DoNotUse;
         public RTCPeerConnection PeerConnection
@@ -46,20 +45,18 @@ namespace WebRtcAdapter.Call
 
         public void MessageFromPeerTaskRun(int peerId, string content)
         {
-            Debug.WriteLine($"MFP! {peerId} : {content}");
-
             Task.Run(async () =>
             {
-                //Debug.Assert(_peerId == peerId || _peerId == -1);
-                //Debug.Assert(content.Length > 0);
+                Debug.Assert(PeerId == peerId || PeerId == -1);
+                Debug.Assert(content.Length > 0);
 
-                //if (_peerId != peerId && _peerId != -1)
-                //{
-                //    Debug.WriteLine("Received a message from unknown peer " +
-                //        "while already in a conversation with a different peer.");
+                if (PeerId != peerId && PeerId != -1)
+                {
+                    Debug.WriteLine("Received a message from unknown peer " +
+                        "while already in a conversation with a different peer.");
 
-                //    return;
-                //}
+                    return;
+                }
 
                 if (!JsonObject.TryParse(content, out JsonObject jMessage))
                 {
@@ -81,8 +78,8 @@ namespace WebRtcAdapter.Call
                         // of old (but not yet fully closed) connections.
                         if (type == "offer" || type == "answer" || type == "json")
                         {
-                            //Debug.Assert(_peerId == -1);
-                            //_peerId = peerId;
+                            Debug.Assert(PeerId == -1);
+                            PeerId = peerId;
 
                             if (!CreatePeerConnection())
                             {
@@ -91,13 +88,13 @@ namespace WebRtcAdapter.Call
                                 //await HttpSignaler.SignOut();
                                 return;
                             }
-                            //else if (_peerId != peerId)
-                            //{
-                            //    Debug.WriteLine("Received a message from unknown peer while already " +
-                            //        "in a conversation with a different peer.");
+                            else if (PeerId != peerId)
+                            {
+                                Debug.WriteLine("Received a message from unknown peer while already " +
+                                    "in a conversation with a different peer.");
 
-                            //    return;
-                            //}
+                                return;
+                            }
                         }
                     }
                     else
@@ -152,9 +149,6 @@ namespace WebRtcAdapter.Call
                         var answerOptions = new RTCAnswerOptions();
                         IRTCSessionDescription answer = await PeerConnection.CreateAnswer(answerOptions);
                         await PeerConnection.SetLocalDescription(answer);
-
-                        // Send answer
-                        //SendSdp(answer);
 
                         string jsonString = SdpToJsonString(answer);
 
@@ -218,7 +212,7 @@ namespace WebRtcAdapter.Call
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
-                //SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(config.PreferredAudioCodecId), int.Parse(config.PreferredVideoCodecId));
+                //TODO: SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(config.PreferredAudioCodecId), int.Parse(config.PreferredVideoCodecId));
                 var sdpInit = new RTCSessionDescriptionInit();
                 sdpInit.Sdp = modifiedSdp;
                 sdpInit.Type = offer.SdpType;
