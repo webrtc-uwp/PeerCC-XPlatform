@@ -44,6 +44,8 @@ namespace Client_UWP.Pages.Call
                     PeerId = call.PeerId.ToString()
                 });
 
+                call.PeerId = -1;
+
                 call.ClosePeerConnection();
 
                 Frame.Navigate(typeof(MainPage));

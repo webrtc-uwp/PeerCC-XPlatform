@@ -66,6 +66,9 @@ namespace Client_UWP.Pages.Main
 
             Call = (WebRtcAdapter.Call.Call)callProvider.GetCallAsync();
 
+            Call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
+            Call.OnSignedOut += Call_OnSignedOut;
+
             //AddDefaultIceServersList();
 
             Loaded += OnLoaded;
@@ -81,7 +84,16 @@ namespace Client_UWP.Pages.Main
             _signaler.PeerDisconnected += Signaler_PeerDisconnected;
             _signaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
 
+            Call.OnPeerConnectionCreated += async () =>
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
+                    => Frame.Navigate(typeof(CallPage), Call));
+
             InitView();
+        }
+
+        private void Call_OnSignedOut(object sender, EventArgs e)
+        {
+            Task.Run(async () => await HttpSignaler.Instance.SignOut());
         }
 
         /// <summary>
@@ -340,15 +352,9 @@ namespace Client_UWP.Pages.Main
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
-                Call.PeerId = remotePeer.Id;
-
                 Task.Run(async () => 
                 {
-                    Call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
-
-                    Call.OnPeerConnectionCreated += async () =>
-                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
-                            => Frame.Navigate(typeof(CallPage), Call));
+                    Call.PeerId = remotePeer.Id;
 
                     CallInfo callInfo = (CallInfo)await Call.PlaceCallAsync(null);
                 });

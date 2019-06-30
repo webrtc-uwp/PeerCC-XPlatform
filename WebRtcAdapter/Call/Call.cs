@@ -43,14 +43,18 @@ namespace WebRtcAdapter.Call
             }
         }
 
+        private int _peerId = -1;
+
         public void MessageFromPeerTaskRun(int peerId, string content)
         {
+            PeerId = peerId;
+
             Task.Run(async () =>
             {
-                Debug.Assert(PeerId == peerId || PeerId == -1);
+                Debug.Assert(_peerId == PeerId || _peerId == -1);
                 Debug.Assert(content.Length > 0);
 
-                if (PeerId != peerId && PeerId != -1)
+                if (_peerId != PeerId && _peerId != -1)
                 {
                     Debug.WriteLine("Received a message from unknown peer " +
                         "while already in a conversation with a different peer.");
@@ -78,17 +82,17 @@ namespace WebRtcAdapter.Call
                         // of old (but not yet fully closed) connections.
                         if (type == "offer" || type == "answer" || type == "json")
                         {
-                            Debug.Assert(PeerId == -1);
-                            PeerId = peerId;
+                            Debug.Assert(_peerId == -1);
+                            _peerId = PeerId;
 
                             if (!CreatePeerConnection())
                             {
                                 Debug.WriteLine("Failed to initialize our PeerConnection instance");
 
-                                //await HttpSignaler.SignOut();
+                                OnSignedOut.Invoke(this, null);
                                 return;
                             }
-                            else if (PeerId != peerId)
+                            else if (_peerId != PeerId)
                             {
                                 Debug.WriteLine("Received a message from unknown peer while already " +
                                     "in a conversation with a different peer.");
@@ -144,14 +148,11 @@ namespace WebRtcAdapter.Call
 
                     if (messageType == RTCSdpType.Offer)
                     {
-                        //SetRemoteCall(sdp);
-
                         var answerOptions = new RTCAnswerOptions();
                         IRTCSessionDescription answer = await PeerConnection.CreateAnswer(answerOptions);
                         await PeerConnection.SetLocalDescription(answer);
-
                         string jsonString = SdpToJsonString(answer);
-
+                        // Send answer
                         OnSendMessageToRemotePeer.Invoke(this, jsonString);
                     }
                 }
@@ -195,8 +196,15 @@ namespace WebRtcAdapter.Call
         /// </summary>
         public event EventHandler<string> OnSendMessageToRemotePeer;
 
+        /// <summary>
+        /// Sign out peer from the server
+        /// </summary>
+        public event EventHandler OnSignedOut;
+
         public async Task<ICallInfo> PlaceCallAsync(CallConfiguration config)
         {
+            Debug.Assert(_peerId == -1);
+
             if (PeerConnection != null)
             {
                 Debug.WriteLine("[Error] We only support connection to one peer at a time.");
@@ -205,6 +213,8 @@ namespace WebRtcAdapter.Call
 
             if (CreatePeerConnection())
             {
+                _peerId = PeerId;
+
                 var offerOptions = new RTCOfferOptions();
                 offerOptions.OfferToReceiveAudio = true;
                 offerOptions.OfferToReceiveVideo = true;
@@ -675,7 +685,7 @@ namespace WebRtcAdapter.Call
             {
                 if (PeerConnection != null)
                 {
-                    PeerId = -1;
+                    _peerId = -1;
 
                     PeerConnection.OnIceCandidate -= PeerConnection_OnIceCandidate;
                     PeerConnection.OnTrack -= PeerConnection_OnTrack;
