@@ -1,5 +1,4 @@
-﻿using GuiCore;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using WebRtcAdapter;
@@ -16,12 +15,12 @@ namespace Client_UWP.Pages.Main
         public MainViewModel(CoreDispatcher uiDispatcher)
             : base(uiDispatcher)
         {
-            Initialization.Instance.Initialized += Instance_Initialized;
+            Initialization.Initialized += Instance_Initialized;
 
             Devices.Instance.RequestAccessForMediaCapture().AsTask().ContinueWith(antecedent =>
             {
                 if (antecedent.Result)
-                    Initialization.Instance.CofigureWebRtcLib(uiDispatcher);
+                    Initialization.CofigureWebRtcLib(uiDispatcher);
                 else
                     RunOnUiThread(async () 
                         => await new MessageDialog("Failed to obtain access to multimedia devices!").ShowAsync());
@@ -40,17 +39,26 @@ namespace Client_UWP.Pages.Main
 
                 Debug.WriteLine($"Application version: {AppVersion}");
 
-                Initialization.Instance.InstallFactories();
+                InstallFactories();
 
                 Task.Run(async() => 
                 {
-                    await WebRtcAdapter.Devices.Instance.GetMediaAsync();
+                    await Devices.Instance.GetMediaAsync();
                 });
 
                 RunOnUiThread(() => OnInitialized?.Invoke());
             }
             else
                 RunOnUiThread(async () => await new MessageDialog("Failed to initialize WebRTC library!").ShowAsync());
+        }
+
+        /// <summary>
+        /// Install the signaler and the calling factories.
+        /// </summary>
+        private void InstallFactories()
+        {
+            PeerCC.Setup.Install();
+            WebRtcAdapter.Setup.Install();
         }
     }
 }
