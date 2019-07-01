@@ -71,6 +71,17 @@ namespace Client_UWP.Pages.Call
 
         private void Signaler_PeerHangup(object sender, Peer e)
         {
+            _signaler.SendToPeer(new Message
+            {
+                Id = "0",
+                Content = "BYE",
+                PeerId = call.PeerId.ToString()
+            });
+
+            call.PeerId = -1;
+
+            call.ClosePeerConnection();
+
             Task.Run(async ()
                 => await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
                 => Frame.Navigate(typeof(MainPage))));

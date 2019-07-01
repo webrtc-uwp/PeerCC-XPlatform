@@ -93,7 +93,7 @@ namespace Client_UWP.Pages.Main
 
         private void Call_OnSignedOut(object sender, EventArgs e)
         {
-            Task.Run(async () => await HttpSignaler.Instance.SignOut());
+            Task.Run(async () => await _signaler.SignOut());
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace Client_UWP.Pages.Main
             AccountProvider accountProvider = (AccountProvider)accountFactory;
 
             Account = (Account)accountProvider
-                .GetAccount(serviceUri, HttpSignaler.Instance.LocalPeer.Name, HttpSignaler.Instance);
+                .GetAccount(serviceUri, _signaler.LocalPeer.Name, _signaler);
         }
 
         private void AddDefaultAccount()
