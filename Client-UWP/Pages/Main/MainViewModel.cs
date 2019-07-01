@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using WebRtcAdapter;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 

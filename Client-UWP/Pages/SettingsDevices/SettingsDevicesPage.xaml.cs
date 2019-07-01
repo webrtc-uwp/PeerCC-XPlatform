@@ -2,10 +2,9 @@
 using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
-using ClientCore.Call;
-using GuiCore;
 using System.Collections.ObjectModel;
 using System.Linq;
+using WebRtcAdapter;
 using WebRtcAdapter.Call;
 using Windows.UI.Xaml.Controls;
 
