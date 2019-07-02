@@ -19,17 +19,17 @@ namespace Client_UWP.Pages.Call
     /// </summary>
     public sealed partial class CallPage : Page
     {
-        private WebRtcAdapter.Call.Call call;
+        private WebRtcAdapter.Call.Call _call;
 
         private HttpSignaler _signaler = HttpSignaler.Instance;
 
-        private CallPageViewModel ViewModel { get; set; }
+        private CallPageViewModel _viewModel { get; set; }
 
         public CallPage()
         {
             InitializeComponent();
 
-            ViewModel = new CallPageViewModel();
+            _viewModel = new CallPageViewModel();
 
             Loaded += OnLoaded;
 
@@ -41,12 +41,12 @@ namespace Client_UWP.Pages.Call
                 {
                     Id = "0",
                     Content = "BYE",
-                    PeerId = call.PeerId.ToString()
+                    PeerId = _call.PeerId.ToString()
                 });
 
-                call.PeerId = -1;
+                _call.PeerId = -1;
 
-                call.ClosePeerConnection();
+                _call.ClosePeerConnection();
 
                 Frame.Navigate(typeof(MainPage));
             };
@@ -58,15 +58,15 @@ namespace Client_UWP.Pages.Call
         /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            call = (WebRtcAdapter.Call.Call)e.Parameter;
+            _call = (WebRtcAdapter.Call.Call)e.Parameter;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             ApplicationView.GetForCurrentView().TryResizeView(new Size(700, 650));
 
-            ViewModel.SelfVideo = SelfVideo;
-            ViewModel.PeerVideo = PeerVideo;
+            _viewModel.SelfVideo = SelfVideo;
+            _viewModel.PeerVideo = PeerVideo;
         }
 
         private void Signaler_PeerHangup(object sender, Peer e)
@@ -75,12 +75,12 @@ namespace Client_UWP.Pages.Call
             {
                 Id = "0",
                 Content = "BYE",
-                PeerId = call.PeerId.ToString()
+                PeerId = _call.PeerId.ToString()
             });
 
-            call.PeerId = -1;
+            _call.PeerId = -1;
 
-            call.ClosePeerConnection();
+            _call.ClosePeerConnection();
 
             Task.Run(async ()
                 => await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()

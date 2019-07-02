@@ -1,5 +1,4 @@
-﻿//using GuiCore;
-using WebRtcAdapter;
+﻿using WebRtcAdapter;
 using Windows.UI.Xaml.Controls;
 
 namespace Client_UWP.Pages.Call
@@ -14,7 +13,6 @@ namespace Client_UWP.Pages.Call
             set
             {
                 _selfVideo = value;
-                //GuiLogic.Instance.SelfVideo = _selfVideo;
                 Devices.Instance.SelfVideo = _selfVideo;
             }
         }
@@ -27,7 +25,6 @@ namespace Client_UWP.Pages.Call
             set
             {
                 _peerVideo = value;
-                //GuiLogic.Instance.PeerVideo = _peerVideo;
                 Devices.Instance.PeerVideo = _peerVideo;
             }
         }

@@ -41,9 +41,9 @@ namespace Client_UWP.Pages.Main
 
         private LocalSettings _localSettings = new LocalSettings();
 
-        private AccountModel accountModel;
+        private AccountModel _accountModel;
 
-        private WebRtcAdapter.Call.Call Call;
+        private WebRtcAdapter.Call.Call _call;
 
         private Account Account;
 
@@ -53,9 +53,9 @@ namespace Client_UWP.Pages.Main
 
             InitializeComponent();
 
-            accountModel = _localSettings.DeserializeSelectedAccount();
+            _accountModel = _localSettings.DeserializeSelectedAccount();
 
-            SetAccount(accountModel?.ServiceUri);
+            SetAccount(_accountModel?.ServiceUri);
 
             //_signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
 
@@ -64,10 +64,10 @@ namespace Client_UWP.Pages.Main
 
             CallProvider callProvider = (CallProvider)callFactory;
 
-            Call = (WebRtcAdapter.Call.Call)callProvider.GetCallAsync();
+            _call = (WebRtcAdapter.Call.Call)callProvider.GetCallAsync();
 
-            Call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
-            Call.OnSignedOut += Call_OnSignedOut;
+            _call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
+            _call.OnSignedOut += Call_OnSignedOut;
 
             //AddDefaultIceServersList();
 
@@ -84,9 +84,9 @@ namespace Client_UWP.Pages.Main
             _signaler.PeerDisconnected += Signaler_PeerDisconnected;
             _signaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
 
-            Call.OnPeerConnectionCreated += async () =>
+            _call.OnPeerConnectionCreated += async () =>
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
-                    => Frame.Navigate(typeof(CallPage), Call));
+                    => Frame.Navigate(typeof(CallPage), _call));
 
             InitView();
         }
@@ -112,7 +112,7 @@ namespace Client_UWP.Pages.Main
             int peerId = int.Parse(e.Message.PeerId);
             string content = e.Message.Content;
 
-            Call.MessageFromPeerTaskRun(peerId, content);
+            _call.MessageFromPeerTaskRun(peerId, content);
         }
 
         public void SetAccount(string serviceUri)
@@ -299,7 +299,7 @@ namespace Client_UWP.Pages.Main
                 peersListView.Items.Add(peer);
             }
 
-            if (accountModel == null)
+            if (_accountModel == null)
             {
                 tbServiceUri.Text = "Please create/select account Service Uri.";
             }
@@ -354,9 +354,9 @@ namespace Client_UWP.Pages.Main
 
                 Task.Run(async () => 
                 {
-                    Call.PeerId = remotePeer.Id;
+                    _call.PeerId = remotePeer.Id;
 
-                    CallInfo callInfo = (CallInfo)await Call.PlaceCallAsync(null);
+                    CallInfo callInfo = (CallInfo)await _call.PlaceCallAsync(null);
                 });
             };
         }
@@ -378,7 +378,7 @@ namespace Client_UWP.Pages.Main
             {
                 Id = "0",
                 Content = e,
-                PeerId = Call.PeerId.ToString()
+                PeerId = _call.PeerId.ToString()
             });
         }
 
