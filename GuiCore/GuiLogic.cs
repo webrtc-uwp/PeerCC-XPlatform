@@ -331,20 +331,20 @@ namespace GuiCore
             //    AudioCodecsList.Add(audioCodec);
             //}
 
-            RTCRtpCapabilities videoCapabilities = RTCRtpSender.GetCapabilities(_factory, "video");
-            IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
-            foreach (var item in videoCodecs)
-            {
-                string payload = item.PreferredPayloadType.ToString();
+            //RTCRtpCapabilities videoCapabilities = RTCRtpSender.GetCapabilities(_factory, "video");
+            //IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
+            //foreach (var item in videoCodecs)
+            //{
+            //    string payload = item.PreferredPayloadType.ToString();
 
-                Codec videoCodec = new Codec();
-                videoCodec.SetMediaKind(MediaKind.Video);
-                videoCodec.SetId(payload);
-                videoCodec.SetDisplayName(item.Name + " " + payload);
-                videoCodec.SetRate((int)item.ClockRate);
+            //    Codec videoCodec = new Codec();
+            //    videoCodec.SetMediaKind(MediaKind.Video);
+            //    videoCodec.SetId(payload);
+            //    videoCodec.SetDisplayName(item.Name + " " + payload);
+            //    videoCodec.SetRate((int)item.ClockRate);
 
-                VideoCodecsList.Add(videoCodec);
-            }
+            //    VideoCodecsList.Add(videoCodec);
+            //}
         }
 
         /// <summary>
@@ -395,23 +395,38 @@ namespace GuiCore
         {
             Debug.WriteLine("Getting user media.");
 
-            IReadOnlyList<IConstraint> mandatoryConstraints = new List<IConstraint>();
-            //{
-            //    new Constraint("maxWidth", Devices.Instance.VideoCaptureProfile.Width.ToString()),
-            //    new Constraint("minWidth", Devices.Instance.VideoCaptureProfile.Width.ToString()),
-            //    new Constraint("maxHeight", Devices.Instance.VideoCaptureProfile.Height.ToString()),
-            //    new Constraint("minHeight", Devices.Instance.VideoCaptureProfile.Height.ToString()),
-            //    new Constraint("maxFrameRate", Devices.Instance.VideoCaptureProfile.FrameRate.ToString()),
-            //    new Constraint("minFrameRate", Devices.Instance.VideoCaptureProfile.FrameRate.ToString())
-            //};
-
-            IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
-
-            MediaDevice _selectedVideoDevice = Devices.Instance.VideoMediaDevicesList[0];
+            MediaDevice _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[0];
 
             for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
-                if (Devices.Instance.VideoMediaDevicesList[i].DisplayName == localSettings.Values["SelectedCameraName"]?.ToString())
-                    _selectedVideoDevice = Devices.Instance.VideoMediaDevicesList[i];
+                if (Devices.Instance.VideoMediaDevicesList[i].DisplayName == (string)localSettings.Values["SelectedCameraName"])
+                    _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[i];
+
+            List<int> widths = new List<int>();
+            List<int> heights = new List<int>();
+            List<int> frameRates = new List<int>();
+
+            foreach (var videoFormat in _selectedVideoDevice.VideoFormats)
+            {
+                widths.Add(videoFormat.Dimension.Width);
+                heights.Add(videoFormat.Dimension.Height);
+
+                foreach (var frameRate in videoFormat.FrameRates)
+                    frameRates.Add(frameRate);
+            }
+
+            // Maximum and minimum values for the selected camera
+            IReadOnlyList<IConstraint> mandatoryConstraints = new List<IConstraint>()
+            {
+                new Constraint("maxWidth", widths.Max().ToString()),
+                new Constraint("minWidth", widths.Min().ToString()),
+                new Constraint("maxHeight", heights.Max().ToString()),
+                new Constraint("minHeight", heights.Min().ToString()),
+                new Constraint("maxFrameRate", frameRates.Max().ToString()),
+                new Constraint("minFrameRate", frameRates.Min().ToString())
+            };
+
+            // Add optional constrains
+            IReadOnlyList<IConstraint> optionalConstraints = new List<IConstraint>();
 
             IMediaConstraints mediaConstraints = new MediaConstraints(mandatoryConstraints, optionalConstraints);
 
@@ -919,18 +934,18 @@ namespace GuiCore
             HttpSignaler.SendToPeer(_peerId, json.Stringify());
         }
 
-        public void SetMedia()
-        {
-            // Media
-            IMediaProvider mediaFactory =
-                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
+        //public void SetMedia()
+        //{
+        //    // Media
+        //    IMediaProvider mediaFactory =
+        //        ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
 
-            MediaProvider mediaProvider = (MediaProvider)mediaFactory;
+        //    MediaProvider mediaProvider = (MediaProvider)mediaFactory;
 
-            Media = (Media)mediaProvider.GetMedia();
+        //    Media = (Media)mediaProvider.GetMedia();
 
-            //Media.GetCodecsAsync(MediaKind.Audio);
-            //Media.GetMediaDevicesAsync(MediaKind.Audio);
-        }
+        //    //Media.GetCodecsAsync(MediaKind.Audio);
+        //    //Media.GetMediaDevicesAsync(MediaKind.Audio);
+        //}
     }
 }

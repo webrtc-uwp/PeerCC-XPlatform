@@ -39,17 +39,26 @@ namespace Client_UWP.Pages.Main
 
                 Debug.WriteLine($"Application version: {AppVersion}");
 
-                Initialization.Instance.InstallFactories();
+                InstallFactories();
 
                 Task.Run(async() => 
                 {
-                    await Devices.Instance.GetMediaDevices();
+                    await Devices.Instance.GetMediaAsync();
                 });
 
                 RunOnUiThread(() => OnInitialized?.Invoke());
             }
             else
                 RunOnUiThread(async () => await new MessageDialog("Failed to initialize WebRTC library!").ShowAsync());
+        }
+
+        /// <summary>
+        /// Install the signaler and the calling factories.
+        /// </summary>
+        private void InstallFactories()
+        {
+            PeerCC.Setup.Install();
+            WebRtcAdapter.Setup.Install();
         }
     }
 }

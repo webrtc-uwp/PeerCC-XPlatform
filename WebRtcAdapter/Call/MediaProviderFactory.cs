@@ -7,7 +7,7 @@ namespace WebRtcAdapter.Call
     {
         public IMediaProvider Create()
         {
-            return MediaProvider.Create();
+            return new MediaProvider();
         }
     }
 }

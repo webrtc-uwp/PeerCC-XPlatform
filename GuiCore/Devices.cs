@@ -1,14 +1,11 @@
-﻿using Org.WebRtc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Media.Capture;
-using Windows.Media.MediaProperties;
 using WebRtcAdapter.Call;
-using System.Linq;
+using ClientCore.Call;
 
 namespace GuiCore
 {
@@ -33,49 +30,29 @@ namespace GuiCore
 
         private Devices() { }
 
-        public List<MediaDevice> VideoMediaDevicesList = new List<MediaDevice>();
-        public List<MediaDevice> AudioMediaDevicesCapturersList = new List<MediaDevice>();
-        public List<MediaDevice> AudioMediaDevicesRendersList = new List<MediaDevice>();
+        public Windows.UI.Xaml.Controls.MediaElement SelfVideo { get; set; }
+        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
 
-        public async Task GetMediaDevices()
+        public IList<IMediaDevice> VideoMediaDevicesList = new List<IMediaDevice>();
+        public IList<IMediaDevice> AudioMediaDevicesCapturersList = new List<IMediaDevice>();
+        public IList<IMediaDevice> AudioMediaDevicesRendersList = new List<IMediaDevice>();
+
+        public IList<ICodec> AudioCodecsList = new List<ICodec>();
+        public IList<ICodec> VideoCodecsList = new List<ICodec>();
+
+        public async Task GetMediaAsync()
         {
-            IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
-            DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(Windows.Media.Devices.MediaDevice.GetAudioCaptureSelector());
-            DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(Windows.Media.Devices.MediaDevice.GetAudioRenderSelector());
+            IMediaProvider mediaFactory =
+                ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
 
-            foreach (var microphone in audioCapturers)
-            {
-                var mediaDevice = new MediaDevice();
-                mediaDevice.GetMediaKind(microphone.Kind.ToString());
-                mediaDevice.GetId(microphone.Id);
-                mediaDevice.GetDisplayName(microphone.Name);
+            Media Media = (Media)await mediaFactory.GetMediaAsync();
 
-                AudioMediaDevicesCapturersList.Add(mediaDevice);
-            }
+            AudioMediaDevicesCapturersList = await Media.GetMediaDevicesAsync(MediaKind.AudioInputDevice);
+            AudioMediaDevicesRendersList = await Media.GetMediaDevicesAsync(MediaKind.AudioOutputDevice);
+            VideoMediaDevicesList = await Media.GetMediaDevicesAsync(MediaKind.VideoDevice);
 
-            foreach (var speaker in audioRenders)
-            {
-                var mediaDevice = new MediaDevice();
-                mediaDevice.GetMediaKind(speaker.Kind.ToString());
-                mediaDevice.GetId(speaker.Id);
-                mediaDevice.GetDisplayName(speaker.Name);
-
-                AudioMediaDevicesRendersList.Add(mediaDevice);
-            }
-
-            foreach (IVideoDeviceInfo videoDevice in videoDevices)
-            {
-                var mediaDevice = new MediaDevice();
-                mediaDevice.GetMediaKind("Video");
-                mediaDevice.GetId(videoDevice.Info.Id);
-                mediaDevice.GetDisplayName(videoDevice.Info.Name);
-
-                IList<MediaVideoFormat> videoFormatsList = await GetMediaVideoFormatList(videoDevice.Info.Id);
-
-                mediaDevice.GetVideoFormats(videoFormatsList);
-
-                VideoMediaDevicesList.Add(mediaDevice); 
-            }
+            AudioCodecsList = await Media.GetCodecsAsync(MediaKind.AudioCodec);
+            VideoCodecsList = await Media.GetCodecsAsync(MediaKind.VideoCodec);
         }
 
         /// <summary>
@@ -111,53 +88,131 @@ namespace GuiCore
             }).AsAsyncOperation();
         }
 
-        public IAsyncOperation<IList<MediaVideoFormat>> GetMediaVideoFormatList(string deviceId)
-        {
-            var mediaCapture = new MediaCapture();
-            var mediaSettings = new MediaCaptureInitializationSettings();
+        //public List<MediaDevice> VideoMediaDevicesList = new List<MediaDevice>();
+        //public List<MediaDevice> AudioMediaDevicesCapturersList = new List<MediaDevice>();
+        //public List<MediaDevice> AudioMediaDevicesRendersList = new List<MediaDevice>();
 
-            mediaSettings.VideoDeviceId = deviceId;
+        //public async Task GetMediaDevices()
+        //{
+        //    IReadOnlyList<IVideoDeviceInfo> videoDevices = await VideoCapturer.GetDevices();
+        //    DeviceInformationCollection audioCapturers = await DeviceInformation.FindAllAsync(Windows.Media.Devices.MediaDevice.GetAudioCaptureSelector());
+        //    DeviceInformationCollection audioRenders = await DeviceInformation.FindAllAsync(Windows.Media.Devices.MediaDevice.GetAudioRenderSelector());
 
-            Task initTask = mediaCapture.InitializeAsync(mediaSettings).AsTask();
+        //    foreach (var microphone in audioCapturers)
+        //    {
+        //        var mediaDevice = new MediaDevice();
+        //        mediaDevice.GetMediaKind(microphone.Kind.ToString());
+        //        mediaDevice.GetId(microphone.Id);
+        //        mediaDevice.GetDisplayName(microphone.Name);
 
-            return initTask.ContinueWith(initResult =>
-            {
-                if (initResult.Exception != null)
-                {
-                    Debug.WriteLine("Failed to initialize video device: " + initResult.Exception.Message);
-                    return null;
-                }
-                IReadOnlyList<IMediaEncodingProperties> streamProperties =
-                    mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
+        //        AudioMediaDevicesCapturersList.Add(mediaDevice);
+        //    }
 
-                IList<MediaVideoFormat> mediaVideoFormatList = new List<MediaVideoFormat>();
+        //    foreach (var speaker in audioRenders)
+        //    {
+        //        var mediaDevice = new MediaDevice();
+        //        mediaDevice.GetMediaKind(speaker.Kind.ToString());
+        //        mediaDevice.GetId(speaker.Id);
+        //        mediaDevice.GetDisplayName(speaker.Name);
 
-                HashSet<string> resolutionsHashSet = new HashSet<string>();
+        //        AudioMediaDevicesRendersList.Add(mediaDevice);
+        //    }
 
-                foreach (VideoEncodingProperties property in streamProperties)
-                    resolutionsHashSet.Add($"{property.Width}x{property.Height}");
+        //    foreach (IVideoDeviceInfo videoDevice in videoDevices)
+        //    {
+        //        var mediaDevice = new MediaDevice();
+        //        mediaDevice.GetMediaKind("Video");
+        //        mediaDevice.GetId(videoDevice.Info.Id);
+        //        mediaDevice.GetDisplayName(videoDevice.Info.Name);
 
-                foreach (string resolution in resolutionsHashSet)
-                {
-                    string[] r = resolution.Split("x");
-                    int width = int.Parse(r[0]);
-                    int height = int.Parse(r[1]);
+        //        IList<MediaVideoFormat> videoFormatsList = await GetMediaVideoFormatList(videoDevice.Info.Id);
 
-                    HashSet<int> frameRateHashSet = new HashSet<int>();
+        //        mediaDevice.GetVideoFormats(videoFormatsList);
 
-                    foreach (VideoEncodingProperties property in streamProperties)
-                        if (property.Width == width && property.Height == height)
-                            frameRateHashSet.Add((int)(property.FrameRate.Numerator / property.FrameRate.Denominator));
+        //        VideoMediaDevicesList.Add(mediaDevice); 
+        //    }
+        //}
 
-                    var mediaVideoFormat = new MediaVideoFormat();
-                    mediaVideoFormat.GetId(deviceId + resolution);
-                    mediaVideoFormat.GetDimension(width, height);
-                    mediaVideoFormat.GetFrameRates(frameRateHashSet.OrderBy(v => v).ToList());
+        /// <summary>
+        /// Gets permission from the OS to get access to a media capture device. 
+        /// If prermissions are not enabled for the calling application, the OS 
+        /// will display a prompt asking the user for permission.
+        /// This function must be called from the UI thread.
+        /// </summary>
+        /// <returns></returns>
+        //public IAsyncOperation<bool> RequestAccessForMediaCapture()
+        //{
+        //    MediaCapture mediaAccessRequester = new MediaCapture();
 
-                    mediaVideoFormatList.Add(mediaVideoFormat);
-                }
-                return mediaVideoFormatList;
-            }).AsAsyncOperation<IList<MediaVideoFormat>>();
-        }
+        //    MediaCaptureInitializationSettings mediaSettings =
+        //        new MediaCaptureInitializationSettings();
+
+        //    mediaSettings.AudioDeviceId = "";
+        //    mediaSettings.VideoDeviceId = "";
+        //    mediaSettings.StreamingCaptureMode = StreamingCaptureMode.AudioAndVideo;
+        //    mediaSettings.PhotoCaptureSource = PhotoCaptureSource.VideoPreview;
+
+        //    Task initTask = mediaAccessRequester.InitializeAsync(mediaSettings).AsTask();
+
+        //    return initTask.ContinueWith(initResult =>
+        //    {
+        //        bool accessRequestAccepted = true;
+        //        if (initResult.Exception != null)
+        //        {
+        //            Debug.WriteLine($"Failed to obtain access permission: {initResult.Exception.Message}");
+        //            accessRequestAccepted = false;
+        //        }
+        //        return accessRequestAccepted;
+        //    }).AsAsyncOperation();
+        //}
+
+        //public IAsyncOperation<IList<MediaVideoFormat>> GetMediaVideoFormatList(string deviceId)
+        //{
+        //    var mediaCapture = new MediaCapture();
+        //    var mediaSettings = new MediaCaptureInitializationSettings();
+
+        //    mediaSettings.VideoDeviceId = deviceId;
+
+        //    Task initTask = mediaCapture.InitializeAsync(mediaSettings).AsTask();
+
+        //    return initTask.ContinueWith(initResult =>
+        //    {
+        //        if (initResult.Exception != null)
+        //        {
+        //            Debug.WriteLine("Failed to initialize video device: " + initResult.Exception.Message);
+        //            return null;
+        //        }
+        //        IReadOnlyList<IMediaEncodingProperties> streamProperties =
+        //            mediaCapture.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoRecord);
+
+        //        IList<MediaVideoFormat> mediaVideoFormatList = new List<MediaVideoFormat>();
+
+        //        HashSet<string> resolutionsHashSet = new HashSet<string>();
+
+        //        foreach (VideoEncodingProperties property in streamProperties)
+        //            resolutionsHashSet.Add($"{property.Width}x{property.Height}");
+
+        //        foreach (string resolution in resolutionsHashSet)
+        //        {
+        //            string[] r = resolution.Split("x");
+        //            int width = int.Parse(r[0]);
+        //            int height = int.Parse(r[1]);
+
+        //            HashSet<int> frameRateHashSet = new HashSet<int>();
+
+        //            foreach (VideoEncodingProperties property in streamProperties)
+        //                if (property.Width == width && property.Height == height)
+        //                    frameRateHashSet.Add((int)(property.FrameRate.Numerator / property.FrameRate.Denominator));
+
+        //            var mediaVideoFormat = new MediaVideoFormat();
+        //            mediaVideoFormat.GetId(deviceId + resolution);
+        //            mediaVideoFormat.GetDimension(width, height);
+        //            mediaVideoFormat.GetFrameRates(frameRateHashSet.OrderBy(v => v).ToList());
+
+        //            mediaVideoFormatList.Add(mediaVideoFormat);
+        //        }
+        //        return mediaVideoFormatList;
+        //    }).AsAsyncOperation<IList<MediaVideoFormat>>();
+        //}
     }
 }
