@@ -580,32 +580,9 @@ namespace GuiCore
                 offerOptions.OfferToReceiveVideo = true;
                 IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
-                //if (localSettings.Values["SelectedAudioCodecName"] != null)
-                //{
-                //    foreach (var aCodec in AudioCodecsList)
-                //    {
-                //        if (aCodec.DisplayName == (string)localSettings.Values["SelectedAudioCodecName"])
-                //            AudioCodec = aCodec;
-                //    }
-                //}
-                //else AudioCodec = AudioCodecsList.First();
-
-                //if (localSettings.Values["SelectedVideoCodecName"] != null)
-                //{
-                //    foreach (var vCodec in VideoCodecsList)
-                //    {
-                //        if (vCodec.DisplayName == (string)localSettings.Values["SelectedVideoCodecName"])
-                //            VideoCodec = vCodec;
-                //    }
-                //}
-                //else
-                //    VideoCodec = VideoCodecsList.First();
-
-
-
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
-                //SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(AudioCodec.Id), int.Parse(VideoCodec.Id));
+                //TODO: SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(AudioCodec.Id), int.Parse(VideoCodec.Id));
                 var sdpInit = new RTCSessionDescriptionInit();
                 sdpInit.Sdp = modifiedSdp;
                 sdpInit.Type = offer.SdpType;
@@ -933,19 +910,5 @@ namespace GuiCore
 
             HttpSignaler.SendToPeer(_peerId, json.Stringify());
         }
-
-        //public void SetMedia()
-        //{
-        //    // Media
-        //    IMediaProvider mediaFactory =
-        //        ClientCore.Factory.MediaFactory.Singleton.CreateMediaProvider();
-
-        //    MediaProvider mediaProvider = (MediaProvider)mediaFactory;
-
-        //    Media = (Media)mediaProvider.GetMedia();
-
-        //    //Media.GetCodecsAsync(MediaKind.Audio);
-        //    //Media.GetMediaDevicesAsync(MediaKind.Audio);
-        //}
     }
 }
