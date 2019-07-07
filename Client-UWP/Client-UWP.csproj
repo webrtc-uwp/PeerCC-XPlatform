@@ -188,10 +188,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\webrtc\windows\projects\msvc\Org.WebRtc.Universal\Org.WebRtc.vcxproj">
-      <Project>{3dd8fdcd-b703-4b75-826a-2c7e844f903e}</Project>
-      <Name>Org.WebRtc</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ClientCore\ClientCore.csproj">
       <Project>{22cbd286-a132-4396-a410-5fa051f7dbef}</Project>
       <Name>ClientCore</Name>

@@ -150,11 +150,6 @@ namespace GuiCore
 
             //Call.HangupAsync();
         }
-        private List<IceServer> iceServers = new List<IceServer>();
-        public void GetIceServers(List<IceServer> iceServersList)
-        {
-            iceServers = iceServersList;
-        }
 
         private string GetPreferredVideoFormatId()
         {
@@ -250,6 +245,12 @@ namespace GuiCore
             //}
 
             return preferredAudioCodecId;
+        }
+
+        private List<IceServer> iceServers = new List<IceServer>();
+        public void SetIceServers(List<IceServer> iceServersList)
+        {
+            iceServers = iceServersList;
         }
 
         public void AddIceServers(List<IceServer> iceServersList)
