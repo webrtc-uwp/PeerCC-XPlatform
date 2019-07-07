@@ -565,26 +565,26 @@ namespace GuiCore
                 offerOptions.OfferToReceiveVideo = true;
                 IRTCSessionDescription offer = await PeerConnection.CreateOffer(offerOptions);
 
-                if (localSettings.Values["SelectedAudioCodecName"] != null)
-                {
-                    foreach (var aCodec in AudioCodecsList)
-                    {
-                        if (aCodec.DisplayName == (string)localSettings.Values["SelectedAudioCodecName"])
-                            AudioCodec = aCodec;
-                    }
-                }
-                else AudioCodec = AudioCodecsList.First();
+                //if (localSettings.Values["SelectedAudioCodecName"] != null)
+                //{
+                //    foreach (var aCodec in AudioCodecsList)
+                //    {
+                //        if (aCodec.DisplayName == (string)localSettings.Values["SelectedAudioCodecName"])
+                //            AudioCodec = aCodec;
+                //    }
+                //}
+                //else AudioCodec = AudioCodecsList.First();
 
-                if (localSettings.Values["SelectedVideoCodecName"] != null)
-                {
-                    foreach (var vCodec in VideoCodecsList)
-                    {
-                        if (vCodec.DisplayName == (string)localSettings.Values["SelectedVideoCodecName"])
-                            VideoCodec = vCodec;
-                    }
-                }
-                else
-                    VideoCodec = VideoCodecsList.First();
+                //if (localSettings.Values["SelectedVideoCodecName"] != null)
+                //{
+                //    foreach (var vCodec in VideoCodecsList)
+                //    {
+                //        if (vCodec.DisplayName == (string)localSettings.Values["SelectedVideoCodecName"])
+                //            VideoCodec = vCodec;
+                //    }
+                //}
+                //else
+                //    VideoCodec = VideoCodecsList.First();
 
 
 
