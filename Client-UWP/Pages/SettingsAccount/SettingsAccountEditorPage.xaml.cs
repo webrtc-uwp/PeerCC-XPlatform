@@ -50,9 +50,9 @@ namespace Client_UWP.Pages.SettingsAccount
                 // Save AccountsList
                 _localSettings.SerializeAccountsList(_accountsList);
 
-                tbAccountName.Text = account.AccountName;
-                tbServiceUri.Text = account.ServiceUri;
-                tbIdentityUri.Text = account.IdentityUri;
+                tbAccountName.Text = account.AccountName != null ? account.AccountName : string.Empty;
+                tbServiceUri.Text = account.ServiceUri != null ? account.ServiceUri : string.Empty;
+                tbIdentityUri.Text = account.IdentityUri != null ? account.IdentityUri : string.Empty;
                 btnAdd.Visibility = Visibility.Collapsed;
                 btnSave.Visibility = Visibility.Visible;
                 btnDelete.Visibility = Visibility.Visible;
@@ -90,24 +90,26 @@ namespace Client_UWP.Pages.SettingsAccount
                     Frame.Navigate(typeof(SettingsAccountPage));
                 };
             }
-
-            btnAdd.Click += (sender, args) =>
+            else
             {
-                AccountModel accountModel = new AccountModel
+                btnAdd.Click += (sender, args) =>
                 {
-                    AccountName = tbAccountName.Text,
-                    ServiceUri = tbServiceUri.Text,
-                    IdentityUri = tbIdentityUri.Text
+                    AccountModel accountModel = new AccountModel
+                    {
+                        AccountName = tbAccountName.Text,
+                        ServiceUri = tbServiceUri.Text,
+                        IdentityUri = tbIdentityUri.Text
+                    };
+
+                    // Add new Account to AccountsList
+                    _accountsList.Add(accountModel);
+
+                    // Save AccountsList
+                    _localSettings.SerializeAccountsList(_accountsList);
+
+                    Frame.Navigate(typeof(SettingsAccountPage), accountModel);
                 };
-
-                // Add new Account to AccountsList
-                _accountsList.Add(accountModel);
-
-                // Save AccountsList
-                _localSettings.SerializeAccountsList(_accountsList);
-
-                Frame.Navigate(typeof(SettingsAccountPage), accountModel);
-            };
+            }
         }
     }
 }
