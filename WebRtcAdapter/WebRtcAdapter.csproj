@@ -140,7 +140,7 @@
       <Version>6.1.9</Version>
     </PackageReference>
     <PackageReference Include="WebRtc">
-      <Version>1.71.0.4-Alpha</Version>
+      <Version>1.71.0.7</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
