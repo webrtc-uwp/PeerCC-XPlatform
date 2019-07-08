@@ -4,30 +4,11 @@ using Windows.UI.Core;
 
 namespace GuiCore
 {
-    public sealed class Initialization
+    public static class Initialization
     {
-        private static Initialization instance = null;
-        private static readonly object InstanceLock = new object();
+        public static event Action<bool> Initialized;
 
-        public static Initialization Instance
-        {
-            get
-            {
-                lock (InstanceLock)
-                {
-                    if (instance == null)
-                        instance = new Initialization();
-
-                    return instance;
-                }
-            }
-        }
-
-        private Initialization() { }
-
-        public event Action<bool> Initialized;
-
-        public void CofigureWebRtcLib(CoreDispatcher uiDispatcher)
+        public static void CofigureWebRtcLib(CoreDispatcher uiDispatcher)
         {
             IEventQueue queue = EventQueueMaker.Bind(uiDispatcher);
             var configuration = new WebRtcLibConfiguration();
@@ -39,15 +20,6 @@ namespace GuiCore
             WebRtcLib.Setup(configuration);
 
             Initialized?.Invoke(true);
-        }
-
-        /// <summary>
-        /// Install the signaler and the calling factories.
-        /// </summary>
-        public void InstallFactories()
-        {
-            PeerCC.Setup.Install();
-            WebRtcAdapter.Setup.Install();
         }
     }
 }

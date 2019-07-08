@@ -15,12 +15,12 @@ namespace Client_UWP.Pages.Main
         public MainViewModel(CoreDispatcher uiDispatcher)
             : base(uiDispatcher)
         {
-            Initialization.Instance.Initialized += Instance_Initialized;
+            Initialization.Initialized += WebRtcInitialized;
 
             Devices.Instance.RequestAccessForMediaCapture().AsTask().ContinueWith(antecedent =>
             {
                 if (antecedent.Result)
-                    Initialization.Instance.CofigureWebRtcLib(uiDispatcher);
+                    Initialization.CofigureWebRtcLib(uiDispatcher);
                 else
                     RunOnUiThread(async () 
                         => await new MessageDialog("Failed to obtain access to multimedia devices!").ShowAsync());
@@ -29,7 +29,7 @@ namespace Client_UWP.Pages.Main
 
         private string AppVersion = "N/A";
 
-        private void Instance_Initialized(bool succeeded)
+        private void WebRtcInitialized(bool succeeded)
         {
             if (succeeded)
             {
