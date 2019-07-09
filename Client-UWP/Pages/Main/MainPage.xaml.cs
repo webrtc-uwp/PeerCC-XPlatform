@@ -69,8 +69,6 @@ namespace Client_UWP.Pages.Main
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
                     => Frame.Navigate(typeof(CallPage)));
 
-            GuiLogic.Instance.OnAddLocalTrack += GuiLogic.Instance.Instance_OnAddLocalTrack;
-
             InitView();
         }
 

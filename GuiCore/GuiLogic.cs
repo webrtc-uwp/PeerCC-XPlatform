@@ -177,45 +177,7 @@ namespace GuiCore
                 IceServers = _iceServers
             };
 
-            GetCodecs();
-
             return config;
-        }
-
-        public List<Codec> VideoCodecsList = new List<Codec>();
-        public List<Codec> AudioCodecsList = new List<Codec>();
-
-        public void GetCodecs()
-        {
-            //RTCRtpCapabilities audioCapabilities = RTCRtpSender.GetCapabilities(_factory, "audio");
-            //IReadOnlyList<RTCRtpCodecCapability> audioCodecs = audioCapabilities.Codecs;
-            //foreach (var item in audioCodecs)
-            //{
-            //    string payload = item.PreferredPayloadType.ToString();
-
-            //    Codec audioCodec = new Codec();
-            //    audioCodec.SetMediaKind(MediaKind.Video);
-            //    audioCodec.SetId(payload);
-            //    audioCodec.SetDisplayName(item.Name + " " + payload);
-            //    audioCodec.SetRate((int)item.ClockRate);
-
-            //    AudioCodecsList.Add(audioCodec);
-            //}
-
-            //RTCRtpCapabilities videoCapabilities = RTCRtpSender.GetCapabilities(_factory, "video");
-            //IReadOnlyList<RTCRtpCodecCapability> videoCodecs = videoCapabilities.Codecs;
-            //foreach (var item in videoCodecs)
-            //{
-            //    string payload = item.PreferredPayloadType.ToString();
-
-            //    Codec videoCodec = new Codec();
-            //    videoCodec.SetMediaKind(MediaKind.Video);
-            //    videoCodec.SetId(payload);
-            //    videoCodec.SetDisplayName(item.Name + " " + payload);
-            //    videoCodec.SetRate((int)item.ClockRate);
-
-            //    VideoCodecsList.Add(videoCodec);
-            //}
         }
 
         /// <summary>
@@ -345,50 +307,6 @@ namespace GuiCore
             }
         }
 
-        private bool _cameraEnabled = true;
-        private bool _microphoneIsOn = true;
-
-        /// <summary>
-        /// Add local media track event handler.
-        /// </summary>
-        /// <param name="track">Media track kind.</param>
-        public void Instance_OnAddLocalTrack(IMediaStreamTrack track)
-        {
-            Debug.WriteLine("Add local track!");
-
-            if (track.Kind == "audio")
-            {
-                if (_microphoneIsOn)
-                {
-                    Debug.WriteLine("audio!");
-                }
-            }
-            if (track.Kind == "video")
-            {
-                if (_cameraEnabled)
-                {
-                    Debug.WriteLine("video!");
-                    EnableLocalVideoStream();
-                }
-            }
-        }
-
-        public object MediaLock { get; set; } = new object();
-        private bool VideoEnabled = true;
-
-        /// <summary>
-        /// Enables the local video stream.
-        /// </summary>
-        private void EnableLocalVideoStream()
-        {
-            lock (MediaLock)
-            {
-                if (_selfVideoTrack != null)
-                    _selfVideoTrack.Enabled = true;
-                VideoEnabled = true;
-            }
-        }
-
         /// <summary>
         /// Add remote media track event handler.
         /// </summary>
@@ -484,6 +402,8 @@ namespace GuiCore
         {
             HttpSignaler.SendToPeer(_peerId, "BYE");
         }
+
+        public object MediaLock { get; set; } = new object();
 
         /// <summary>
         /// Closes a peer connection.
