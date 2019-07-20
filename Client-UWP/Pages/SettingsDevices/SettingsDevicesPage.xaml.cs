@@ -2,10 +2,10 @@
 using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
+using ClientCore.Call;
 using GuiCore;
 using System.Collections.ObjectModel;
 using System.Linq;
-using WebRtcAdapter.Call;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -63,7 +63,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetVideoCodecsList()
         {
-            foreach (Codec videoCodec in Devices.Instance.VideoCodecsList)
+            foreach (ICodec videoCodec in Devices.Instance.VideoCodecsList)
                 _videoCodecsList.Add(videoCodec.DisplayName);
 
             if (_videoCodecsList.Count != 0)
@@ -73,6 +73,8 @@ namespace Client_UWP.Pages.SettingsDevices
             }
             else
                 _videoCodecsList = _localSettings.DeserializeVideoCodecsNameList();
+
+            cbVideoCodecs.SelectionChanged += CbVideoCodecs_SelectionChanged;
 
             if (_videoCodecsList != null)
             {
@@ -91,7 +93,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetAudioCodecsList()
         {
-            foreach (var audioCodec in Devices.Instance.AudioCodecsList)
+            foreach (ICodec audioCodec in Devices.Instance.AudioCodecsList)
                 _audioCodesList.Add(audioCodec.DisplayName);
 
             if (_audioCodesList.Count != 0)
@@ -121,7 +123,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetSpeakersList()
         {
-            foreach (var speaker in Devices.Instance.AudioMediaDevicesRendersList)
+            foreach (IMediaDevice speaker in Devices.Instance.AudioMediaDevicesRendersList)
                 _speakersList.Add(speaker.DisplayName);
 
             cbSpeakers.SelectionChanged += CbSpeakers_SelectionChanged;
@@ -140,7 +142,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetMicrophonesList()
         {
-            foreach (var microphone in Devices.Instance.AudioMediaDevicesCapturersList)
+            foreach (IMediaDevice microphone in Devices.Instance.AudioMediaDevicesCapturersList)
                 _microphonesList.Add(microphone.DisplayName);
 
             cbMicrophone.SelectionChanged += CbMicrophone_SelectionChanged;
@@ -159,7 +161,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetCamerasList()
         {
-            foreach (var videoDevice in Devices.Instance.VideoMediaDevicesList)
+            foreach (IMediaDevice videoDevice in Devices.Instance.VideoMediaDevicesList)
                 _camerasList.Add(videoDevice.DisplayName);
 
             cbCamera.SelectionChanged += CbCamera_SelectionChanged;
@@ -178,7 +180,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetResolutions()
         {
-            foreach (var device in Devices.Instance.VideoMediaDevicesList)
+            foreach (IMediaDevice device in Devices.Instance.VideoMediaDevicesList)
             {
                 if (device.DisplayName == (string)_localSettings.GetSelectedCameraName)
                 {
@@ -207,7 +209,7 @@ namespace Client_UWP.Pages.SettingsDevices
 
         private void SetFrameRateList()
         {
-            foreach (var device in Devices.Instance.VideoMediaDevicesList)
+            foreach (IMediaDevice device in Devices.Instance.VideoMediaDevicesList)
             {
                 if (device.DisplayName == (string)_localSettings.GetSelectedCameraName)
                 {
