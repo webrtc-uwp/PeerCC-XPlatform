@@ -13,7 +13,7 @@ namespace Client_UWP.Pages.Call
             set
             {
                 _selfVideo = value;
-                GuiLogic.Instance.SelfVideo = _selfVideo;
+                Devices.Instance.SelfVideo = _selfVideo;
             }
         }
 
@@ -25,8 +25,7 @@ namespace Client_UWP.Pages.Call
             set
             {
                 _peerVideo = value;
-                GuiLogic.Instance.PeerVideo = _peerVideo;
-                //GuiLogic.Instance.ConfigureCall();
+                Devices.Instance.PeerVideo = _peerVideo;
             }
         }
     }

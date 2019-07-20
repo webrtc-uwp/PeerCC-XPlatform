@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace GuiCore.Utilities
+namespace Client_UWP
 {
     public static class XmlSerialization<T>
     {

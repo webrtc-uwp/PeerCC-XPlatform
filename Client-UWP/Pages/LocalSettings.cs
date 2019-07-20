@@ -1,5 +1,4 @@
 ﻿using Client_UWP.Models;
-using GuiCore.Utilities;
 using System.Collections.ObjectModel;
 using Windows.Storage;
 

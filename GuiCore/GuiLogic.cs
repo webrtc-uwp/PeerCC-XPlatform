@@ -1,14 +1,12 @@
 ﻿using ClientCore.Account;
 using ClientCore.Call;
 using ClientCore.Signaling;
-using GuiCore.Utilities;
 using Org.WebRtc;
 using PeerCC.Account;
 using PeerCC.Signaling;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using WebRtcAdapter.Call;
@@ -77,9 +75,6 @@ namespace GuiCore
         public event Action OnPeerConnectionCreated;
         public event Action OnPeerConnectionClosed;
         public event Action OnReadyToConnect;
-
-        public Windows.UI.Xaml.Controls.MediaElement SelfVideo { get; set; }
-        public Windows.UI.Xaml.Controls.MediaElement PeerVideo { get; set; }
 
         public Account Account;
         public Call Call;
@@ -295,7 +290,7 @@ namespace GuiCore
             if (_selfVideoTrack != null)
             {
 
-                _selfVideoTrack.Element = MediaElementMaker.Bind(SelfVideo);
+                _selfVideoTrack.Element = MediaElementMaker.Bind(Devices.Instance.SelfVideo);
                 ((MediaStreamTrack)_selfVideoTrack).OnFrameRateChanged += (float frameRate) =>
                 {
                     FramesPerSecondChanged?.Invoke("SELF", frameRate.ToString("0.0"));
@@ -371,7 +366,7 @@ namespace GuiCore
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
-                //TODO: SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(AudioCodec.Id), int.Parse(VideoCodec.Id));
+                //TODO: modify sdp to use selected codecs
                 var sdpInit = new RTCSessionDescriptionInit();
                 sdpInit.Sdp = modifiedSdp;
                 sdpInit.Type = offer.SdpType;
@@ -476,7 +471,7 @@ namespace GuiCore
 
                 if (_peerVideoTrack != null)
                 {
-                    _peerVideoTrack.Element = MediaElementMaker.Bind(PeerVideo);
+                    _peerVideoTrack.Element = MediaElementMaker.Bind(Devices.Instance.PeerVideo);
                     ((MediaStreamTrack)_peerVideoTrack).OnFrameRateChanged += (float frameRate) =>
                     {
                         FramesPerSecondChanged?.Invoke("PEER", frameRate.ToString("0.0"));
