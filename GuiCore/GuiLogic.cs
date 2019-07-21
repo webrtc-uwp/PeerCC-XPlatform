@@ -61,7 +61,7 @@ namespace GuiCore
             }
         }
 
-        public ApplicationDataContainer localSettings =
+        private ApplicationDataContainer _localSettings =
             ApplicationData.Current.LocalSettings;
 
         public bool PeerConnectedToServer;
@@ -77,18 +77,6 @@ namespace GuiCore
         public event Action OnReadyToConnect;
 
         public Account Account;
-        public Call Call;
-        public Media Media;
-
-        /// <summary>
-        /// Video codec used in WebRTC session.
-        /// </summary>
-        public Codec VideoCodec { get; set; }
-
-        /// <summary>
-        /// Audio codec used in WebRTC session.
-        /// </summary>
-        public Codec AudioCodec { get; set; }
 
         private GuiLogic()
         {
@@ -226,7 +214,7 @@ namespace GuiCore
             MediaDevice _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[0];
 
             for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
-                if (Devices.Instance.VideoMediaDevicesList[i].DisplayName == (string)localSettings.Values["SelectedCameraName"])
+                if (Devices.Instance.VideoMediaDevicesList[i].DisplayName == (string)_localSettings.Values["SelectedCameraName"])
                     _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[i];
 
             List<int> widths = new List<int>();
@@ -358,6 +346,9 @@ namespace GuiCore
 
             if (CreatePeerConnection())
             {
+                string selectedAudioCodecName = (string)_localSettings.Values["SelectedAudioCodecName"];
+                string selectedVideoCodecName = (string)_localSettings.Values["SelectedVideoCodecName"];
+
                 _peerId = peerId;
                 var offerOptions = new RTCOfferOptions();
                 offerOptions.OfferToReceiveAudio = true;
@@ -366,15 +357,15 @@ namespace GuiCore
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
-                //TODO: modify sdp to use selected codecs
-                var sdpInit = new RTCSessionDescriptionInit();
+                SdpUtils.SelectCodec(ref modifiedSdp, selectedAudioCodecName, "audio");
+                SdpUtils.SelectCodec(ref modifiedSdp, selectedVideoCodecName, "video");
+                RTCSessionDescriptionInit sdpInit = new RTCSessionDescriptionInit();
                 sdpInit.Sdp = modifiedSdp;
                 sdpInit.Type = offer.SdpType;
                 var modifiedOffer = new RTCSessionDescription(sdpInit);
-
                 await PeerConnection.SetLocalDescription(modifiedOffer);
 
-                Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
+                Debug.WriteLine($"Sending offer:\n {modifiedOffer.Sdp}");
 
                 SendSdp(modifiedOffer);
             }
@@ -648,7 +639,8 @@ namespace GuiCore
 
                     if (messageType == RTCSdpType.Offer)
                     {
-                        var answerOptions = new RTCAnswerOptions();
+
+                        RTCAnswerOptions answerOptions = new RTCAnswerOptions();
                         IRTCSessionDescription answer = await PeerConnection.CreateAnswer(answerOptions);
                         await PeerConnection.SetLocalDescription(answer);
                         // Send answer
