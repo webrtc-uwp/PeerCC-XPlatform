@@ -19,17 +19,36 @@ namespace PeerCC.Signaling
     /// </summary>
     public class HttpSignaler : HttpSignalerEvents, ISignaler
     {
+        private static HttpSignaler instance = null;
+        private static readonly object InstanceLock = new object();
+
+        public static HttpSignaler Instance
+        {
+            get
+            {
+                lock (InstanceLock)
+                {
+                    if (instance == null)
+                        instance = new HttpSignaler();
+
+                    return instance;
+                }
+            }
+        }
+
         private readonly HttpClient _httpClient = new HttpClient();
         private State _state;
         private Uri _baseHttpAddress;
         private int _myId;
         private string _clientName;
-        public ObservableCollection<Peer> _peers = new ObservableCollection<Peer>();
         private ManualResetEvent _sendEvent = new ManualResetEvent(false);
-        private ConcurrentQueue<Tuple<int, string>> _sendMessageQueue = new ConcurrentQueue<Tuple<int, string>>();
+        private ConcurrentQueue<Message> _sendMessageQueue = new ConcurrentQueue<Message>();
         private Thread _sendThread;
 
-        public HttpSignaler()
+        public bool LocalPeerSignedIn = false;
+        public ObservableCollection<Peer> _peers = new ObservableCollection<Peer>();
+
+        private HttpSignaler()
         {
             _state = State.NotConnected;
             _myId = -1;
@@ -79,11 +98,12 @@ namespace PeerCC.Signaling
                             {
                                 _sendEvent.WaitOne();
                                 _sendEvent.Reset();
-                                Tuple<int, string> peerMessageTuple;
-                                while (_sendMessageQueue.TryDequeue(out peerMessageTuple))
+
+                                Message message;
+                                while (_sendMessageQueue.TryDequeue(out message))
                                 {
-                                    if (-1 == peerMessageTuple.Item1) break;    // quit thread
-                                    SendToPeerAsync(peerMessageTuple.Item1, peerMessageTuple.Item2).Wait();
+                                    if (-1 == int.Parse(message.PeerId)) break;    // quit thread
+                                    SentToPeerAsync(message).Wait();
                                 }
                                 Thread.Yield();
                             }
@@ -160,6 +180,8 @@ namespace PeerCC.Signaling
                             return false;
 
                         OnSignedIn();
+
+                        LocalPeerSignedIn = true;
                     }
                 }
                 else if (_state == State.SigningOut)
@@ -185,18 +207,23 @@ namespace PeerCC.Signaling
             }
         }
 
-        public override void SendToPeer(int peer_id, string message)
+        public override void SendToPeer(Message message)
         {
             // A message is queued to deliver to the server in order the
             // messages are created. This prevents the server from
             // accidentally receiving a message sent later because an
             // earlier HTTP request was delayed before the next HTTP
             // request was able to succeed.
-            _sendMessageQueue.Enqueue(new Tuple<int, string>(peer_id, message));
+            _sendMessageQueue.Enqueue(new Message
+            {
+                Id = message.Id,
+                Content = message.Content,
+                PeerId = message.PeerId
+            });
             _sendEvent.Set();
         }
 
-        private async Task<bool> SendToPeerAsync(int peer_id, string message)
+        private async Task<bool> SendToPeerAsync(Message message)
         {
             try
             {
@@ -204,6 +231,8 @@ namespace PeerCC.Signaling
                     return false;
 
                 Debug.Assert(IsConnected());
+
+                int peer_id = int.Parse(message.Id);
 
                 if (!IsConnected() || peer_id == -1)
                     return false;
@@ -213,7 +242,8 @@ namespace PeerCC.Signaling
                         "message?peer_id={0}&to={1} HTTP/1.0",
                         _myId, peer_id);
 
-                var content = new StringContent(message, System.Text.Encoding.UTF8, "application/json");
+                StringContent content =
+                    new StringContent(message.Content, System.Text.Encoding.UTF8, "application/json");
 
                 Debug.WriteLine("Sending to remote peer: " + request + " " + message);
 
@@ -241,6 +271,8 @@ namespace PeerCC.Signaling
                 return true;
             _state = State.SigningOut;
 
+            LocalPeerSignedIn = false;
+
             if (_myId != -1)
             {
                 string request = string.Format("sign_out?peer_id={0}", _myId);
@@ -259,7 +291,12 @@ namespace PeerCC.Signaling
 
             // By putting an invalid peer ID and null message into the queue,
             // the send message thread is signaled to quit.
-            _sendMessageQueue.Enqueue(new Tuple<int, string>(-1, null));
+            _sendMessageQueue.Enqueue(new Message
+            {
+                PeerId = "-1",
+                Content = null
+            });
+
             _sendEvent.Set();
 
             // The spawned sender thread is no longer usable as it will quit.
@@ -416,23 +453,20 @@ namespace PeerCC.Signaling
 
                 Debug.Assert(IsConnected());
 
-                if (!IsConnected() || message.PeerId == "")
+                int peer_id = int.Parse(message.PeerId);
+
+                if (!IsConnected() || peer_id == -1)
                     return;
 
                 string request =
                     string.Format(
-                        "message?peer_id={0}&to={1}" +
-                        "Content-Length: {2}\r\n" +
-                        "Content-Type: text/plain\r\n" +
-                        "\r\n" +
-                        "{3}",
-                    _myId, message.PeerId, message.Content.Length, message.Content);
+                        "message?peer_id={0}&to={1} HTTP/1.0",
+                        _myId, peer_id);
 
-                var content = new StringContent(message.Content, System.Text.Encoding.UTF8, "application/json");
+                StringContent content =
+                    new StringContent(message.Content, System.Text.Encoding.UTF8, "application/json");
 
-                Debug.WriteLine("Sending to remote peer id: " + message.PeerId);
-                Debug.WriteLine("Message id: " + message.Id + ", content: " + message.Content);
-                Debug.WriteLine("Formated request: " + request);
+                Debug.WriteLine("Sending to remote peer: " + request + " " + message);
 
                 // Send request, await response
                 HttpResponseMessage response = await _httpClient.PostAsync(
@@ -446,9 +480,6 @@ namespace PeerCC.Signaling
                 Debug.WriteLine("[Error] Signaling SendToPeer: " + ex.Message);
             }
         }
-
-        private List<Message> messagesList = new List<Message>();
-        private object _locker = new object();
 
         /// <summary>
         /// Long lasting loop to get server responses 
@@ -499,17 +530,12 @@ namespace PeerCC.Signaling
                             {
                                 messageId++;
 
-                                var message = new Message();
-                                message.Id = messageId.ToString();
-                                message.PeerId = peerId.ToString();
-                                message.Content = result;
-
-                                lock (_locker)
+                                OnMessageFromPeer(new Message
                                 {
-                                    messagesList.Add(message);
-                                }
-
-                                OnMessageFromPeer(message);
+                                    Id = messageId.ToString(),
+                                    PeerId = peerId.ToString(),
+                                    Content = result
+                                });
                             }
                         }
                     }
@@ -537,19 +563,8 @@ namespace PeerCC.Signaling
         /// failed.</returns>
         public async Task<IList<Message>> WaitForMessagesAsync()
         {
-            return await Task.Run(() => GetMessagesList());
-        }
-
-        private IList<Message> GetMessagesList()
-        {
-            IList<Message> list = new List<Message>();
-
-            lock (_locker)
-            {
-                messagesList.ForEach(m => { list.Add(m); });
-            }
-
-            return list;
+            // This method is not currently used.
+            return await Task.Run(() => new List<Message>());
         }
 
         private static readonly string _localPeerRandom = new Func<string>(() =>

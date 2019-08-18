@@ -2,7 +2,7 @@
 using System;
 using Windows.UI.Core;
 
-namespace GuiCore
+namespace WebRtcAdapter
 {
     public static class Initialization
     {

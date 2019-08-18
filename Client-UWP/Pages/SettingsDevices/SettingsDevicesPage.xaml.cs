@@ -3,9 +3,9 @@ using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using ClientCore.Call;
-using GuiCore;
 using System.Collections.ObjectModel;
 using System.Linq;
+using WebRtcAdapter;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -178,7 +178,7 @@ namespace Client_UWP.Pages.SettingsDevices
                 cbCamera.SelectedIndex = -1;
         }
 
-        private void SetResolutions()
+        private void SetResolutionsList()
         {
             foreach (IMediaDevice device in Devices.Instance.VideoMediaDevicesList)
             {
@@ -246,9 +246,9 @@ namespace Client_UWP.Pages.SettingsDevices
         {
             _localSettings.SetSelectedCameraName((string)cbCamera.SelectedValue);
 
-            SetResolutions();
+            if (cbCamera.SelectedValue != null)
+                SetResolutionsList();
         }
-
 
         private void CbCaptureResolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -258,13 +258,8 @@ namespace Client_UWP.Pages.SettingsDevices
                 SetFrameRateList();
         }
 
-        private void CbCaptureFrameRate_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void CbCaptureFrameRate_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
             _localSettings.SetSelectedFrameRateString((string)cbCaptureFrameRate.SelectedValue);
-
-            //if (cbCaptureFrameRate.SelectedValue != null)
-            //    GuiLogic.Instance.Call_OnFrameRateChanged(MediaDirection.Local, int.Parse((string)_localSettings.GetSelectedFrameRateString));
-        }
 
         private void CbVideoCodecs_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
             _localSettings.SetSelectedVideoCodecName((string)cbVideoCodecs.SelectedValue);

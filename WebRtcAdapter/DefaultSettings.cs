@@ -1,7 +1,7 @@
 ﻿using ClientCore.Call;
 using System.Collections.Generic;
 
-namespace GuiCore
+namespace WebRtcAdapter
 {
     public static class DefaultSettings
     {

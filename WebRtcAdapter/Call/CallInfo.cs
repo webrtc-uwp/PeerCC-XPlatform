@@ -8,14 +8,21 @@ namespace WebRtcAdapter.Call
 
         public string Sdp { get; private set; }
 
-        public void GetSdp(string sdp)
+        public string JsonString { get; private set; }
+
+        public void SetCall(Call call)
+        {
+            Call = call;
+        }
+
+        public void SetSdp(string sdp)
         {
             Sdp = sdp;
         }
 
-        public void GetCall(Call call)
+        public void SetJsonString(string jsonString)
         {
-            Call = call;
+            JsonString = jsonString;
         }
     }
 }

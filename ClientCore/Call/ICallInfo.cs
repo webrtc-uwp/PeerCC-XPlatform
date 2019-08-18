@@ -11,5 +11,10 @@
         /// Get the offer or answer SDP.
         /// </summary>
         string Sdp { get; }
+
+        /// <summary>
+        /// Get the offer or answer JSON string.
+        /// </summary>
+        string JsonString { get; }
     }
 }

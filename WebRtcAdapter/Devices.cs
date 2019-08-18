@@ -1,13 +1,13 @@
-﻿using System;
+﻿using ClientCore.Call;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Media.Capture;
 using WebRtcAdapter.Call;
-using ClientCore.Call;
 
-namespace GuiCore
+namespace WebRtcAdapter
 {
     public sealed class Devices
     {

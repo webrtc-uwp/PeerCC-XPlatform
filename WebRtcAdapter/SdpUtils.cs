@@ -4,7 +4,8 @@ using System.Text.RegularExpressions;
 
 // This class is borrowed from here: https://github.com/webrtc-uwp/PeerCC/blob/0f53fc5045d8b5347c79b4613510663f2053f6e5/ClientCore/Utilities/SdpUtils.cs
 
-namespace GuiCore
+
+namespace WebRtcAdapter
 {
     /// <summary>
     /// Utility class to organize SDP negotiation.
