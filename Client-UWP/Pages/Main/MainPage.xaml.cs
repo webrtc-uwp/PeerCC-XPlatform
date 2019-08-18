@@ -204,8 +204,6 @@ namespace Client_UWP.Pages.Main
         {
             _mainViewModel = (MainViewModel)e.Parameter;
             DataContext = _mainViewModel;
-
-            AddDefaultIceServersList();
         }
 
         private async void Signaler_SignedIn(object sender, EventArgs e)

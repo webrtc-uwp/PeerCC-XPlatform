@@ -468,8 +468,6 @@ namespace WebRtcAdapter.Call
 
         private RTCConfiguration ConfigureRtc()
         {
-            AddIceServers(AddDefaultIceServers);
-
             var factoryConfig = new WebRtcFactoryConfiguration();
             _factory = new WebRtcFactory(factoryConfig);
 
@@ -529,16 +527,6 @@ namespace WebRtcAdapter.Call
                 _iceServers.Add(server);
             }
         }
-
-        public static List<IceServer> AddDefaultIceServers
-            => new List<IceServer>()
-            {
-                new IceServer { Urls = new List<string> { "stun:stun.l.google.com:19302" } },
-                new IceServer { Urls = new List<string> { "stun:stun1.l.google.com:19302" } },
-                new IceServer { Urls = new List<string> { "stun:stun2.l.google.com:19302" } },
-                new IceServer { Urls = new List<string> { "stun:stun3.l.google.com:19302" } },
-                new IceServer { Urls = new List<string> { "stun:stun4.l.google.com:19302" } }
-            };
 
         /// <summary>
         /// Creates JSON object from SDP.
