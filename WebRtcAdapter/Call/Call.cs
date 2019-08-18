@@ -213,6 +213,9 @@ namespace WebRtcAdapter.Call
 
             if (CreatePeerConnection())
             {
+                string selectedAudioCodecName = (string)_localSettings.Values["SelectedAudioCodecName"];
+                string selectedVideoCodecName = (string)_localSettings.Values["SelectedVideoCodecName"];
+
                 _peerId = PeerId;
 
                 var offerOptions = new RTCOfferOptions();
@@ -222,12 +225,12 @@ namespace WebRtcAdapter.Call
 
                 // Alter sdp to force usage of selected codecs
                 string modifiedSdp = offer.Sdp;
-                //TODO: SdpUtils.SelectCodecs(ref modifiedSdp, int.Parse(config.PreferredAudioCodecId), int.Parse(config.PreferredVideoCodecId));
-                var sdpInit = new RTCSessionDescriptionInit();
+                SdpUtils.SelectCodec(ref modifiedSdp, selectedAudioCodecName, "audio");
+                SdpUtils.SelectCodec(ref modifiedSdp, selectedVideoCodecName, "video");
+                RTCSessionDescriptionInit sdpInit = new RTCSessionDescriptionInit();
                 sdpInit.Sdp = modifiedSdp;
                 sdpInit.Type = offer.SdpType;
                 var modifiedOffer = new RTCSessionDescription(sdpInit);
-
                 await PeerConnection.SetLocalDescription(modifiedOffer);
 
                 Debug.WriteLine($"Sending offer: {modifiedOffer.Sdp}");
@@ -319,7 +322,7 @@ namespace WebRtcAdapter.Call
             MediaDevice _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[0];
 
             for (int i = 0; i < Devices.Instance.VideoMediaDevicesList.Count; i++)
-                if (Devices.Instance.VideoMediaDevicesList[i].DisplayName == (string)localSettings.Values["SelectedCameraName"])
+                if (Devices.Instance.VideoMediaDevicesList[i].DisplayName == (string)_localSettings.Values["SelectedCameraName"])
                     _selectedVideoDevice = (MediaDevice)Devices.Instance.VideoMediaDevicesList[i];
 
             List<int> widths = new List<int>();
@@ -572,12 +575,12 @@ namespace WebRtcAdapter.Call
             return Task.Run(() => Debug.WriteLine("Hangup async."));
         }
 
-        private ApplicationDataContainer localSettings =
+        private ApplicationDataContainer _localSettings =
             ApplicationData.Current.LocalSettings;
 
         public string GetPreferredVideoFormatId(IList<IMediaDevice> VideoMediaDevicesList)
         {
-            string selectedResolution = (string)localSettings.Values["SelectedResolution"];
+            string selectedResolution = (string)_localSettings.Values["SelectedResolution"];
             string preferredVideoFormatId = string.Empty;
 
             for (int i = 0; i < VideoMediaDevicesList.Count; i++)
@@ -596,15 +599,15 @@ namespace WebRtcAdapter.Call
 
         public int? GetPreferredFrameRate()
         {
-            if (localSettings.Values["SelectedFrameRate"] != null)
-                return int.Parse((string)localSettings.Values["SelectedFrameRate"]);
+            if (_localSettings.Values["SelectedFrameRate"] != null)
+                return int.Parse((string)_localSettings.Values["SelectedFrameRate"]);
             else
                 return -1;
         }
 
         public string GetPreferredVideoDeviceId(IList<IMediaDevice> VideoMediaDevicesList)
         {
-            string selectedCameraName = (string)localSettings.Values["SelectedCameraName"];
+            string selectedCameraName = (string)_localSettings.Values["SelectedCameraName"];
             string preferredVideoDeviceId = string.Empty;
 
             for (int i = 0; i < VideoMediaDevicesList.Count; i++)
@@ -618,7 +621,7 @@ namespace WebRtcAdapter.Call
 
         public string GetPreferredOutputAudioDeviceId(IList<IMediaDevice> AudioMediaDevicesRendersList)
         {
-            string selectedSpeakerName = (string)localSettings.Values["SelectedSpeakerName"];
+            string selectedSpeakerName = (string)_localSettings.Values["SelectedSpeakerName"];
             string preferredOutputAudioDeviceId = string.Empty;
 
             for (int i = 0; i < AudioMediaDevicesRendersList.Count; i++)
@@ -632,7 +635,7 @@ namespace WebRtcAdapter.Call
 
         public string GetPreferredInputAudioDeviceId(IList<IMediaDevice> AudioMediaDevicesCapturersList)
         {
-            string selectedMicrophoneName = (string)localSettings.Values["SelectedMicrophoneName"];
+            string selectedMicrophoneName = (string)_localSettings.Values["SelectedMicrophoneName"];
             string preferredInputAudioDeviceId = string.Empty;
 
             for (int i = 0; i < AudioMediaDevicesCapturersList.Count; i++)
@@ -646,7 +649,7 @@ namespace WebRtcAdapter.Call
 
         public string GetPreferredVideoCodecId(IList<ICodec> VideoCodecsList)
         {
-            string selectedVideoCodecName = (string)localSettings.Values["SelectedVideoCodecName"];
+            string selectedVideoCodecName = (string)_localSettings.Values["SelectedVideoCodecName"];
             string preferredVideoCodecId = string.Empty;
 
             for (int i = 0; i < VideoCodecsList.Count; i++)
@@ -660,7 +663,7 @@ namespace WebRtcAdapter.Call
 
         public string GetPreferredAudioCodecId(IList<ICodec> AudioCodecsList)
         {
-            string selectedAudioCodecName = (string)localSettings.Values["SelectedAudioCodecName"];
+            string selectedAudioCodecName = (string)_localSettings.Values["SelectedAudioCodecName"];
             string preferredAudioCodecId = string.Empty;
 
             for (int i = 0; i < AudioCodecsList.Count; i++)
