@@ -5,9 +5,6 @@ namespace WebRtcAdapter.Call
 {
     public class CallProviderFactory : ICallProviderFactory
     {
-        public ICallProvider Create()
-        {
-            return CallProvider.Create();
-        }
+        public ICallProvider Create() => new CallProvider();
     }
 }

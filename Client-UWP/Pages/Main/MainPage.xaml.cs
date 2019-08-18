@@ -13,7 +13,6 @@ using Client_UWP.Pages.SettingsDevices;
 using Client_UWP.Pages.SettingsDebug;
 using PeerCC.Signaling;
 using Client_UWP.Pages.SettingsAccount;
-using GuiCore;
 using System.Linq;
 using Client_UWP.Pages.Call;
 using System.Threading.Tasks;
@@ -21,6 +20,11 @@ using Client_UWP.Models;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using ClientCore.Call;
+using WebRtcAdapter.Call;
+using ClientCore.Signaling;
+using ClientCore.Account;
+using PeerCC.Account;
+using WebRtcAdapter;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -31,13 +35,17 @@ namespace Client_UWP.Pages.Main
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        private HttpSignaler _signaler = GuiLogic.Instance.HttpSignaler;
+        private HttpSignaler _signaler = HttpSignaler.Instance;
 
         private MainViewModel _mainViewModel;
 
         private LocalSettings _localSettings = new LocalSettings();
 
-        private AccountModel accountModel;
+        private AccountModel _accountModel;
+
+        private WebRtcAdapter.Call.Call _call;
+
+        private Account Account;
 
         public MainPage()
         {
@@ -45,13 +53,23 @@ namespace Client_UWP.Pages.Main
 
             InitializeComponent();
 
-            AddDefaultIceServersList();
+            _accountModel = _localSettings.DeserializeSelectedAccount();
 
-            accountModel = _localSettings.DeserializeSelectedAccount();
-
-            GuiLogic.Instance.SetAccount(accountModel?.ServiceUri);
+            SetAccount(_accountModel?.ServiceUri);
 
             //_signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
+
+            ICallProvider callFactory =
+                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+
+            CallProvider callProvider = (CallProvider)callFactory;
+
+            _call = (WebRtcAdapter.Call.Call)callProvider.GetCall();
+
+            _call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
+            _call.OnSignedOut += Call_OnSignedOut;
+
+            //AddDefaultIceServersList();
 
             Loaded += OnLoaded;
 
@@ -64,12 +82,50 @@ namespace Client_UWP.Pages.Main
             _signaler.ServerConnectionFailed += Signaler_ServerConnectionFailed;
             _signaler.PeerConnected += Signaler_PeerConnected;
             _signaler.PeerDisconnected += Signaler_PeerDisconnected;
+            _signaler.MessageFromPeer += HttpSignaler_MessageFromPeer;
 
-            GuiLogic.Instance.OnPeerConnectionCreated += async () =>
+            _call.OnPeerConnectionCreated += async () =>
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
-                    => Frame.Navigate(typeof(CallPage)));
+                    => Frame.Navigate(typeof(CallPage), _call));
 
             InitView();
+
+            NavigationCacheMode = NavigationCacheMode.Required;
+        }
+
+        private void Call_OnSignedOut(object sender, EventArgs e)
+        {
+            Task.Run(async () => await _signaler.SignOut());
+        }
+
+        /// <summary>
+        /// Logs in local peer to server.
+        /// </summary>
+        /// <returns></returns>
+        public async Task LogInToServer()
+        {
+            Debug.WriteLine("Connects to server.");
+
+            await _signaler.Connect(Account.ServiceUri);
+        }
+
+        private void HttpSignaler_MessageFromPeer(object sender, HttpSignalerMessageEvent e)
+        {
+            int peerId = int.Parse(e.Message.PeerId);
+            string content = e.Message.Content;
+
+            _call.MessageFromPeerTaskRun(peerId, content);
+        }
+
+        public void SetAccount(string serviceUri)
+        {
+            IAccountProvider accountFactory =
+                ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
+
+            AccountProvider accountProvider = (AccountProvider)accountFactory;
+
+            Account = (Account)accountProvider
+                .GetAccount(serviceUri, _signaler.LocalPeer.Name, _signaler);
         }
 
         private void AddDefaultAccount()
@@ -124,8 +180,8 @@ namespace Client_UWP.Pages.Main
 
                     iceServersList.Add(iceServer);
                 }
-                GuiLogic.Instance.AddIceServers(iceServersList);
-                GuiLogic.Instance.SetIceServers(iceServersList);
+                //GuiLogic.Instance.AddIceServers(iceServersList);
+                //GuiLogic.Instance.SetIceServers(iceServersList);
             }
         }
 
@@ -150,7 +206,7 @@ namespace Client_UWP.Pages.Main
             // task thread. To prevent concurrency issues, ensure all
             // notifications from this thread are asynchronously
             // forwarded back to the GUI thread for further processing.
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
                 => HandleSignedIn(sender, e));
         }
 
@@ -162,7 +218,7 @@ namespace Client_UWP.Pages.Main
         private async void Signaler_ServerConnectionFailed(object sender, EventArgs e)
         {
             // See method Signaler_SignedIn for concurrency comments.
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
                 => HandleServerConnectionFailed(sender, e));
 
         }
@@ -175,7 +231,7 @@ namespace Client_UWP.Pages.Main
         private async void Signaler_PeerConnected(object sender, Peer peer)
         {
             // See method Signaler_SignedIn for concurrency comments.
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
                 => HandlePeerConnected(sender, peer));
         }
 
@@ -206,7 +262,7 @@ namespace Client_UWP.Pages.Main
         private async void Signaler_PeerDisconnected(object sender, Peer peer)
         {
             // See method Signaler_SignedIn for concurrency comments.
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () 
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()
                 => HandlePeerDisconnected(sender, peer));
 
         }
@@ -227,7 +283,7 @@ namespace Client_UWP.Pages.Main
 
         private void InitView()
         {
-            if (GuiLogic.Instance.PeerConnectedToServer)
+            if (_signaler.LocalPeerSignedIn)
             {
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -245,13 +301,13 @@ namespace Client_UWP.Pages.Main
                 peersListView.Items.Add(peer);
             }
 
-            if (accountModel == null)
+            if (_accountModel == null)
             {
                 tbServiceUri.Text = "Please create/select account Service Uri.";
             }
             else
             {
-                tbServiceUri.Text = $"Service Uri: { GuiLogic.Instance.Account?.ServiceUri }";
+                tbServiceUri.Text = $"Service Uri: { Account?.ServiceUri }";
             }
 
             peersListView.SelectedIndex = -1;
@@ -269,9 +325,7 @@ namespace Client_UWP.Pages.Main
 
             ConnectPeer.Click += async (sender, args) =>
             {
-                await GuiLogic.Instance.LogInToServer();
-
-                GuiLogic.Instance.PeerConnectedToServer = true;
+                await LogInToServer();
 
                 ConnectPeer.IsEnabled = false;
                 DisconnectPeer.IsEnabled = true;
@@ -279,9 +333,7 @@ namespace Client_UWP.Pages.Main
 
             DisconnectPeer.Click += async (sender, args) =>
             {
-                await GuiLogic.Instance.LogOutFromServer();
-
-                GuiLogic.Instance.PeerConnectedToServer = false;
+                await LogOutFromServer();
 
                 peersListView.Items.Clear();
 
@@ -302,8 +354,34 @@ namespace Client_UWP.Pages.Main
 
                 Debug.WriteLine($"Call remote peer {remotePeer.ToString()}");
 
-                Task.Run(async () => await GuiLogic.Instance.ConnectToPeer(remotePeer.Id));
+                Task.Run(async () =>
+                {
+                    _call.PeerId = remotePeer.Id;
+
+                    CallInfo callInfo = (CallInfo)await _call.PlaceCallAsync(null);
+                });
             };
+        }
+
+        /// <summary>
+        /// Logs out local peer from server.
+        /// </summary>
+        /// <returns></returns>
+        public async Task LogOutFromServer()
+        {
+            Debug.WriteLine("Disconnects from server.");
+
+            await _signaler.SignOut();
+        }
+
+        private void Call_OnSendMessageToRemotePeer(object sender, string e)
+        {
+            _signaler.SendToPeer(new Message
+            {
+                Id = "0",
+                Content = e,
+                PeerId = _call.PeerId.ToString()
+            });
         }
 
         private void PeersListView_Tapped(object sender, TappedRoutedEventArgs e) =>

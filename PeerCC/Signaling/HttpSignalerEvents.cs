@@ -33,7 +33,8 @@ namespace PeerCC.Signaling
         public event EventHandler<Peer> PeerHangup;
         public event EventHandler<HttpSignalerMessageEvent> MessageFromPeer;
 
-        public abstract void SendToPeer(int id, string message);
+        //public abstract void SendToPeer(int id, string message);
+        public abstract void SendToPeer(Message message);
 
         protected void OnSignedIn()
         {

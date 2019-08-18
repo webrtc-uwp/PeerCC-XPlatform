@@ -1,5 +1,5 @@
 ﻿using Client_UWP.Pages.Main;
-using GuiCore;
+using ClientCore.Signaling;
 using PeerCC.Signaling;
 using System;
 using System.Threading.Tasks;
@@ -8,6 +8,7 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -18,15 +19,17 @@ namespace Client_UWP.Pages.Call
     /// </summary>
     public sealed partial class CallPage : Page
     {
-        private HttpSignaler _signaler = GuiLogic.Instance.HttpSignaler;
+        private WebRtcAdapter.Call.Call _call;
 
-        private CallPageViewModel ViewModel { get; set; }
+        private HttpSignaler _signaler = HttpSignaler.Instance;
+
+        private CallPageViewModel _viewModel { get; set; }
 
         public CallPage()
         {
             InitializeComponent();
 
-            ViewModel = new CallPageViewModel();
+            _viewModel = new CallPageViewModel();
 
             Loaded += OnLoaded;
 
@@ -34,24 +37,52 @@ namespace Client_UWP.Pages.Call
 
             Hangup.Click += (sender, args) =>
             {
-                GuiLogic.Instance.DisconnectFromPeer();
+                _signaler.SendToPeer(new Message
+                {
+                    Id = "0",
+                    Content = "BYE",
+                    PeerId = _call.PeerId.ToString()
+                });
+
+                _call.PeerId = -1;
+
+                _call.ClosePeerConnection();
 
                 Frame.Navigate(typeof(MainPage));
             };
+
+            NavigationCacheMode = NavigationCacheMode.Required;
+        }
+
+        /// <summary>
+        /// See Page.OnNavigatedTo()
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            _call = (WebRtcAdapter.Call.Call)e.Parameter;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             ApplicationView.GetForCurrentView().TryResizeView(new Size(700, 650));
 
-            ViewModel.SelfVideo = SelfVideo;
-            ViewModel.PeerVideo = PeerVideo;
+            _viewModel.SelfVideo = SelfVideo;
+            _viewModel.PeerVideo = PeerVideo;
         }
-
 
         private void Signaler_PeerHangup(object sender, Peer e)
         {
-            GuiLogic.Instance.DisconnectFromPeer();
+            _signaler.SendToPeer(new Message
+            {
+                Id = "0",
+                Content = "BYE",
+                PeerId = _call.PeerId.ToString()
+            });
+
+            _call.PeerId = -1;
+
+            _call.ClosePeerConnection();
 
             Task.Run(async ()
                 => await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, ()

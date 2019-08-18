@@ -1,7 +1,7 @@
-﻿using GuiCore;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using WebRtcAdapter;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 
@@ -15,21 +15,21 @@ namespace Client_UWP.Pages.Main
         public MainViewModel(CoreDispatcher uiDispatcher)
             : base(uiDispatcher)
         {
-            Initialization.Initialized += WebRtcInitialized;
+            Initialization.Initialized += Instance_Initialized;
 
             Devices.Instance.RequestAccessForMediaCapture().AsTask().ContinueWith(antecedent =>
             {
                 if (antecedent.Result)
                     Initialization.CofigureWebRtcLib(uiDispatcher);
                 else
-                    RunOnUiThread(async () 
+                    RunOnUiThread(async ()
                         => await new MessageDialog("Failed to obtain access to multimedia devices!").ShowAsync());
             });
         }
 
         private string AppVersion = "N/A";
 
-        private void WebRtcInitialized(bool succeeded)
+        private void Instance_Initialized(bool succeeded)
         {
             if (succeeded)
             {
@@ -41,7 +41,7 @@ namespace Client_UWP.Pages.Main
 
                 InstallFactories();
 
-                Task.Run(async() => 
+                Task.Run(async () =>
                 {
                     await Devices.Instance.GetMediaAsync();
                 });

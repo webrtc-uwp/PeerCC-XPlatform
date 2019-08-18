@@ -3,9 +3,9 @@ using Client_UWP.Pages.SettingsAccount;
 using Client_UWP.Pages.SettingsConnection;
 using Client_UWP.Pages.SettingsDebug;
 using ClientCore.Call;
-using GuiCore;
 using System.Collections.ObjectModel;
 using System.Linq;
+using WebRtcAdapter;
 using Windows.UI.Xaml.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
