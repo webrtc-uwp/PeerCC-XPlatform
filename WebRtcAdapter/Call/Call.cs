@@ -484,6 +484,12 @@ namespace WebRtcAdapter.Call
             return config;
         }
 
+        private List<IceServer> iceServers = new List<IceServer>();
+        public void SetIceServers(List<IceServer> iceServersList)
+        {
+            iceServers = iceServersList;
+        }
+
         public void AddIceServers(List<IceServer> iceServersList)
         {
             List<string> urlsList = new List<string>();

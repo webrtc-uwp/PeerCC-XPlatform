@@ -59,17 +59,12 @@ namespace Client_UWP.Pages.Main
 
             //_signaler = (HttpSignaler)GuiLogic.Instance.Account.Signaler;
 
-            ICallProvider callFactory =
-                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
-
-            CallProvider callProvider = (CallProvider)callFactory;
-
-            _call = (WebRtcAdapter.Call.Call)callProvider.GetCall();
+            _call = SetCall();
 
             _call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
             _call.OnSignedOut += Call_OnSignedOut;
 
-            //AddDefaultIceServersList();
+            AddDefaultIceServersList();
 
             Loaded += OnLoaded;
 
@@ -117,7 +112,7 @@ namespace Client_UWP.Pages.Main
             _call.MessageFromPeerTaskRun(peerId, content);
         }
 
-        public void SetAccount(string serviceUri)
+        private void SetAccount(string serviceUri)
         {
             IAccountProvider accountFactory =
                 ClientCore.Factory.SignalingFactory.Singleton.CreateIAccountProvider();
@@ -126,6 +121,16 @@ namespace Client_UWP.Pages.Main
 
             Account = (Account)accountProvider
                 .GetAccount(serviceUri, _signaler.LocalPeer.Name, _signaler);
+        }
+
+        private WebRtcAdapter.Call.Call SetCall()
+        {
+            ICallProvider callFactory =
+                ClientCore.Factory.CallFactory.Singleton.CreateICallProvider();
+
+            CallProvider callProvider = (CallProvider)callFactory;
+
+            return (WebRtcAdapter.Call.Call)callProvider.GetCall();
         }
 
         private void AddDefaultAccount()
@@ -180,8 +185,9 @@ namespace Client_UWP.Pages.Main
 
                     iceServersList.Add(iceServer);
                 }
-                //GuiLogic.Instance.AddIceServers(iceServersList);
-                //GuiLogic.Instance.SetIceServers(iceServersList);
+
+                _call.AddIceServers(iceServersList);
+                _call.SetIceServers(iceServersList);
             }
         }
 
@@ -198,6 +204,8 @@ namespace Client_UWP.Pages.Main
         {
             _mainViewModel = (MainViewModel)e.Parameter;
             DataContext = _mainViewModel;
+
+            AddDefaultIceServersList();
         }
 
         private async void Signaler_SignedIn(object sender, EventArgs e)
