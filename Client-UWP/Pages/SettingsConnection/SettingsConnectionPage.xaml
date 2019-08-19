@@ -28,17 +28,22 @@
                               Label="Debug"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
-        <StackPanel Background="White"
+        <TextBlock Text="ICE Servers List: "
+                   Width="300"
+                   FontWeight="Bold"
+                   Foreground="DimGray"
+                   Padding="0,40,0,10"/>
+        <Grid Background="White"
                     Width="300"
                     Height="400"
-                    Margin="0,60,0,10">
+                    Margin="0,0,0,10">
             <ListView x:Name="IceServersListView" 
                   ItemsSource="{x:Bind _iceServersList}"
                   Width="300"
-                  Margin="0,20,0,0"
                   Background="White"
                   SelectionMode="Single"
-                  IsItemClickEnabled="True">
+                  IsItemClickEnabled="True"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ListViewItem Background="White">
@@ -57,7 +62,14 @@
                                           IsHitTestVisible="False"
                                           Grid.Row="0"
                                           Grid.Column="0"
-                                          Grid.ColumnSpan="2"/>
+                                          Grid.ColumnSpan="2">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}"
+                                                       Foreground="Blue"/>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
                                 <TextBlock Text="User: "
                                            Padding="13,0,0,0"
                                            Grid.Row="1"
@@ -72,7 +84,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </StackPanel>
+        </Grid>
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Center">
             <Button x:Name="AddServer"

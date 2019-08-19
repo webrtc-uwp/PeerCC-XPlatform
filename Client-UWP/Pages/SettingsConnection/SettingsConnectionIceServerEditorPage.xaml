@@ -35,7 +35,8 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <TextBlock Text="{Binding}"/>
+                        <TextBlock Text="{Binding}"
+                                   Foreground="Blue"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
@@ -50,7 +51,7 @@
         <Button x:Name="btnAddUrl"
                 HorizontalAlignment="Center"
                 Content="Add URL"
-                Foreground="Blue"
+                Foreground="Black"
                 Margin="0,20,0,0"/>
         <TextBlock Text="Username"
                    Width="300"
@@ -69,7 +70,7 @@
         <Button x:Name="btnAdd"
                 HorizontalAlignment="Center"
                 Content="Add Ice Server"
-                Foreground="Blue"
+                Foreground="Black"
                 Margin="0,20,0,10"/>
         <StackPanel x:Name="spEdit" 
                     Orientation="Horizontal"
