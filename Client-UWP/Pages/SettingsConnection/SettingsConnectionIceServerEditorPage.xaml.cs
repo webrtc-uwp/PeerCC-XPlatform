@@ -27,11 +27,8 @@ namespace Client_UWP.Pages.SettingsConnection
             InitializeComponent();
 
             GoToSettingsConnectionPage.Click += (sender, args) => Frame.Navigate(typeof(SettingsConnectionPage));
-
             AccountSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsAccountPage));
-
             DevicesSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDevicesPage));
-
             DebugSettings.Click += (sender, args) => Frame.Navigate(typeof(SettingsDebugPage));
         }
 

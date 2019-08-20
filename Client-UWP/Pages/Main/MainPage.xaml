@@ -30,11 +30,7 @@
         <TextBlock x:Name="tbServiceUri"
                        Height="20"
                        Width="280"
-                       Margin="10,10,10,5"/>
-        <!--<TextBlock x:Name="tbIdentityUri"
-                       Height="20"
-                       Width="280"
-                       Margin="10,5,10,0"/>-->
+                       Margin="10,25,10,5"/>
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Center"
                     Margin="0,10,0,5"
@@ -43,12 +39,12 @@
                 Content=" Connect "
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                Margin="10,20,57,10"/>
+                Margin="10,10,57,10"/>
             <Button x:Name="DisconnectPeer" 
                 Content="Disconnect"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
-                Margin="57,20,10,10"/>
+                Margin="57,10,10,10"/>
         </StackPanel>
 
         <StackPanel Background="White"
