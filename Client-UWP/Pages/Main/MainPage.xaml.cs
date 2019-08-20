@@ -49,7 +49,7 @@ namespace Client_UWP.Pages.Main
 
         public MainPage()
         {
-            AddDefaultAccount();
+            DefaultSettings.AddDefaultAccount();
 
             InitializeComponent();
 
@@ -64,7 +64,7 @@ namespace Client_UWP.Pages.Main
             _call.OnSendMessageToRemotePeer += Call_OnSendMessageToRemotePeer;
             _call.OnSignedOut += Call_OnSignedOut;
 
-            AddDefaultIceServersList();
+            DefaultSettings.AddDefaultIceServersList(_call);
 
             Loaded += OnLoaded;
 
@@ -131,64 +131,6 @@ namespace Client_UWP.Pages.Main
             CallProvider callProvider = (CallProvider)callFactory;
 
             return (WebRtcAdapter.Call.Call)callProvider.GetCall();
-        }
-
-        private void AddDefaultAccount()
-        {
-            if (_localSettings.DeserializeAccountsList() == null
-                || !(_localSettings.DeserializeAccountsList()).Any())
-            {
-                ObservableCollection<AccountModel> accountsList = new ObservableCollection<AccountModel>();
-
-                AccountModel accountModel = new AccountModel();
-                accountModel.AccountName = "Default Account";
-                accountModel.ServiceUri = "http://40.83.179.150:8888";
-
-                accountsList.Add(accountModel);
-
-                _localSettings.SerializeSelectedAccount(accountModel);
-                _localSettings.SerializeAccountsList(accountsList);
-            }
-        }
-
-        private void AddDefaultIceServersList()
-        {
-            if (_localSettings.DeserializeIceServersList() == null
-                || !(_localSettings.DeserializeIceServersList()).Any())
-            {
-                ObservableCollection<IceServerModel> iceServersList = new ObservableCollection<IceServerModel>();
-
-                foreach (IceServer iceServer in DefaultSettings.AddDefaultIceServers)
-                {
-                    IceServerModel iceServerModel = new IceServerModel();
-                    iceServerModel.Urls = iceServer.Urls;
-                    iceServerModel.Username = iceServer.Username;
-                    iceServerModel.Credential = iceServer.Credential;
-
-                    iceServersList.Add(iceServerModel);
-                }
-
-                _localSettings.SerializeIceServersList(iceServersList);
-            }
-            else
-            {
-                List<IceServer> iceServersList = new List<IceServer>();
-
-                ObservableCollection<IceServerModel> list = _localSettings.DeserializeIceServersList();
-
-                foreach (var ice in list)
-                {
-                    IceServer iceServer = new IceServer();
-                    iceServer.Urls = ice.Urls;
-                    iceServer.Username = ice.Username;
-                    iceServer.Credential = ice.Credential;
-
-                    iceServersList.Add(iceServer);
-                }
-
-                _call.AddIceServers(iceServersList);
-                _call.SetIceServers(iceServersList);
-            }
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)

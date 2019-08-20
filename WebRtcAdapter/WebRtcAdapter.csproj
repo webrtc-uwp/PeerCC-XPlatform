@@ -131,7 +131,6 @@
     <Compile Include="Call\MediaProvider.cs" />
     <Compile Include="Call\MediaProviderFactory.cs" />
     <Compile Include="Call\MediaVideoFormat.cs" />
-    <Compile Include="DefaultSettings.cs" />
     <Compile Include="Devices.cs" />
     <Compile Include="Initialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

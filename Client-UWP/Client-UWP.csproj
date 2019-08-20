@@ -95,6 +95,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DefaultSettings.cs" />
     <Compile Include="Models\AccountModel.cs" />
     <Compile Include="Pages\BindableBase.cs" />
     <Compile Include="Pages\DispatcherBindableBase.cs" />
